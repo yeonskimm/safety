@@ -1,8 +1,9 @@
 {
   "name": "오늘의안전 - 대구지방고용노동청",
   "short_name": "오늘의안전",
-  "description": "작업 전 안전 체크리스트 - 대구지방고용노동청 광역산재예방감독과",
-  "start_url": "./오늘의안전_체크리스트.html",
+  "description": "작업 전 안전 체크리스트",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#080c14",
   "theme_color": "#f59e0b",
