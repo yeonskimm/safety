@@ -1561,7 +1561,7 @@ function getDate(){const n=new Date();return n.getFullYear()+"."+String(n.getMon
 //  Canvas 보고서
 // ══════════════════════════════════════
 function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();}
-function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr){
+function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr,lang){
   const W=800,ROW=46,HDR=200,FTR=180,PAD=36;
   const total=items.length,done=items.filter((_,i)=>checked[i]).length;
   const H=HDR+total*ROW+FTR+40;
@@ -1571,7 +1571,7 @@ function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr){
   c.fillStyle="#1e293b";c.fillRect(0,0,W,8);
   c.fillStyle=isNR?"#7c3aed":"#f59e0b";c.fillRect(0,8,W,4);
   c.fillStyle="#0f172a";c.font="bold 22px -apple-system,sans-serif";
-  c.fillText(isNR?(s.lang==='en'?"Pre-Work Safety Checklist [Non-Routine]":"작업 전 안전 점검 확인서 [비정형작업]"):(s.lang==='en'?"Pre-Work Safety Checklist":"작업 전 안전 점검 확인서"),PAD,52);
+  c.fillText(isNR?(lang==='en'?"Pre-Work Safety Checklist [Non-Routine]":"작업 전 안전 점검 확인서 [비정형작업]"):(lang==='en'?"Pre-Work Safety Checklist":"작업 전 안전 점검 확인서"),PAD,52);
   c.fillStyle="#64748b";c.font="14px -apple-system,sans-serif";
   c.fillText(isNR?"비정형작업 LOTO 절차 준수 점검":"TBM (Tool Box Meeting) 안전 점검 기록",PAD,76);
   if(isNR){c.fillStyle="#f3e8ff";roundRect(c,PAD,84,W-PAD*2,28,6);c.fill();c.strokeStyle="#a78bfa";c.lineWidth=1;c.stroke();c.fillStyle="#6d28d9";c.font="bold 12px -apple-system,sans-serif";c.fillText("⚠ 비정형작업: 설비 수리·교체·청소 등 — LOTO 절차(잠금·표지) 반드시 준수",PAD+10,103);}
@@ -1617,7 +1617,7 @@ function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr){
   y+=20;c.strokeStyle="#e2e8f0";c.lineWidth=1;c.beginPath();c.moveTo(PAD,y);c.lineTo(W-PAD,y);c.stroke();
   y+=20;c.fillStyle="#334155";c.font="bold 13px -apple-system,sans-serif";c.fillText("서명 확인",PAD,y+16);
   const bW=(W-PAD*2-30)/3;
-  const signs4=["본인 서명","관리감독자 확인","안전관리자 확인","안전보건관리책임자"];
+  const signs4=lang==='en'?["Signature","Supervisor","Safety Manager","Safety Officer"]:["본인 서명","관리감독자 확인","안전관리자 확인","안전보건관리책임자"];
   const gap4=10;
   const bW4=Math.floor((W-PAD*2-gap4*3)/4);
   signs4.forEach((label,i)=>{
@@ -1789,7 +1789,7 @@ function toggle(i){const c={...state.checked};c[i]=!c[i];setState({checked:c});}
 function saveReport(){
   const items=getItems();
   const ind=INDUSTRIES.find(x=>x.id===state.industry);
-  const cv=buildReport(items,state.checked,ind,(state.lang==='en'?(WORK_KEY_MAP[state.workType]||state.workType):state.workType),state.isNR,state.workerName,state.team,getDate());
+  const cv=buildReport(items,state.checked,ind,(state.lang==='en'?(WORK_KEY_MAP[state.workType]||state.workType):state.workType),state.isNR,state.workerName,state.team,getDate(),state.lang);
   setState({previewUrl:cv.toDataURL("image/png"),step:4});
   window.scrollTo(0,0);
 }
