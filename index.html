@@ -31,6 +31,8 @@ input{font-family:inherit;outline:none}
 .home-title{font-size:25px;font-weight:900;color:#f59e0b;text-align:center}
 .home-sub{font-size:13px;color:#94a3b8}
 .home-desc{font-size:13px;color:#64748b;text-align:center;line-height:1.8}
+#update-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:#f59e0b;color:#000;padding:12px 16px;z-index:999;align-items:center;justify-content:space-between;font-family:-apple-system,sans-serif;font-size:14px;font-weight:700;box-shadow:0 -2px 10px rgba(0,0,0,0.3)}
+#update-banner button{background:#000;color:#f59e0b;border:none;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer}
 #install-btn{display:none;margin-top:10px;background:#1a2540;border:1.5px solid #f59e0b;color:#f59e0b;border-radius:10px;padding:11px 28px;font-size:14px;font-weight:700;align-items:center;gap:8px;cursor:pointer}
 .home-btn{margin-top:14px;background:#f59e0b;color:#000;border-radius:12px;padding:14px 36px;font-size:15px;font-weight:800;box-shadow:0 4px 20px rgba(245,158,11,0.4)}
 .tab-row{display:flex;gap:0;margin-bottom:14px;background:#1a2540;border-radius:10px;padding:4px}
@@ -104,6 +106,10 @@ input{font-family:inherit;outline:none}
 </style>
 </head>
 <body>
+<div id="update-banner">
+  <span>🔄 새 버전이 있습니다!</span>
+  <button onclick="applyUpdate()">지금 업데이트</button>
+</div>
 <div id="app"></div>
 <script>
 const INDUSTRIES=[
@@ -1053,10 +1059,47 @@ render();
 <script>
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./service-worker.js")
-      .then(()=>console.log("SW OK")).catch(e=>console.log(e));
+    navigator.serviceWorker.register("./service-worker.js").then(reg=>{
+      console.log("SW 등록 완료");
+
+      // 새 버전 감지 시 자동 업데이트
+      reg.addEventListener("updatefound",()=>{
+        const newSW = reg.installing;
+        newSW.addEventListener("statechange",()=>{
+          if(newSW.state==="installed" && navigator.serviceWorker.controller){
+            // 새 버전 발견 — 업데이트 배너 표시
+            showUpdateBanner();
+          }
+        });
+      });
+
+      // 주기적으로 업데이트 확인 (30분마다)
+      setInterval(()=>reg.update(), 30*60*1000);
+
+    }).catch(e=>console.log("SW 오류:",e));
+
+    // SW 교체 완료 시 자동 새로고침
+    let refreshing=false;
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+      if(!refreshing){ refreshing=true; window.location.reload(); }
+    });
   });
 }
+
+function showUpdateBanner(){
+  const banner = document.getElementById("update-banner");
+  if(banner) banner.style.display="flex";
+}
+
+function applyUpdate(){
+  navigator.serviceWorker.getRegistration().then(reg=>{
+    if(reg && reg.waiting){
+      reg.waiting.postMessage({type:"SKIP_WAITING"});
+    }
+  });
+  document.getElementById("update-banner").style.display="none";
+}
+
 let dP;
 window.addEventListener("beforeinstallprompt",e=>{
   e.preventDefault();dP=e;
