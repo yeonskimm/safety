@@ -12,7 +12,7 @@
 <title>오늘의안전 체크리스트</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#080c14;color:#e2e8f0;min-height:100vh;--fs-body:21px;--fs-home-title:25px;--fs-home-sub:18px;--fs-home-desc:16px;--fs-home-btn:21px;--fs-i-label:16px;--fs-i-icon:26px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#080c14;color:#e2e8f0;min-height:100vh;--fs-body:17px;--fs-home-title:21px;--fs-home-sub:15px;--fs-home-desc:13px;--fs-home-btn:17px;--fs-i-label:13px;--fs-i-icon:20px}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
 input{font-family:inherit;outline:none}
 .hdr{background:#0f1729;border-bottom:2px solid #f59e0b;padding:12px 16px;position:sticky;top:0;z-index:10;overflow:visible}
@@ -1566,7 +1566,7 @@ const PLEDGE_ITEM = {
 // ══════════════════════════════════════
 //  상태 & 헬퍼
 // ══════════════════════════════════════
-let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'m',gearOpen:false};
+let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'s',gearOpen:false};
 function setState(p){Object.assign(state,p);render();}
 function getItems(){
   if(!state.workType)return[];
