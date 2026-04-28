@@ -12,7 +12,7 @@
 <title>오늘의안전 체크리스트</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#080c14;color:#e2e8f0;min-height:100vh;--fs-body:13px;--fs-home-title:18px;--fs-home-sub:13px;--fs-home-desc:12px;--fs-home-btn:15px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#080c14;color:#e2e8f0;min-height:100vh;--fs-body:21px;--fs-home-title:25px;--fs-home-sub:18px;--fs-home-desc:16px;--fs-home-btn:21px;--fs-i-label:16px;--fs-i-icon:26px}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
 input{font-family:inherit;outline:none}
 .hdr{background:#0f1729;border-bottom:2px solid #f59e0b;padding:12px 16px;position:sticky;top:0;z-index:10;overflow:visible}
@@ -41,8 +41,8 @@ input{font-family:inherit;outline:none}
 .i-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px}
 .i-btn{background:#1a2540;border:1.5px solid #2d3d5c;border-radius:12px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;color:#cbd5e1;transition:all 0.2s;width:100%}
 .i-btn.on{background:#1c1408;border-color:#f59e0b;box-shadow:0 0 10px rgba(245,158,11,0.25)}
-.i-icon{font-size:24px}
-.i-label{font-size:11px;font-weight:700;text-align:center;line-height:1.3}
+.i-icon{font-size:var(--fs-i-icon)}
+.i-label{font-size:var(--fs-i-label);font-weight:700;text-align:center;line-height:1.3}
 .det-list{display:flex;flex-direction:column;gap:8px}
 .det-btn{background:#1a2540;border:1.5px solid #2d3d5c;border-radius:10px;padding:13px 14px;display:flex;align-items:center;gap:12px;color:#cbd5e1;font-size:var(--fs-body);font-weight:600;transition:all 0.15s;text-align:left;width:100%}
 .det-btn.on{background:#1c1408;border-color:#f59e0b;color:#fbbf24}
@@ -186,7 +186,7 @@ const DETAIL_MAP={
     {d:"자동화설비 수리·점검",nr:true},{d:"배선·패널 수리",nr:true},
   ],
   logistics:[
-    {d:"지게차 운행"},{d:"리치트럭·고소작업대"},{d:"상·하차"},{d:"컨베이어"},{d:"냉동·냉장창고"},
+    {d:"지게차 운행"},{d:"고소작업대"},{d:"상·하차"},{d:"컨베이어"},{d:"냉동·냉장창고"},
     {d:"지게차 수리·점검",nr:true},{d:"컨베이어 수리·청소",nr:true},{d:"소터·자동화설비",nr:true},
   ],
   building:[
@@ -606,12 +606,15 @@ const DB={
   ],
 
   // ══ 물류·창고 ══
-  "리치트럭·고소작업대":[
+  "고소작업대":[
+    {t:"작업 전 유압·조작·경보장치 이상 유무를 점검했나요?",i:"📋"},
     {t:"아웃트리거를 완전히 펼치고 수평을 확인했나요?",i:"📐"},
-    {t:"안전벨트를 착용하고 체결을 확인했나요?",i:"🔗",w:true},
-    {t:"조작 스위치 이상 유무를 점검했나요?",i:"🎛️"},
-    {t:"하부 출입통제를 완료했나요?",i:"🚧"},
-    {t:"배터리 충전 상태를 확인했나요?",i:"🔋"},
+    {t:"안전대(하네스)를 착용하고 작업대 고리에 체결했나요?",i:"🔗",w:true},
+    {t:"작업 반경 내 전선·장애물 위치를 확인했나요?",i:"⚡",w:true},
+    {t:"하부 출입통제(접근금지 표지)를 완료했나요?",i:"🚧"},
+    {t:"탑승 인원·적재물이 최대 하중을 초과하지 않음을 확인했나요?",i:"⚖️"},
+    {t:"강풍 시 작업을 즉시 중지해야 함을 알고 있나요?",i:"🌬️",w:true},
+    {t:"비상연락 체계 및 비상하강 방법을 확인했나요?",i:"📞"},
   ],
   "상·하차":[
     {t:"트럭 바퀴에 고임목을 설치했나요?",i:"🚛",w:true},
@@ -851,7 +854,7 @@ const DETAIL_MAP_EN={
     {d:"Automated Equipment Repair",nr:true},{d:"Panel & Wiring Repair",nr:true},
   ],
   logistics:[
-    {d:"Forklift Operation"},{d:"Reach Truck & Aerial Work Platform"},{d:"Loading & Unloading"},{d:"Conveyor"},{d:"Cold Storage"},
+    {d:"Forklift Operation"},{d:"Aerial Work Platform"},{d:"Loading & Unloading"},{d:"Conveyor"},{d:"Cold Storage"},
     {d:"Forklift Repair & Inspection",nr:true},{d:"Conveyor Repair & Cleaning",nr:true},{d:"Sorter & Automation",nr:true},
   ],
   building:[
@@ -1217,12 +1220,15 @@ const DB_EN={
     {t:"Have you established an exclusion zone around the panel?",i:"🚧"},
   ],
 
-  "Reach Truck & Aerial Work Platform":[
-    {t:"Have you fully extended and leveled the outriggers?",i:"📐"},
-    {t:"Have you fastened your safety harness?",i:"🔗",w:true},
-    {t:"Have you inspected all control switches for faults?",i:"🎛️"},
-    {t:"Have you established an exclusion zone below the work platform?",i:"🚧"},
-    {t:"Have you checked the battery charge level?",i:"🔋"},
+  "Aerial Work Platform":[
+    {t:"Have you inspected the hydraulics, controls, and alarm systems before work?",i:"📋"},
+    {t:"Have you fully extended the outriggers and confirmed the unit is level?",i:"📐"},
+    {t:"Have you put on a harness and clipped it to the platform anchor point?",i:"🔗",w:true},
+    {t:"Have you checked for power lines and obstacles within the work radius?",i:"⚡",w:true},
+    {t:"Have you completed access control (no-entry signs) under the work area?",i:"🚧"},
+    {t:"Have you confirmed that occupants and loads do not exceed the maximum capacity?",i:"⚖️"},
+    {t:"Do you know that work must stop immediately in strong winds?",i:"🌬️",w:true},
+    {t:"Have you confirmed the emergency contact system and emergency descent method?",i:"📞"},
   ],
   "Loading & Unloading":[
     {t:"Have you placed wheel chocks under the truck tires?",i:"🚛",w:true},
@@ -1490,7 +1496,7 @@ const WORK_KEY_MAP = {
   "도금·세정":"Plating & Cleaning",
   "자동화설비 수리·점검":"Automated Equipment Repair",
   "배선·패널 수리":"Panel & Wiring Repair",
-  "리치트럭·고소작업대":"Reach Truck & Aerial Work Platform",
+  "고소작업대":"Aerial Work Platform",
   "상·하차":"Loading & Unloading",
   "컨베이어":"Conveyor",
   "냉동·냉장창고":"Cold Storage",
@@ -1537,7 +1543,7 @@ const HEAD_RISK_WORKS = [
   "프레스 이상복구·비정형","로봇 이상복구·비정형","금형·지그 교체","설비 수리·청소",
   "컨베이어 수리·청소(제조)",
   // 물류 - 낙하·고소만
-  "상·하차","리치트럭·고소작업대",
+  "상·하차","고소작업대",
   // 화학 - 탱크 내부(추락·낙하물)
   "탱크·반응기 내부 작업",
   // 조선 - 전반적 낙하·추락 위험
@@ -1675,13 +1681,15 @@ function render(){
   const app=document.getElementById("app");
   const s=state;
   // CSS 변수 유지
-  const fsMap={s:{body:'11px',ht:'15px',hs:'11px',hd:'10px',hb:'13px'},m:{body:'13px',ht:'18px',hs:'13px',hd:'12px',hb:'15px'},l:{body:'16px',ht:'22px',hs:'16px',hd:'14px',hb:'18px'}};
+  const fsMap={s:{body:'17px',ht:'21px',hs:'15px',hd:'13px',hb:'17px',il:'13px',ii:'20px'},m:{body:'21px',ht:'25px',hs:'18px',hd:'16px',hb:'21px',il:'16px',ii:'26px'},l:{body:'24px',ht:'28px',hs:'21px',hd:'19px',hb:'24px',il:'19px',ii:'30px'}};
   const fsz=fsMap[s.fontSize]||fsMap['m'];
   document.body.style.setProperty('--fs-body',fsz.body);
   document.body.style.setProperty('--fs-home-title',fsz.ht);
   document.body.style.setProperty('--fs-home-sub',fsz.hs);
   document.body.style.setProperty('--fs-home-desc',fsz.hd);
   document.body.style.setProperty('--fs-home-btn',fsz.hb);
+  document.body.style.setProperty('--fs-i-label',fsz.il||'16px');
+  document.body.style.setProperty('--fs-i-icon',fsz.ii||'26px');
   const ind=INDUSTRIES.find(x=>x.id===s.industry);
   const items=getItems();
   const total=items.length,done=items.filter((_,i)=>s.checked[i]).length;
@@ -1813,13 +1821,15 @@ function render(){
 function setFontSize(sz){
   state.fontSize=sz;
   const root=document.body;
-  const sizes={s:{body:'11px',ht:'15px',hs:'11px',hd:'10px',hb:'13px'},m:{body:'13px',ht:'18px',hs:'13px',hd:'12px',hb:'15px'},l:{body:'16px',ht:'22px',hs:'16px',hd:'14px',hb:'18px'}};
+  const sizes={s:{body:'17px',ht:'21px',hs:'15px',hd:'13px',hb:'17px',il:'13px',ii:'20px'},m:{body:'21px',ht:'25px',hs:'18px',hd:'16px',hb:'21px',il:'16px',ii:'26px'},l:{body:'24px',ht:'28px',hs:'21px',hd:'19px',hb:'24px',il:'19px',ii:'30px'}};
   const f=sizes[sz];
   root.style.setProperty('--fs-body',f.body);
   root.style.setProperty('--fs-home-title',f.ht);
   root.style.setProperty('--fs-home-sub',f.hs);
   root.style.setProperty('--fs-home-desc',f.hd);
   root.style.setProperty('--fs-home-btn',f.hb);
+  root.style.setProperty('--fs-i-label',f.il);
+  root.style.setProperty('--fs-i-icon',f.ii);
   // 버튼 active 상태 업데이트
   ['fbar','gear'].forEach(prefix=>{
     ['s','m','l'].forEach(id=>{
