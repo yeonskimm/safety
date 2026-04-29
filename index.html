@@ -1502,7 +1502,7 @@ const DB_EN={
   ],
 
   // ══ Steel·Manufacturing ══
-  "전기로·용강 작업":[
+  "Electric Furnace & Molten Steel Work":[
     {t:"Have you confirmed access controls and barriers around the molten steel/slag zone?",i:"🚧",w:true},
     {t:"Have you confirmed all moisture and water is completely removed near the molten steel?",i:"💧",w:true},
     {t:"Have you put on heat-resistant clothing, gloves, and a face shield?",i:"🧤",w:true},
@@ -1514,7 +1514,7 @@ const DB_EN={
     {t:"Have you put on a harness and clipped it to a lifeline for elevated work?",i:"🔗"},
     {t:"Have you established an exclusion zone below while working at height?",i:"🚧"},
   ],
-  "압연·가공 작업":[
+  "Rolling & Processing":[
     {t:"Have you confirmed the rolling mill guards and safety devices are working correctly?",i:"🔒",w:true},
     {t:"Have you put on heat-resistant gloves when handling heated material (slab/billet)?",i:"🧤",w:true},
     {t:"Have you confirmed the location and operation of emergency stop buttons?",i:"🛑"},
@@ -1524,12 +1524,41 @@ const DB_EN={
     {t:"Have you confirmed there are no slip hazards such as oil or water on the walkway floor?",i:"⚠️",w:true},
     {t:"Have you confirmed covers or safety signs are in place at openings?",i:"🔲"},
   ],
-  "크레인·운반 작업":[
+  "Crane & Transport":[
     {t:"Have you inspected the hook, wire rope, and shackle for defects before lifting?",i:"🔗",w:true},
     {t:"Have you confirmed no one is below the lift path and established an exclusion zone?",i:"🚧",w:true},
     {t:"Have you agreed on signal methods between the signaler and crane operator?",i:"📢"},
     {t:"Have you confirmed the overload prevention and overwind prevention devices are working?",i:"⚙️"},
     {t:"Have you checked the wire rope for kinking, wear, or broken strands?",i:"🔍"},
+  ],
+
+  // ── 추가 번역키 ──
+  "Welding & Cutting (Metal)":[
+    {t:"Have you removed combustible materials around the welding area?",i:"🔥",w:true},
+    {t:"Have you turned on and confirmed the welding fume extractor?",i:"💨"},
+    {t:"Have you put on appropriate shade-level lens and face shield?",i:"🥽"},
+    {t:"Have you put on welding shoes and heat-resistant apron?",i:"🧥"},
+    {t:"Have you positioned a fire watch?",i:"👁️"},
+  ],
+  "Welding & Cutting (Ship)":[
+    {t:"Have you removed combustible materials nearby?",i:"🔥",w:true},
+    {t:"Have you turned on and confirmed the welding fume extractor?",i:"💨"},
+    {t:"Have you put on appropriate shade-level lens and face shield?",i:"🥽"},
+    {t:"Have you put on welding shoes and heat-resistant apron?",i:"🧥"},
+    {t:"Have you positioned a fire watch?",i:"👁️"},
+  ],
+  "Cutting & Trimming (Print)":[
+    {t:"Have you confirmed the cutter safety guard is properly in place?",i:"✂️",w:true},
+    {t:"Have you confirmed blade inspection is only done after power is off?",i:"⚡"},
+    {t:"Have you put on dedicated gloves when replacing blades?",i:"🧤"},
+  ],
+  "Steel Equipment Repair":[
+    {t:"Have you obtained work approval / permit-to-work (PTW) from your supervisor?",i:"📋",w:true,loto:true},
+    {t:"Have you locked out and tagged all electrical, hydraulic, and pneumatic energy sources?",i:"🔒",w:true,loto:true},
+    {t:"Have you confirmed zero-energy state (voltage, pressure, stored energy)?",i:"⚡",w:true,loto:true},
+    {t:"Have you placed safety blocks / props to prevent unexpected movement?",i:"🪛",w:true},
+    {t:"Have you reported the abnormality to your supervisor and obtained work approval?",i:"📋",w:true},
+    {t:"Is it mandatory to check no tools or rags remain inside before restarting?",i:"🔍",w:true},
   ],
 };
 
@@ -1902,10 +1931,10 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       </div>
       <div class="sec-label">${s.lang==='ko'?'📌 기본 확인':'📌 Basic Check'}</div>${commonRows}
       ${nrSec}
-      <div class="sec-label">${s.lang==='ko'?'🎯 '+s.workType+' 수칙':'🎯 '+s.workType+' Rules'}</div>${specialRows}
+      <div class="sec-label">${s.lang==='ko'?'🎯 '+s.workType+' 수칙':'🎯 '+(WORK_KEY_MAP[s.workType]||s.workType)+' Rules'}</div>${specialRows}
       <div class="sec-label" style="margin-top:18px;color:#f59e0b;font-size:12px">${s.lang==='ko'?'🤝 안전 다짐':'🤝 Safety Pledge'}</div>${pledgeRow}${doneCard}
       <div class="save-area"><div class="save-desc">${s.lang==='ko'?'📄 체크리스트를 관리감독자 제출용 이미지로 저장':'📄 Save checklist as image for supervisor'}</div>
-        <button class="save-btn" onclick="saveReport()">📷 보고서 이미지 저장</button>
+        <button class="save-btn" onclick="saveReport()">${s.lang==='ko'?'📷 보고서 이미지 저장':'📷 Save Report Image'}</button>
       </div>
       <div class="btn-row"><button class="sm-btn" onclick="go(0)">${s.lang==='ko'?'🏠 처음으로':'🏠 Home'}</button><button class="sm-btn" onclick="go(2)">${s.lang==='ko'?'↩ 작업 변경':'↩ Change Task'}</button></div>
     </div>`;
