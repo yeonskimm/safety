@@ -2002,7 +2002,7 @@ function startCheck(){setState({checked:{},step:3});window.scrollTo(0,0);}
 function toggle(i){const c={...state.checked};c[i]=!c[i];setState({checked:c});}
 function saveReport(){
   const items=getItems();
-  const ind=INDUSTRIES.find(x=>x.id===state.industry);
+  const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===state.industry);
   const cv=buildReport(items,state.checked,ind,(state.lang==='en'?(WORK_KEY_MAP[state.workType]||state.workType):state.workType),state.isNR,state.workerName,state.team,getDate(),state.lang);
   setState({previewUrl:cv.toDataURL("image/png"),step:4});
   window.scrollTo(0,0);
@@ -2064,8 +2064,8 @@ window.addEventListener("beforeinstallprompt",e=>{
   // 업데이트 배너 언어 갱신
   const _bt=document.getElementById('update-banner-text');
   const _bb=document.getElementById('update-banner-btn');
-  if(_bt)_bt.textContent=s.lang==='ko'?'🔄 새 버전이 있습니다!':'🔄 New version available!';
-  if(_bb)_bb.textContent=s.lang==='ko'?'지금 업데이트':'Update now';
+  if(_bt)_bt.textContent=state.lang==='ko'?'🔄 새 버전이 있습니다!':'🔄 New version available!';
+  if(_bb)_bb.textContent=state.lang==='ko'?'지금 업데이트':'Update now';
   const b=document.getElementById("install-btn");
   if(b)b.style.display="flex";
 });
