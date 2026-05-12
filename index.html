@@ -7,6 +7,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="오늘의안전">
 <link rel="manifest" href="manifest.json">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4WGRS4XM1K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4WGRS4XM1K');
+</script>
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#f59e0b">
 <title>오늘의안전 체크리스트</title>
@@ -1995,7 +2003,7 @@ function toggleLang(){
   window.scrollTo(0, 0);
 }
 function go(step){setState({step});window.scrollTo(0,0);}
-function selInd(id){setState({industry:id,workType:null,isNR:false,checked:{},tab:0});go(2);}
+function selInd(id){setState({industry:id,workType:null,isNR:false,checked:{},tab:0});go(2);gtag('event','industry_selected',{industry_name:id});}
 function setTab(t){state.tab=t;state.workType=null;state.isNR=false;render();}
 function selWork(d,nr){const koKey=WORK_KEY_MAP_REVERSE[d]||d;setState({workType:koKey,isNR:nr});}
 function startCheck(){setState({checked:{},step:3});window.scrollTo(0,0);}
