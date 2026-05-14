@@ -43,7 +43,6 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .gov-badge{display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:auto}
 .gov-mark{width:22px;height:22px;flex-shrink:0;object-fit:contain;border-radius:3px}
 .gov-text{font-size:11px;font-weight:700;color:var(--txt-3);line-height:1.3;text-align:right;white-space:nowrap}
-.gov-text span{display:none}
 .gov-text span{display:block}
 .back-btn{background:var(--bg-3);border:1px solid var(--bdr-dim);color:var(--txt-2);font-size:13px;font-weight:600;padding:4px 9px;border-radius:7px}
 .h-title{flex:1;font-size:clamp(10px,2.8vw,12px);font-weight:700;color:var(--txt-1);text-align:center;line-height:1.2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
@@ -365,7 +364,8 @@ const DB={
   // ══ 자동차부품 제조 ══
   "프레스 정형작업":[
     {t:"양수조작 버튼을 두 손으로 동시에 누르는 방법을 확인했나요?",i:"🖐️",w:true},
-    {t:"안전블록(세이프티 블록)이 삽입되어 있음을 확인했나요?",i:"🔒",w:true},
+    {t:"이상 발생·끼임 시에는 즉시 운전을 멈추고 전원을 차단한 뒤 안전블록을 삽입해야 한다는 것을 알고 있나요?",i:"🧱",w:true},
+    {t:"비상정지 버튼(E-Stop) 위치를 확인하고 즉시 누를 수 있는 자리에 있나요?",i:"🔴",w:true},
     {t:"방호울·광전관(라이트커튼) 작동 여부를 직접 테스트했나요?",i:"🔦",w:true},
     {t:"금형 내 이물질·잔재가 없음을 확인했나요?",i:"🔍"},
     {t:"소매 단추를 잠그고 말림 위험이 없는 복장인지 확인했나요?",i:"👕"},
@@ -1062,7 +1062,8 @@ const DB_EN={
 
   "Press Operation":[
     {t:"Are you using both hands simultaneously on the two-hand control buttons?",i:"🖐️",w:true},
-    {t:"Have you confirmed the safety block (die safety block) is inserted?",i:"🔒",w:true},
+    {t:"Do you know that if an abnormality or jam occurs, you must immediately stop operation, isolate power, and then insert the safety block?",i:"🧱",w:true},
+    {t:"Have you confirmed the location of the emergency stop button (E-Stop) and is it within immediate reach?",i:"🔴",w:true},
     {t:"Have you tested the guard and light curtain to confirm they work?",i:"🔦",w:true},
     {t:"Have you confirmed there is no foreign material or scrap inside the die?",i:"🔍"},
     {t:"Are your sleeves buttoned and free from entanglement hazards?",i:"👕"},
@@ -1837,9 +1838,11 @@ function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr,lan
     const words=item.t;
     if(c.measureText(words).width>maxW){
       const mid=Math.floor(words.length/2);
-      let sp=words.lastIndexOf(' ',mid);if(sp<0)sp=mid;
-      c.fillText(words.slice(0,sp),PAD+86,y+20);
-      c.fillText(words.slice(sp+1),PAD+86,y+36);
+      let sp=words.lastIndexOf(' ',mid);
+      const cut1=sp<0?mid:sp;
+      const cut2=sp<0?mid:sp+1;
+      c.fillText(words.slice(0,cut1),PAD+86,y+20);
+      c.fillText(words.slice(cut2),PAD+86,y+36);
     }else{c.fillText(words,PAD+86,y+28);}
     if(isDone){const tw=c.measureText(item.t.split(' ').slice(0,5).join(' ')).width;c.strokeStyle="#94a3b8";c.lineWidth=1;c.beginPath();c.moveTo(PAD+86,y+21);c.lineTo(PAD+86+tw,y+21);c.stroke();}
     const bx=W-PAD-52,by=y+ROW/2-11;
