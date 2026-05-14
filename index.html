@@ -2081,7 +2081,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         <span id="ai-report-btn-txt">${s.lang==='ko'?'✨ AI 위험 진단 리포트 생성 (5/5)':' ✨ AI Diagnosis Report (5/5)'}</span>
       </button>
       <div class="ai-result-card" id="ai-result-card">
-        <div class="ai-result-hdr"><span class="ai-result-hdr-icon">🤖</span><span class="ai-result-hdr-text">${s.lang==='ko'?'AI 위험 진단 리포트':'AI Safety Report'}</span><span class="ai-result-hdr-sub">Gemini 1.5 Flash</span></div>
+        <div class="ai-result-hdr"><span class="ai-result-hdr-icon">🤖</span><span class="ai-result-hdr-text">${s.lang==='ko'?'AI 위험 진단 리포트':'AI Safety Report'}</span><span class="ai-result-hdr-sub">Gemini 2.0 Flash</span></div>
         <div class="ai-result-body" id="ai-result-body"></div>
       </div>
     </div>`;
@@ -2183,7 +2183,7 @@ function downloadImg(){
 }
 
 // ═══════════════════ GEMINI AI FEATURES ═══════════════════
-const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
 let aiKey='AIzaSyASlw4Bmzh5S6RKHAohwRnN_d1xbk6nW6o';
 let aiChatHistory=[];
