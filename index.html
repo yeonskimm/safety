@@ -1973,7 +1973,7 @@ function render(){
       <div class="font-bar"><span class="font-bar-label">${s.lang==='ko'?'글자 크기':'Font Size'}</span><button class="fbar-btn${s.fontSize==='s'?' active':''}" id="fbar-s" onclick="setFontSize('s')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="fbar-btn${s.fontSize==='m'?' active':''}" id="fbar-m" onclick="setFontSize('m')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="fbar-btn${s.fontSize==='l'?' active':''}" id="fbar-l" onclick="setFontSize('l')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'크게':'Lg'}</span></button></div>
       <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
       <div style="width:100%;max-width:310px;display:flex;gap:8px;margin-top:10px">
-        <button class="big-btn" id="home-ai-chat-btn" style="flex:1;background:linear-gradient(135deg,#7c5fe0,#4f46e5);color:#fff;box-shadow:0 3px 16px rgba(124,95,224,0.32);font-size:var(--fs-home-btn)" onclick="goAiChat()">${s.lang==='ko'?'💬 AI 안전 상담':'💬 AI Safety Chat'}</button>
+        <button class="big-btn" id="home-ai-chat-btn" style="flex:1;background:linear-gradient(135deg,#7c5fe0,#4f46e5);color:#fff;box-shadow:0 3px 16px rgba(124,95,224,0.32);font-size:var(--fs-home-btn)" onclick="goAiChat()">${s.lang==='ko'?'💬 AI 안전 상담':'💬 AI Safety Chat'}<span id="home-chat-update-badge" style="display:none;font-size:11px;font-weight:500;background:rgba(255,255,255,0.2);border-radius:20px;padding:2px 8px;margin-left:6px">${s.lang==='ko'?'업데이트 중':'updating'}</span></button>
       </div>
       <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.08);border:1px solid rgba(124,95,224,0.18);border-radius:10px;padding:8px 12px;margin-top:6px" id="home-ai-counter">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
@@ -2090,7 +2090,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         <span class="ai-limit-reset" id="ai-reset"></span>
       </div>
       <button class="ai-report-btn" id="ai-report-btn" onclick="generateAiReport()" disabled>
-        <span id="ai-report-btn-txt">${s.lang==='ko'?'✨ AI 위험 진단 리포트 생성 (5/5)':' ✨ AI Diagnosis Report (5/5)'}</span>
+        <span id="ai-report-btn-txt">${s.lang==='ko'?'✨ AI 위험 진단 리포트 생성 (5/5)':' ✨ AI Diagnosis Report (5/5)'}</span><span id="report-update-badge" style="display:none;font-size:11px;font-weight:500;background:rgba(255,255,255,0.2);border-radius:20px;padding:2px 8px;margin-left:6px">${s.lang==='ko'?'업데이트 중':'updating'}</span>
       </button>
       <div class="ai-result-card" id="ai-result-card">
         <div class="ai-result-hdr"><span class="ai-result-hdr-icon">🤖</span><span class="ai-result-hdr-text">${s.lang==='ko'?'AI 위험 진단 리포트':'AI Safety Report'}</span><span class="ai-result-hdr-sub">Gemini 2.0 Flash</span></div>
@@ -2309,10 +2309,28 @@ async function generateAiReport(){
   finally{aiUpdateLimitUI();updateAiReportBtn();}
 }
 
+// 업데이트 중 배지 표시/숨김
+function showUpdateBadge(){
+  const b1=document.getElementById('home-chat-update-badge');
+  const b2=document.getElementById('report-update-badge');
+  const btn=document.getElementById('home-ai-chat-btn');
+  if(b1){b1.style.display='inline';}
+  if(b2){b2.style.display='inline';}
+  if(btn){btn.style.opacity='0.45';btn.style.cursor='not-allowed';}
+}
+function hideUpdateBadge(){
+  const b1=document.getElementById('home-chat-update-badge');
+  const b2=document.getElementById('report-update-badge');
+  const btn=document.getElementById('home-ai-chat-btn');
+  if(b1){b1.style.display='none';}
+  if(b2){b2.style.display='none';}
+  if(btn){btn.style.opacity='';btn.style.cursor='';}
+}
 // 에러 메시지 포맷팅 (상태 코드별 안내)
 function aiFormatErrorMsg(status,err,isEn){
   const msg=err?.message||'';
   if(status===429||msg.includes('quota')||msg.includes('RATE_LIMIT')){
+    showUpdateBadge();
     return isEn?'⚠️ Daily free quota exceeded. Please try again tomorrow.':'⚠️ 무료 한도를 초과했습니다. 내일 다시 시도해주세요.';
   }
   if(status===400&&msg.includes('API_KEY')){
@@ -2431,6 +2449,8 @@ function initAiUI(){
   aiKey=localStorage.getItem('gemini_key')||aiKey;
   aiUpdateKeyUI();aiUpdateLimitUI();
   setInterval(()=>{aiUpdateLimitUI();updateHomeAiCounter();},60000);
+  // 시작 시 이미 한도 초과 상태면 배지 표시
+  if(aiGetLeft('ai_report',REPORT_LIMIT)<=0&&aiGetLeft('ai_chat',CHAT_LIMIT)<=0)showUpdateBadge();
 }
 
 render();
