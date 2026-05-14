@@ -191,11 +191,11 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-limit-label{font-size:9px;color:var(--txt-3);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
 .ai-limit-dots{display:flex;gap:2px}
 .ai-dot{width:6px;height:6px;border-radius:50%;background:var(--bg-3);border:1px solid var(--bdr-dim)}
-.ai-dot.used{background:var(--gold);border-color:var(--gold)}
-.ai-dot.ai-purple{background:#7c5fe0;border-color:#7c5fe0}
+.ai-dot.left{background:#22c55e;border-color:#22c55e}
+.ai-dot.warnl{background:#f59e0b;border-color:#f59e0b}
 .ai-limit-num{font-size:9px;font-weight:700;color:var(--txt-2);margin-left:2px}
-.ai-limit-num.warn{color:var(--red)}
-.ai-limit-num.ok{color:var(--green)}
+.ai-limit-num.warn{color:#f59e0b}
+.ai-limit-num.ok{color:#22c55e}
 .ai-limit-reset{font-size:9px;color:var(--txt-3);margin-left:auto}
 .ai-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -2222,18 +2222,23 @@ function aiSaveKey(){
   aiUpdateKeyUI();aiUpdateLimitUI();
 }
 
-function aiRenderDots(elId,used,total,cls=''){
+function aiRenderDots(elId,left,total){
   const el=document.getElementById(elId);if(!el)return;
-  el.innerHTML='';for(let i=0;i<total;i++){const d=document.createElement('div');d.className='ai-dot'+(i<used?' '+(cls||'used'):'');el.appendChild(d);}
+  el.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='ai-dot'+(i<left?(left===1?' warnl':' left'):'');
+    el.appendChild(d);
+  }
 }
 function aiUpdateLimitUI(){
   const rLeft=aiGetLeft('ai_report',REPORT_LIMIT);
   const cLeft=aiGetLeft('ai_chat',CHAT_LIMIT);
-  aiRenderDots('ai-rdots',REPORT_LIMIT-rLeft,REPORT_LIMIT,'ai-purple');
-  aiRenderDots('ai-cdots',CHAT_LIMIT-cLeft,CHAT_LIMIT,'ai-purple');
+  aiRenderDots('ai-rdots',rLeft,REPORT_LIMIT);
+  aiRenderDots('ai-cdots',cLeft,CHAT_LIMIT);
   const rn=document.getElementById('ai-rnum');const cn=document.getElementById('ai-cnum');
-  if(rn){rn.textContent=rLeft+'/'+REPORT_LIMIT;rn.className='ai-limit-num '+(rLeft===0?'warn':'ok');}
-  if(cn){cn.textContent=cLeft+'/'+CHAT_LIMIT;cn.className='ai-limit-num '+(cLeft===0?'warn':'ok');}
+  if(rn){rn.textContent=rLeft+'/'+REPORT_LIMIT;rn.className='ai-limit-num '+(rLeft===0?'warn':rLeft===1?'warn':'ok');}
+  if(cn){cn.textContent=cLeft+'/'+CHAT_LIMIT;cn.className='ai-limit-num '+(cLeft===0?'warn':cLeft<=2?'warn':'ok');}
   const now=new Date();const midnight=new Date(now);midnight.setDate(midnight.getDate()+1);midnight.setHours(0,0,0,0);
   const diffMin=Math.round((midnight-now)/60000);const h=Math.floor(diffMin/60),m=diffMin%60;
   const rst=document.getElementById('ai-reset');
@@ -2399,7 +2404,10 @@ function updateHomeAiCounter(){
     el.innerHTML='';
     for(let i=0;i<total;i++){
       const d=document.createElement('span');
-      d.style.cssText='width:10px;height:10px;border-radius:50%;display:inline-block;background:'+(i<left?'#22c55e':'#ef4444');
+      let bg,border;
+      if(i<left){bg=left===1?'#f59e0b':'#22c55e';border=bg;}
+      else{bg='transparent';border='rgba(255,255,255,0.15)';}
+      d.style.cssText='width:10px;height:10px;border-radius:50%;display:inline-block;background:'+bg+';border:1px solid '+border+';';
       el.appendChild(d);
     }
   }
@@ -2407,8 +2415,8 @@ function updateHomeAiCounter(){
   makeDots(document.getElementById('home-cdots'),cLeft,CHAT_LIMIT);
   const rn=document.getElementById('home-rnum');
   const cn=document.getElementById('home-cnum');
-  if(rn){rn.textContent=rLeft+'/'+REPORT_LIMIT;rn.style.color=rLeft===0?'#ef4444':'#22c55e';}
-  if(cn){cn.textContent=cLeft+'/'+CHAT_LIMIT;cn.style.color=cLeft===0?'#ef4444':'#22c55e';}
+  if(rn){rn.textContent=rLeft+'/'+REPORT_LIMIT;rn.style.color=rLeft===0?'rgba(255,255,255,0.3)':rLeft===1?'#f59e0b':'#22c55e';}
+  if(cn){cn.textContent=cLeft+'/'+CHAT_LIMIT;cn.style.color=cLeft===0?'rgba(255,255,255,0.3)':cLeft<=2?'#f59e0b':'#22c55e';}
   const rt=document.getElementById('home-reset-txt');
   if(rt){
     const now=new Date();const midnight=new Date();midnight.setHours(24,0,0,0);
