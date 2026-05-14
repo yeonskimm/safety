@@ -2196,6 +2196,7 @@ function downloadImg(){
 
 // ═══════════════════ GEMINI AI FEATURES ═══════════════════
 const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const AI_UPDATING=true; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
 let aiKey='AIzaSyC3cZ6OGGjWNMhBWvyAB1yeiH7RKVoerPE';
 let aiChatHistory=[];
@@ -2264,6 +2265,13 @@ function updateAiReportBtn(){
 }
 
 async function generateAiReport(){
+  if(AI_UPDATING){
+    const card=document.getElementById('ai-result-card');
+    const body=document.getElementById('ai-result-body');
+    if(card)card.className='ai-result-card show';
+    if(body){body.className='ai-result-body';body.textContent=state.lang==='ko'?'AI 기능 업데이트 중입니다.\n오후 4시 이후 이용해 주세요.':'AI feature is updating.\nPlease try after 4PM.';}
+    return;
+  }
   const rLeft=aiGetLeft('ai_report',REPORT_LIMIT);
   if(rLeft<=0){
     const card=document.getElementById('ai-result-card');
@@ -2350,6 +2358,7 @@ function aiFormatNetworkErrorMsg(isEn){
 
 // ─── CHAT (step 5) ───
 function goAiChat(){
+  if(AI_UPDATING){alert(state.lang==='ko'?'AI 기능이 현재 업데이트 중입니다.\n오후 4시 이후 이용해 주세요.':'AI feature is updating.\nPlease try after 4PM.');return;}
   aiChatHistory=[];
   setState({step:5});
   window.scrollTo(0,0);
@@ -2449,8 +2458,8 @@ function initAiUI(){
   aiKey=localStorage.getItem('gemini_key')||aiKey;
   aiUpdateKeyUI();aiUpdateLimitUI();
   setInterval(()=>{aiUpdateLimitUI();updateHomeAiCounter();},60000);
-  // 시작 시 이미 한도 초과 상태면 배지 표시
-  if(aiGetLeft('ai_report',REPORT_LIMIT)<=0&&aiGetLeft('ai_chat',CHAT_LIMIT)<=0)showUpdateBadge();
+  // AI_UPDATING 플래그 또는 한도 초과 시 배지 표시
+  if(AI_UPDATING||aiGetLeft('ai_report',REPORT_LIMIT)<=0&&aiGetLeft('ai_chat',CHAT_LIMIT)<=0)showUpdateBadge();
 }
 
 render();
