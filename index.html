@@ -2197,7 +2197,7 @@ function downloadImg(){
 // ═══════════════════ GEMINI AI FEATURES ═══════════════════
 const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-let aiKey='AIzaSyAWS9BbrJmZYW1QxkVVqbab8onoc1WQDJc';
+let aiKey='AIzaSyDUEeOEMd1Ex9NFybL-LFttgUHN_nhYswE';
 let aiChatHistory=[];
 let aiChatLoading=false;
 
@@ -2421,7 +2421,7 @@ function updateHomeAiCounter(){
   if(rt){
     const now=new Date();const midnight=new Date();midnight.setHours(24,0,0,0);
     const diff=midnight-now;const hh=Math.floor(diff/3600000);const mm=Math.floor((diff%3600000)/60000);
-    rt.textContent=(isKo?'매일 00:00 초기화 · Gemini AI':'Resets at 00:00 · Gemini AI')+(rLeft===0&&cLeft===0?(' · '+(isKo?hh+'시간 '+mm+'분 후':'in '+hh+'h '+mm+'m')):'');
+    rt.textContent=(isKo?'매일 오후 4시 초기화 · Gemini AI':'Resets at 4PM KST · Gemini AI')+(rLeft===0&&cLeft===0?(' · '+(isKo?hh+'시간 '+mm+'분 후':'in '+hh+'h '+mm+'m')):'');
     rt.style.color=(rLeft===0&&cLeft===0)?'#ef4444':'var(--txt-3)';
   }
   const btn=document.getElementById('home-ai-chat-btn');
