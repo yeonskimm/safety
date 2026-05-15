@@ -60,6 +60,8 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .home-desc{font-size:var(--fs-home-desc);color:#707888;text-align:center;line-height:1.9;margin-top:14px}
 .home-btn{margin-top:30px;width:100%;max-width:310px;background:linear-gradient(160deg,#e0b045 0%,#c9a030 50%,#a87028 100%);color:#07090d;border-radius:16px;padding:17px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(201,168,76,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.2);position:relative;overflow:hidden;letter-spacing:0.3px}
 .home-btn::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:sheen 4s 1s infinite}
+.home-btn-purple{margin-top:10px;width:100%;max-width:310px;background:linear-gradient(160deg,#9b7bf0 0%,#7c5fe0 50%,#4f46e5 100%);color:#fff;border-radius:16px;padding:17px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(124,95,224,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);position:relative;overflow:hidden;letter-spacing:0.3px}
+.home-btn-purple::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:skewX(-20deg);animation:sheen 4s 2s infinite}
 @keyframes sheen{0%,100%{left:-80%}50%{left:120%}}
 
 /* update banner */
@@ -1972,9 +1974,7 @@ function render(){
       <div class="home-desc">${s.lang==='ko'?'업종·작업을 선택하면 맞춤 수칙을 알려드려요<br>비정형작업(수리·점검·교체)도 따로 있어요':'Select industry &amp; task for tailored safety rules.<br>Non-routine work (repair·inspection) included.'}</div>
       <div class="font-bar"><span class="font-bar-label">${s.lang==='ko'?'글자 크기':'Font Size'}</span><button class="fbar-btn${s.fontSize==='s'?' active':''}" id="fbar-s" onclick="setFontSize('s')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="fbar-btn${s.fontSize==='m'?' active':''}" id="fbar-m" onclick="setFontSize('m')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="fbar-btn${s.fontSize==='l'?' active':''}" id="fbar-l" onclick="setFontSize('l')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'크게':'Lg'}</span></button></div>
       <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
-      <div style="width:100%;max-width:310px;display:flex;gap:8px;margin-top:10px">
-        <button class="big-btn" id="home-ai-chat-btn" style="flex:1;background:linear-gradient(135deg,#7c5fe0,#4f46e5);color:#fff;box-shadow:0 3px 16px rgba(124,95,224,0.32);font-size:var(--fs-home-btn)" onclick="goAiChat()">${s.lang==='ko'?'💬 AI 안전 상담':'💬 AI Safety Chat'}<span id="home-chat-update-badge" style="display:none;font-size:11px;font-weight:500;background:rgba(255,255,255,0.2);border-radius:20px;padding:2px 8px;margin-left:6px">${s.lang==='ko'?'준비중':'coming soon'}</span></button>
-      </div>
+      <button class="home-btn-purple" id="home-ai-chat-btn" onclick="goAiChat()">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span id="home-chat-update-badge" style="display:none;font-size:11px;font-weight:500;background:rgba(255,255,255,0.18);border-radius:20px;padding:2px 8px;margin-left:6px">${s.lang==='ko'?'준비중':'coming soon'}</span></button>
       <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.08);border:1px solid rgba(124,95,224,0.18);border-radius:10px;padding:8px 12px;margin-top:6px" id="home-ai-counter">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
           <span style="font-size:10px;color:var(--txt-3);min-width:38px">${s.lang==='ko'?'리포트':'Report'}</span>
@@ -2112,11 +2112,11 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===s.industry);
     const indLabel=ind?ind.label:(s.lang==='ko'?'현장':'Site');
     const workLabel=s.workType||(s.lang==='ko'?'일반 작업':'General');
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'💬 AI 안전 상담':'💬 AI Safety Chat'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button></div></div>
     <div class="body ai-chat-wrap">
 
       <div class="ai-chat-msgs" id="ai-chat-msgs">
-        <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">${s.lang==='ko'?'안녕하세요! 안전 상담 AI 입니다. 안전 관련 질문을 자유롭게 물어보세요.':'Hello! I am your Safety AI. Feel free to ask any safety-related questions.'}</div></div>
+        <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">${s.lang==='ko'?'안녕하세요! AI 안전관리자입니다. 안전 관련 질문을 자유롭게 물어보세요.':'Hello! I am your Safety AI. Feel free to ask any safety-related questions.'}</div></div>
       </div>
       <div>
         <div class="ai-chat-input-area"><textarea class="ai-chat-ta" id="ai-chat-ta" rows="1" ${s.lang==='ko'?'placeholder="안전 관련 질문을 입력하세요..."':'placeholder="Ask a safety question..."'} oninput="aiChatAutoResize(this)" onkeydown="aiChatKeydown(event)"></textarea><button class="ai-chat-send" id="ai-chat-send" onclick="sendAiChat()" disabled><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>
@@ -2240,10 +2240,10 @@ function aiUpdateLimitUI(){
   const rn=document.getElementById('ai-rnum');const cn=document.getElementById('ai-cnum');
   if(rn){rn.textContent=rLeft+'/'+REPORT_LIMIT;rn.className='ai-limit-num '+(rLeft===0?'warn':rLeft===1?'warn':'ok');}
   if(cn){cn.textContent=cLeft+'/'+CHAT_LIMIT;cn.className='ai-limit-num '+(cLeft===0?'warn':cLeft<=2?'warn':'ok');}
-  const now=new Date();const midnight=new Date(now);midnight.setDate(midnight.getDate()+1);midnight.setHours(0,0,0,0);
-  const diffMin=Math.round((midnight-now)/60000);const h=Math.floor(diffMin/60),m=diffMin%60;
+  const now=new Date();const utcMidnight=new Date();utcMidnight.setUTCHours(24,0,0,0);
+  const diffMin=Math.round((utcMidnight-now)/60000);const h=Math.floor(diffMin/60),m=diffMin%60;
   const rst=document.getElementById('ai-reset');
-  if(rst)rst.textContent=state.lang==='ko'?'초기화: '+(h>0?h+'h ':'')+ m+'m · 매일 00:00':'Resets: '+(h>0?h+'h ':'')+ m+'m · daily 00:00';
+  if(rst)rst.textContent=state.lang==='ko'?'초기화: '+(h>0?h+'h ':'')+ m+'m · 매일 오전 9시':'Resets: '+(h>0?h+'h ':'')+ m+'m · daily 9AM KST';
   // chat send btn
   const sb=document.getElementById('ai-chat-send');
   if(sb)sb.disabled=cLeft===0;
@@ -2283,7 +2283,7 @@ async function generateAiReport(){
     const card=document.getElementById('ai-result-card');
     const body=document.getElementById('ai-result-body');
     if(card)card.className='ai-result-card show';
-    if(body){body.className='ai-result-body';body.textContent=state.lang==='ko'?'오늘의 무료 AI 리포트(5회)를 모두 사용했습니다.\n내일 00:00에 초기화됩니다 😊':'Daily free AI report (5 times) fully used.\nResets at midnight tonight 😊';}
+    if(body){body.className='ai-result-body';body.textContent=state.lang==='ko'?'오늘의 무료 AI 리포트(5회)를 모두 사용했습니다.\n매일 오전 9시에 초기화됩니다 😊':'Daily free AI report (5 times) fully used.\nResets at 9AM KST daily 😊';}
     return;
   }
   const items=getItems();
@@ -2331,7 +2331,7 @@ function showUpdateBadge(){
   const rbtn=document.getElementById('ai-report-btn');
   if(b1){b1.style.display='inline';}
   if(b2){b2.style.display='inline';}
-  if(btn){btn.style.opacity='0.45';btn.style.cursor='not-allowed';}
+  if(btn){btn.style.opacity='0.45';btn.style.cursor='not-allowed';btn.style.animation='none';}
   if(rbtn){rbtn.style.opacity='0.45';}
 }
 function hideUpdateBadge(){
@@ -2389,7 +2389,7 @@ async function sendAiChat(exText){
   const cLeft=aiGetLeft('ai_chat',CHAT_LIMIT);
   if(cLeft<=0){
     const msgs=document.getElementById('ai-chat-msgs');
-    if(msgs){const d=document.createElement('div');d.className='ai-msg ai';d.innerHTML='<div class="ai-avatar">🤖</div><div class="ai-bubble">'+(state.lang==='ko'?'오늘의 무료 AI 상담(10회)을 모두 사용했습니다.<br>내일 00:00에 초기화됩니다 😊':'Daily free AI chat (10 times) fully used.<br>Resets at midnight tonight 😊')+'</div>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
+    if(msgs){const d=document.createElement('div');d.className='ai-msg ai';d.innerHTML='<div class="ai-avatar">🤖</div><div class="ai-bubble">'+(state.lang==='ko'?'오늘의 무료 AI 상담(10회)을 모두 사용했습니다.<br>매일 오전 9시에 초기화됩니다 😊':'Daily free AI chat (10 times) fully used.<br>Resets at 9AM KST daily 😊')+'</div>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
     return;
   }
   const ta=document.getElementById('ai-chat-ta');
@@ -2406,8 +2406,8 @@ async function sendAiChat(exText){
   const indLabel=ind?ind.label:'현장';
   const isEn2=state.lang==='en';
   const sys=isEn2?
-    `You are a professional workplace safety AI consultant. The user works in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Always answer in English, concisely and practically. Only answer safety-related questions.`:
-    `당신은 현장 안전 전문 AI 상담사입니다. 현재 상담자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장 근로자입니다. 항상 한국어로 간결하고 실용적으로 답하세요. 안전 관련 질문에만 답변하세요.`;
+    `You are an AI professional safety manager with expertise in industrial safety regulations and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond in English concisely and practically as a certified safety manager. Only answer safety-related questions.`:
+    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법과 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 근로자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 한국어로 답변하세요. 안전 관련 질문에만 답변하세요.`;
   const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'근로자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
@@ -2454,9 +2454,9 @@ function updateHomeAiCounter(){
   if(cn){cn.textContent=cLeft+'/'+CHAT_LIMIT;cn.style.color=cLeft===0?'rgba(255,255,255,0.3)':cLeft<=2?'#f59e0b':'#22c55e';}
   const rt=document.getElementById('home-reset-txt');
   if(rt){
-    const now=new Date();const midnight=new Date();midnight.setHours(24,0,0,0);
-    const diff=midnight-now;const hh=Math.floor(diff/3600000);const mm=Math.floor((diff%3600000)/60000);
-    rt.textContent=(isKo?'매일 오후 4시 초기화 · Gemini AI':'Resets at 4PM KST · Gemini AI')+(rLeft===0&&cLeft===0?(' · '+(isKo?hh+'시간 '+mm+'분 후':'in '+hh+'h '+mm+'m')):'');
+    const now=new Date();const utcMid=new Date();utcMid.setUTCHours(24,0,0,0);
+    const diff=utcMid-now;const hh=Math.floor(diff/3600000);const mm=Math.floor((diff%3600000)/60000);
+    rt.textContent=(isKo?'매일 오전 9시 초기화 · Gemini AI':'Resets at 9AM KST · Gemini AI')+(rLeft===0&&cLeft===0?(' · '+(isKo?hh+'시간 '+mm+'분 후':'in '+hh+'h '+mm+'m')):'');
     rt.style.color=(rLeft===0&&cLeft===0)?'#ef4444':'var(--txt-3)';
   }
   const btn=document.getElementById('home-ai-chat-btn');
