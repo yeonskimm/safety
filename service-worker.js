@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v23';
+const CACHE_NAME = 'onul-safety-v25';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -34,12 +34,20 @@ self.addEventListener('message', event => {
 
 // 요청 처리 — 네트워크 우선, 실패 시 캐시
 self.addEventListener('fetch', event => {
+  const url = event.request.url;
+  // POST 요청 또는 외부 API(Gemini 등)는 캐시 처리 제외
+  if(event.request.method !== 'GET' || url.includes('googleapis.com')){
+    event.respondWith(fetch(event.request));
+    return;
+  }
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // 새 응답을 캐시에 저장
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        // GET 요청만 캐시에 저장
+        if(response && response.status === 200 && response.type === 'basic'){
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
         return response;
       })
       .catch(() => caches.match(event.request))
