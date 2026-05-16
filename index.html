@@ -1015,7 +1015,7 @@ const INDUSTRIES_EN=[
   {id:"shipbuilding",label:"Shipbuilding & Heavy Industry",icon:"⚓"},
   {id:"printing",label:"Printing & Publishing",icon:"🖨️"},
   {id:"textile",label:"Textile & Garment",icon:"🧵"},
-  {id:"steel",label:"Steel·Manufacturing",icon:"🔥"},
+  {id:"steel",label:"Steel & Manufacturing",icon:"🔥"},
 ];
 
 const DETAIL_MAP_EN={
@@ -2183,7 +2183,9 @@ function downloadImg(){
 }
 
 // ═══════════════════ GEMINI AI FEATURES ═══════════════════
-const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+// Cloudflare Workers를 통한 안전한 Gemini API 호출
+// 사용자가 Cloudflare 셋업 완료 후 아래 URL을 실제 Worker URL로 교체
+const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 const AI_UPDATING=true; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
 let aiKey='';
@@ -2295,7 +2297,7 @@ async function generateAiReport(){
   card.className='ai-result-card show';
   body.className='ai-result-body typing';body.textContent='';
   try{
-    const res=await fetch(GEMINI_URL+'?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:600,temperature:0.7}})});
+    const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:600,temperature:0.7}})});
     const data=await res.json();
     if(data.error){
       body.className='ai-result-body';
@@ -2401,7 +2403,7 @@ async function sendAiChat(exText){
   const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'근로자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
-    const res=await fetch(GEMINI_URL+'?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.6}})});
+    const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.6}})});
     const data=await res.json();
     if(data.error){
       if(typing)typing.remove();
