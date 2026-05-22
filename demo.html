@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,interactive-widget=resizes-visual-viewport">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="오늘의안전">
@@ -2803,17 +2803,20 @@ initAiUI();
     const wrap = document.querySelector('.ai-chat-wrap');
     if(!wrap) return;
     const hdrH = getHdrH();
+    const hdr = document.querySelector('.hdr');
     if(window.visualViewport){
-      // 버그 수정: offsetTop은 top에 더하지 않음 (iOS에서 항상 0)
-      // 키보드 높이 = 전체화면 - 실제 viewport 높이
-      const vvHeight = window.visualViewport.height;
-      const winHeight = window.innerHeight;
-      const kbHeight = Math.max(0, winHeight - vvHeight);
-      wrap.style.top = hdrH + 'px';
-      wrap.style.bottom = kbHeight + 'px';
+      const vv = window.visualViewport;
+      const H = window.innerHeight;          // 레이아웃 뷰포트 높이
+      const ot = vv.offsetTop || 0;          // iOS는 키보드 시 화면을 위로 밀어올림(>0)
+      // 보이는 영역 = [ot, ot+vv.height]. 그 안에 헤더+채팅을 같이 배치해 상단 고정
+      wrap.style.top = (hdrH + ot) + 'px';
+      wrap.style.bottom = Math.max(0, H - ot - vv.height) + 'px';
+      // 헤더도 밀린 만큼 같이 내려 화면 상단에 유지(iOS 안내글 사라짐 방지)
+      if(hdr) hdr.style.transform = ot ? ('translateY(' + ot + 'px)') : '';
     } else {
       wrap.style.top = hdrH + 'px';
       wrap.style.bottom = '0px';
+      if(hdr) hdr.style.transform = '';
     }
   }
   updateChatPos();
