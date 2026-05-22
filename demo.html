@@ -2445,6 +2445,7 @@ function go(step){
   if(step===0) setTimeout(updateHomeAiCounter,50);
   // 채팅 진입 시: 입력창 자동 포커스 시도(안드로이드 키보드 활성) + 강조(iOS 탭 유도)
   if(step===5){
+    aiStickBottom=false; // 진입 직후엔 인사말을 위쪽에 보여줌
     setTimeout(function(){
       var ta=document.getElementById('ai-chat-ta');
       if(!ta) return;
@@ -2505,6 +2506,7 @@ const APP_VERSION='v39'; // 관리자 표시용 - service-worker.js CACHE_NAME�
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
+let aiStickBottom=false; // 대화 시작 후 키보드 재오픈/리사이즈 시 마지막 메시지로 유지
 
 function aiGetToday(){return new Date().toISOString().slice(0,10);}
 function aiGetUsage(key){try{const r=localStorage.getItem(key);if(!r)return{date:'',count:0};return JSON.parse(r);}catch(e){return{date:'',count:0};}}
@@ -2673,7 +2675,7 @@ function aiAppendMsg(role,text,typing=false){
   const av=role==='ai'?'<div class="ai-avatar">🤖</div>':'<div class="ai-avatar">나</div>';
   if(typing){div.innerHTML=av+'<div class="ai-bubble"><div class="ai-typing-dots"><span></span><span></span><span></span></div></div>';}
   else{div.innerHTML=av+'<div class="ai-bubble">'+text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')+'</div>';}
-  wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;return div;
+  wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;aiStickBottom=true;return div;
 }
 
 async function sendAiChat(exText){
@@ -2818,6 +2820,11 @@ initAiUI();
       wrap.style.bottom = '0px';
       if(hdr) hdr.style.transform = '';
     }
+    // 대화가 시작된 뒤(맨아래 고정)면, 리사이즈/키보드 재오픈 후 마지막 메시지 유지
+    if(aiStickBottom){
+      const msgs = document.getElementById('ai-chat-msgs');
+      if(msgs){ requestAnimationFrame(function(){ msgs.scrollTop = msgs.scrollHeight; }); }
+    }
   }
   updateChatPos();
   if(window.visualViewport){
@@ -2825,6 +2832,13 @@ initAiUI();
     window.visualViewport.addEventListener('scroll', updateChatPos);
   }
   window.addEventListener('resize', updateChatPos);
+  // 사용자가 메시지 영역을 직접 스크롤하면 위치 의도를 기억(맨아래 근처면 고정, 위로 읽으면 해제)
+  document.addEventListener('scroll', function(e){
+    const m = e.target;
+    if(m && m.id === 'ai-chat-msgs'){
+      aiStickBottom = (m.scrollHeight - m.scrollTop - m.clientHeight) < 40;
+    }
+  }, true);
   document.addEventListener('focusin', function(e){
     if(e.target && e.target.classList.contains('ai-chat-ta')){
       setTimeout(updateChatPos, 50);
