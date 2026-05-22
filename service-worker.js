@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v33';
+const CACHE_NAME = 'onul-safety-v35';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -45,9 +45,10 @@ self.addEventListener('fetch', event => {
     url.includes('googleapis.com') ||
     url.includes('anthropic.com') ||
     url.includes('groq.com') ||
-    url.includes('workers.dev')
+    url.includes('workers.dev') ||
+    !url.startsWith(self.location.origin)
   ){
-    event.respondWith(fetch(event.request));
+    // 외부 요청 완전 위임 (iOS non-app-bound domain 에러 방지)
     return;
   }
 

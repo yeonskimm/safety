@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,interactive-widget=resizes-visual-viewport">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="오늘의안전">
@@ -32,6 +32,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg-0);color:var(--txt-1);min-height:100vh;--fs-body:21px;--fs-home-title:25px;--fs-home-sub:18px;--fs-home-desc:16px;--fs-home-btn:21px;--fs-i-label:16px;--fs-i-icon:26px}
+body.chat-mode{overflow:hidden;position:fixed;width:100%;height:100%}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
 input{font-family:inherit;outline:none;color:var(--txt-1)}
 
@@ -202,7 +203,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Chat screen */
-.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:50%;transform:translateX(-50%);width:min(100%,600px);bottom:0;overflow:hidden;z-index:1;transition:bottom .15s ease}
+.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:50%;transform:translateX(-50%);width:min(100%,600px);bottom:0;overflow:hidden;z-index:1;transition:top .1s ease,bottom .1s ease}
 .ai-chat-ctx{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:10px;padding:9px 12px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ai-chat-ctx-label{font-size:9px;color:var(--txt-3);font-weight:700}
 .ai-chat-ctx-val{font-size:10px;font-weight:700;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 7px;border-radius:20px}
@@ -2119,13 +2120,14 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         </div>
       </div>
     </div>`;
-    // 버그 수정: iOS Safari는 setTimeout 밖에서 focus() 해야 user gesture 인정
+    // preventScroll:true → 브라우저 강제 스크롤 없이 키보드 활성화
+    // 안내글이 화면 밖으로 밀리지 않음 (iOS/Android 공통)
     const _ta = document.getElementById('ai-chat-ta');
-    if(_ta) _ta.focus();
+    if(_ta) _ta.focus({preventScroll: true});
     setTimeout(()=>{
       aiUpdateLimitUI();
       updateChatPos();
-    },0);
+    }, 50);
   }
 }
 
@@ -2171,7 +2173,18 @@ function toggleLang(){
   render();
   window.scrollTo(0, 0);
 }
-function go(step){setState({step});window.scrollTo(0,0);if(step===0)setTimeout(updateHomeAiCounter,50);}
+function go(step){
+  // 채팅 모드 진입/이탈 시 body 고정 (타이핑 중 레이아웃 깨짐 방지)
+  if(step===5){
+    document.body.classList.add('chat-mode');
+  } else {
+    document.body.classList.remove('chat-mode');
+    document.body.style.top='';
+  }
+  setState({step});
+  if(step!==5) window.scrollTo(0,0);
+  if(step===0) setTimeout(updateHomeAiCounter,50);
+}
 function selInd(id){setState({industry:id,workType:null,isNR:false,checked:{},tab:0});go(2);gtag('event','industry_selected',{industry_name:id});}
 function setTab(t){state.tab=t;state.workType=null;state.isNR=false;render();}
 function selWork(d,nr){const koKey=WORK_KEY_MAP_REVERSE[d]||d;setState({workType:koKey,isNR:nr});}
@@ -2194,6 +2207,8 @@ function downloadImg(){
 // Cloudflare Workers를 통한 안전한 Gemini API 호출
 // 사용자가 Cloudflare 셋업 완료 후 아래 URL을 실제 Worker URL로 교체
 const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
+// 한자(CJK통합한자 U+4E00~U+9FFF) 후처리 제거 - Gemini가 한자를 섞을 경우 강제 제거
+function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
 let aiKey='';
@@ -2302,14 +2317,19 @@ async function generateAiReport(){
   card.className='ai-result-card show';
   body.className='ai-result-body typing';body.textContent='';
   try{
-    const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:600,temperature:0.7}})});
+    const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        system_instruction:{parts:[{text:isEn
+          ?'You are an industrial safety expert. Never use Chinese characters or any non-English/Korean scripts.'
+          :'당신은 산업안전 전문가입니다. 반드시 순수 한글로만 작성하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{maxOutputTokens:600,temperature:0.7}})});
     const data=await res.json();
     if(data.error){
       body.className='ai-result-body';
       body.textContent=aiFormatErrorMsg(res.status,data.error,state.lang==='en');
       return;
     }
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'No response received.':'응답을 받지 못했습니다.');
+    const text=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'No response received.':'응답을 받지 못했습니다.'));
     aiIncUsage('ai_report');aiUpdateLimitUI();
     let i=0;body.textContent='';body.className='ai-result-body typing';
     const tick=setInterval(()=>{if(i>=text.length){clearInterval(tick);body.className='ai-result-body';return;}body.textContent+=text[i++];body.scrollIntoView({block:'nearest'});},16);
@@ -2391,14 +2411,19 @@ async function sendAiChat(exText){
   const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'근로자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
-    const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.6}})});
+    const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      system_instruction:{parts:[{text:isEn2
+        ?'You are an AI safety manager. Never use Chinese characters.'
+        :'당신은 현장 전문안전관리자 AI입니다. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
+      contents:[{parts:[{text:prompt}]}],
+      generationConfig:{maxOutputTokens:400,temperature:0.6}})});
     const data=await res.json();
     if(data.error){
       if(typing)typing.remove();
       aiAppendMsg('ai',aiFormatErrorMsg(res.status,data.error,state.lang==='en'));
       return;
     }
-    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'Sorry, no response received.':'죄송합니다, 응답을 받지 못했습니다.');
+    const reply=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'Sorry, no response received.':'죄송합니다, 응답을 받지 못했습니다.'));
     aiChatHistory.push({role:'ai',text:reply});
     aiIncUsage('ai_chat');aiUpdateLimitUI();
     if(typing)typing.remove();
