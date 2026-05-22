@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v30';
+const CACHE_NAME = 'onul-safety-v31';
 const FILES_TO_CACHE = [
   './',
   './index.html',

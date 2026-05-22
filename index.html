@@ -202,7 +202,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Chat screen */
-.ai-chat-wrap{display:flex;flex-direction:column;height:calc(100dvh - 56px);height:calc(var(--vvh,100vh) - 56px);overflow:hidden}
+.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:0;right:0;bottom:0;overflow:hidden;z-index:1;transition:bottom .15s ease}
 .ai-chat-ctx{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:10px;padding:9px 12px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ai-chat-ctx-label{font-size:9px;color:var(--txt-3);font-weight:700}
 .ai-chat-ctx-val{font-size:10px;font-weight:700;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 7px;border-radius:20px}
@@ -2101,7 +2101,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const indLabel=ind?ind.label:(s.lang==='ko'?'현장':'Site');
     const workLabel=s.workType||(s.lang==='ko'?'일반 작업':'General');
     app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:9px;background:rgba(124,95,224,0.25);color:#b39af0;border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700">Beta</span></div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button></div></div>
-    <div class="body ai-chat-wrap">
+    <div class="ai-chat-wrap">
       <div class="ai-chat-msgs" id="ai-chat-msgs">
         <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">
           <div>${s.lang==='ko'?'안녕하세요! 🛡️ AI 안전관리자입니다. 산업안전 관련 질문을 자유롭게 물어보세요.':'Hello! 🛡️ I am your AI Safety Manager. Feel free to ask any industrial safety questions.'}</div>
@@ -2451,18 +2451,46 @@ initAiUI();
 // 처음 로드 시 즉시 배지 표시 (setTimeout 없이)
 </script>
 <script>
-// ── 키보드 대응: visualViewport로 --vvh 업데이트 ──
+// ── 키보드 대응: visualViewport로 채팅창 위치 동적 조정 ──
 (function(){
-  function updateVVH(){
-    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    document.documentElement.style.setProperty('--vvh', h + 'px');
+  function getHdrH(){
+    // 버그 수정: 헤더 높이 동적 측정 (소형화면 등 대응)
+    const hdr = document.querySelector('.hdr');
+    return hdr ? hdr.getBoundingClientRect().height : 57;
   }
-  updateVVH();
+  function updateChatPos(){
+    const wrap = document.querySelector('.ai-chat-wrap');
+    if(!wrap) return;
+    const hdrH = getHdrH();
+    if(window.visualViewport){
+      // 버그 수정: offsetTop은 top에 더하지 않음 (iOS에서 항상 0)
+      // 키보드 높이 = 전체화면 - 실제 viewport 높이
+      const vvHeight = window.visualViewport.height;
+      const winHeight = window.innerHeight;
+      const kbHeight = Math.max(0, winHeight - vvHeight);
+      wrap.style.top = hdrH + 'px';
+      wrap.style.bottom = kbHeight + 'px';
+    } else {
+      wrap.style.top = hdrH + 'px';
+      wrap.style.bottom = '0px';
+    }
+  }
+  updateChatPos();
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateVVH);
-    window.visualViewport.addEventListener('scroll', updateVVH);
+    window.visualViewport.addEventListener('resize', updateChatPos);
+    window.visualViewport.addEventListener('scroll', updateChatPos);
   }
-  window.addEventListener('resize', updateVVH);
+  window.addEventListener('resize', updateChatPos);
+  document.addEventListener('focusin', function(e){
+    if(e.target && e.target.classList.contains('ai-chat-ta')){
+      setTimeout(updateChatPos, 50);
+    }
+  });
+  document.addEventListener('focusout', function(e){
+    if(e.target && e.target.classList.contains('ai-chat-ta')){
+      setTimeout(updateChatPos, 50);
+    }
+  });
 })();
 
 if("serviceWorker" in navigator){
