@@ -2220,10 +2220,14 @@ function aiRenderDots(elId,left,total){
   }
 }
 function aiUpdateLimitUI(){
-  // 한도 표시 제거됨 - 엘리먼트 없으면 즉시 종료
-  if(!document.getElementById('ai-rdots'))return;
   const rLeft=aiGetLeft('ai_report',REPORT_LIMIT);
   const cLeft=aiGetLeft('ai_chat',CHAT_LIMIT);
+  // 채팅 전송 버튼/textarea 활성화 (항상 실행)
+  const sb=document.getElementById('ai-chat-send');
+  if(sb)sb.disabled=cLeft===0;
+  const ta=document.getElementById('ai-chat-ta');
+  if(ta)ta.disabled=cLeft===0;
+  // 이하 도트/숫자 UI는 해당 엘리먼트 있을 때만 실행
   aiRenderDots('ai-rdots',rLeft,REPORT_LIMIT);
   aiRenderDots('ai-cdots',cLeft,CHAT_LIMIT);
   const rn=document.getElementById('ai-rnum');const cn=document.getElementById('ai-cnum');
@@ -2233,11 +2237,6 @@ function aiUpdateLimitUI(){
   const diffMin=Math.round((utcMidnight-now)/60000);const h=Math.floor(diffMin/60),m=diffMin%60;
   const rst=document.getElementById('ai-reset');
   if(rst)rst.textContent=state.lang==='ko'?'초기화: '+(h>0?h+'h ':'')+ m+'m · 매일 오전 9시':'Resets: '+(h>0?h+'h ':'')+ m+'m · daily 9AM KST';
-  // chat send btn
-  const sb=document.getElementById('ai-chat-send');
-  if(sb)sb.disabled=cLeft===0;
-  const ta=document.getElementById('ai-chat-ta');
-  if(ta)ta.disabled=cLeft===0;
   const cln=document.getElementById('ai-chat-lnum');
   if(cln){
     const chatTxt=state.lang==='ko'?cLeft+'/'+CHAT_LIMIT+'회':cLeft+'/'+CHAT_LIMIT;
