@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,interactive-widget=resizes-visual-viewport">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="오늘의안전">
@@ -223,6 +223,8 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 @keyframes typing{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 .ai-chat-input-area{margin-top:8px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:11px;padding:9px 11px;display:flex;align-items:flex-end;gap:7px}
 .ai-chat-input-area:focus-within{border-color:rgba(124,58,237,0.35)}
+@keyframes aiInputAttn{0%{box-shadow:0 0 0 0 rgba(124,95,224,0.55);border-color:rgba(124,95,224,0.95)}70%{box-shadow:0 0 0 9px rgba(124,95,224,0)}100%{box-shadow:0 0 0 0 rgba(124,95,224,0);border-color:var(--bdr-dim)}}
+.ai-chat-input-area.ai-input-attn{border-color:rgba(124,95,224,0.95);animation:aiInputAttn 1.2s ease-out 2}
 .ai-chat-ta{flex:1;background:transparent;border:none;resize:none;font-size:max(16px,var(--fs-body));color:var(--txt-1);line-height:1.6;max-height:90px;overflow-y:auto;font-family:inherit;touch-action:auto}
 .ai-chat-ta::placeholder{color:var(--txt-3)}
 .ai-chat-send{width:32px;height:32px;background:linear-gradient(135deg,#7c5fe0,#4f46e5);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -2441,6 +2443,22 @@ function go(step){
   setState({step});
   if(step!==5) window.scrollTo(0,0);
   if(step===0) setTimeout(updateHomeAiCounter,50);
+  // 채팅 진입 시: 입력창 자동 포커스 시도(안드로이드 키보드 활성) + 강조(iOS 탭 유도)
+  if(step===5){
+    aiStickBottom=false; // 진입 직후엔 인사말을 위쪽에 보여줌
+    setTimeout(function(){
+      var ta=document.getElementById('ai-chat-ta');
+      if(!ta) return;
+      try{ ta.focus({preventScroll:true}); }catch(e){ try{ ta.focus(); }catch(_){} }
+      var area=ta.closest('.ai-chat-input-area');
+      if(area){
+        area.classList.remove('ai-input-attn');
+        void area.offsetWidth; // 재진입 시 애니메이션 재시작
+        area.classList.add('ai-input-attn');
+        setTimeout(function(){ area.classList.remove('ai-input-attn'); }, 2500);
+      }
+    }, 120);
+  }
 }
 function selInd(id){
   setState({industry:id,workType:null,isNR:false,checked:{},tab:0});
@@ -2484,10 +2502,11 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v39'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v40'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
+let aiStickBottom=false; // 대화 시작 후 키보드 재오픈/리사이즈 시 마지막 메시지로 유지
 
 function aiGetToday(){return new Date().toISOString().slice(0,10);}
 function aiGetUsage(key){try{const r=localStorage.getItem(key);if(!r)return{date:'',count:0};return JSON.parse(r);}catch(e){return{date:'',count:0};}}
@@ -2656,7 +2675,7 @@ function aiAppendMsg(role,text,typing=false){
   const av=role==='ai'?'<div class="ai-avatar">🤖</div>':'<div class="ai-avatar">나</div>';
   if(typing){div.innerHTML=av+'<div class="ai-bubble"><div class="ai-typing-dots"><span></span><span></span><span></span></div></div>';}
   else{div.innerHTML=av+'<div class="ai-bubble">'+text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')+'</div>';}
-  wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;return div;
+  wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;aiStickBottom=true;return div;
 }
 
 async function sendAiChat(exText){
@@ -2682,15 +2701,15 @@ async function sendAiChat(exText){
   const isEn2=state.lang==='en';
   const sys=isEn2?
     `You are an AI professional safety manager with expertise in industrial safety regulations, OSHA standards, and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond concisely and practically as a certified safety manager. Answer in the same language as the question (English only — do not use Chinese characters or other scripts). Only answer industrial safety-related questions.`:
-    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
-  const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'근로자: ':'AI: ')+h.text).join('\n');
+    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 사용자를 부를 때는 반드시 '작업자님'이라고 호칭하고, '근로자님'이라는 표현은 절대 쓰지 마세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
+  const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'작업자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
     const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       type:'chat',
       system_instruction:{parts:[{text:isEn2
         ?'You are an AI safety manager. Never use Chinese characters.'
-        :'당신은 현장 전문안전관리자 AI입니다. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
+        :'당신은 현장 전문안전관리자 AI입니다. 사용자는 반드시 "작업자님"으로 호칭하고 "근로자님"은 쓰지 마세요. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
       contents:[{parts:[{text:prompt}]}],
       generationConfig:{maxOutputTokens:400,temperature:0.6}})});
     const data=await res.json();
@@ -2786,17 +2805,32 @@ initAiUI();
     const wrap = document.querySelector('.ai-chat-wrap');
     if(!wrap) return;
     const hdrH = getHdrH();
+    const hdr = document.querySelector('.hdr');
     if(window.visualViewport){
-      // 버그 수정: offsetTop은 top에 더하지 않음 (iOS에서 항상 0)
-      // 키보드 높이 = 전체화면 - 실제 viewport 높이
-      const vvHeight = window.visualViewport.height;
-      const winHeight = window.innerHeight;
-      const kbHeight = Math.max(0, winHeight - vvHeight);
-      wrap.style.top = hdrH + 'px';
-      wrap.style.bottom = kbHeight + 'px';
+      const vv = window.visualViewport;
+      const H = window.innerHeight;          // 레이아웃 뷰포트 높이
+      const ot = vv.offsetTop || 0;          // iOS는 키보드 시 화면을 위로 밀어올림(>0)
+      // 보이는 영역 = [ot, ot+vv.height]. 그 안에 헤더+채팅을 같이 배치해 상단 고정
+      wrap.style.top = (hdrH + ot) + 'px';
+      wrap.style.bottom = Math.max(0, H - ot - vv.height) + 'px';
+      // 헤더도 밀린 만큼 같이 내려 화면 상단에 유지(iOS 안내글 사라짐 방지)
+      if(hdr) hdr.style.transform = ot ? ('translateY(' + ot + 'px)') : '';
     } else {
       wrap.style.top = hdrH + 'px';
       wrap.style.bottom = '0px';
+      if(hdr) hdr.style.transform = '';
+    }
+    // 대화가 시작된 뒤(맨아래 고정)면, 리사이즈/키보드 재오픈 후 마지막 메시지 "끝"까지 유지
+    // (키보드 애니메이션·wrap transition이 끝난 뒤까지 여러 번 보정)
+    if(aiStickBottom){
+      const toBottom = function(){
+        if(!aiStickBottom) return;
+        const msgs = document.getElementById('ai-chat-msgs');
+        if(msgs) msgs.scrollTop = msgs.scrollHeight;
+      };
+      requestAnimationFrame(toBottom);
+      setTimeout(toBottom, 130);
+      setTimeout(toBottom, 300);
     }
   }
   updateChatPos();
@@ -2805,6 +2839,13 @@ initAiUI();
     window.visualViewport.addEventListener('scroll', updateChatPos);
   }
   window.addEventListener('resize', updateChatPos);
+  // 사용자가 메시지 영역을 직접 스크롤하면 위치 의도를 기억(맨아래 근처면 고정, 위로 읽으면 해제)
+  document.addEventListener('scroll', function(e){
+    const m = e.target;
+    if(m && m.id === 'ai-chat-msgs'){
+      aiStickBottom = (m.scrollHeight - m.scrollTop - m.clientHeight) < 40;
+    }
+  }, true);
   document.addEventListener('focusin', function(e){
     if(e.target && e.target.classList.contains('ai-chat-ta')){
       setTimeout(updateChatPos, 50);
