@@ -2701,15 +2701,15 @@ async function sendAiChat(exText){
   const isEn2=state.lang==='en';
   const sys=isEn2?
     `You are an AI professional safety manager with expertise in industrial safety regulations, OSHA standards, and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond concisely and practically as a certified safety manager. Answer in the same language as the question (English only — do not use Chinese characters or other scripts). Only answer industrial safety-related questions.`:
-    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
-  const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'근로자: ':'AI: ')+h.text).join('\n');
+    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 사용자를 부를 때는 반드시 '작업자님'이라고 호칭하고, '근로자님'이라는 표현은 절대 쓰지 마세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
+  const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'작업자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
     const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       type:'chat',
       system_instruction:{parts:[{text:isEn2
         ?'You are an AI safety manager. Never use Chinese characters.'
-        :'당신은 현장 전문안전관리자 AI입니다. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
+        :'당신은 현장 전문안전관리자 AI입니다. 사용자는 반드시 "작업자님"으로 호칭하고 "근로자님"은 쓰지 마세요. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
       contents:[{parts:[{text:prompt}]}],
       generationConfig:{maxOutputTokens:400,temperature:0.6}})});
     const data=await res.json();
@@ -2820,10 +2820,17 @@ initAiUI();
       wrap.style.bottom = '0px';
       if(hdr) hdr.style.transform = '';
     }
-    // 대화가 시작된 뒤(맨아래 고정)면, 리사이즈/키보드 재오픈 후 마지막 메시지 유지
+    // 대화가 시작된 뒤(맨아래 고정)면, 리사이즈/키보드 재오픈 후 마지막 메시지 "끝"까지 유지
+    // (키보드 애니메이션·wrap transition이 끝난 뒤까지 여러 번 보정)
     if(aiStickBottom){
-      const msgs = document.getElementById('ai-chat-msgs');
-      if(msgs){ requestAnimationFrame(function(){ msgs.scrollTop = msgs.scrollHeight; }); }
+      const toBottom = function(){
+        if(!aiStickBottom) return;
+        const msgs = document.getElementById('ai-chat-msgs');
+        if(msgs) msgs.scrollTop = msgs.scrollHeight;
+      };
+      requestAnimationFrame(toBottom);
+      setTimeout(toBottom, 130);
+      setTimeout(toBottom, 300);
     }
   }
   updateChatPos();
