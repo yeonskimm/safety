@@ -32,7 +32,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg-0);color:var(--txt-1);min-height:100vh;--fs-body:21px;--fs-home-title:25px;--fs-home-sub:18px;--fs-home-desc:16px;--fs-home-btn:21px;--fs-i-label:16px;--fs-i-icon:26px}
-body.chat-mode{overflow:hidden;position:fixed;width:100%;height:100%;overscroll-behavior:none;touch-action:none}
+body.chat-mode{overflow:hidden;position:fixed;width:100%;height:100%;overscroll-behavior:none}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
 input{font-family:inherit;outline:none;color:var(--txt-1)}
 
@@ -203,7 +203,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Chat screen */
-.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:50%;transform:translateX(-50%);width:min(100%,600px);bottom:0;overflow:hidden;z-index:1;transition:top .1s ease,bottom .1s ease;touch-action:none}
+.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:50%;transform:translateX(-50%);width:min(100%,600px);bottom:0;overflow:hidden;z-index:1;transition:top .1s ease,bottom .1s ease}
 .ai-chat-ctx{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:10px;padding:9px 12px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ai-chat-ctx-label{font-size:9px;color:var(--txt-3);font-weight:700}
 .ai-chat-ctx-val{font-size:10px;font-weight:700;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 7px;border-radius:20px}
@@ -2227,26 +2227,41 @@ function _adminClose(){
   const dash=document.getElementById('admin-dash'); if(dash) dash.remove();
 }
 async function _showAdminDash(){
-  const rLeft=aiGetLeft('ai_report',REPORT_LIMIT);
-  const cLeft=aiGetLeft('ai_chat',CHAT_LIMIT);
-  // Worker에서 전체 통계 가져오기
+  // 1) 대시보드를 즉시 띄움 (네트워크 대기 중 홈 화면 멈춤 방지)
+  const dash = document.createElement('div');
+  dash.id = 'admin-dash';
+  dash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#0d1117;z-index:9999;overflow-y:auto;font-family:inherit';
+  dash.innerHTML = _buildAdminDash(null);  // 로딩 상태로 먼저 표시
+  document.body.appendChild(dash);
+  // 2) 전체 통계 비동기 로드
   let ws = null;
   try {
     const r = await fetch(GEMINI_URL+'/admin-stats', { headers:{'X-Admin-Token':'safety-admin-2024'} });
     if(r.ok) ws = await r.json();
   } catch(e) {}
+  // 3) 대시보드가 아직 열려 있으면 실제 수치로 갱신
+  const cur = document.getElementById('admin-dash');
+  if(cur) cur.innerHTML = _buildAdminDash(ws);
+}
 
-  const dash = document.createElement('div');
-  dash.id = 'admin-dash';
-  dash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#0d1117;z-index:9999;overflow-y:auto;font-family:inherit';
+function _buildAdminDash(ws){
+  const loading = (ws===null);
+  const ph = loading ? '…' : '?';
+  const rLeft=aiGetLeft('ai_report',REPORT_LIMIT);
+  const cLeft=aiGetLeft('ai_chat',CHAT_LIMIT);
 
-  const todayV  = ws?.today?.visits  ?? '?';
-  const todayC  = ws?.today?.chat    ?? '?';
-  const todayR  = ws?.today?.report  ?? '?';
-  const todayE  = ws?.today?.errors  ?? '?';
-  const totalV  = ws?.total?.visits  ?? '?';
-  const totalC  = ws?.total?.chat    ?? '?';
-  const totalR  = ws?.total?.report  ?? '?';
+  const todayV  = ws?.today?.visits  ?? ph;
+  const todayC  = ws?.today?.chat    ?? ph;
+  const todayR  = ws?.today?.report  ?? ph;
+  const todayE  = ws?.today?.errors  ?? ph;
+  const totalV  = ws?.total?.visits  ?? ph;
+  const totalC  = ws?.total?.chat    ?? ph;
+  const totalR  = ws?.total?.report  ?? ph;
+
+  // ① 오늘 전체 API 호출(채팅+리포트+오류) · ③ Groq 실시간 잔여 스냅샷
+  const todayCalls = ws?.today ? ((ws.today.chat||0)+(ws.today.report||0)+(ws.today.errors||0)) : null;
+  const GROQ_RPD = 1000; // Groq 무료 한도(요청/일) - 참고선
+  const g = ws?.groq || null;
 
   // 주간 차트 막대
   const week = ws?.week || [];
@@ -2261,7 +2276,7 @@ async function _showAdminDash(){
     </div>`;
   }).join('');
 
-  dash.innerHTML = `
+  return `
     <div style="max-width:480px;margin:0 auto;padding:24px 20px 48px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
         <div>
@@ -2307,62 +2322,85 @@ async function _showAdminDash(){
         <div style="display:flex;align-items:flex-end;gap:4px;height:80px">${weekBars}</div>
       </div>
 
-      <!-- 내 기기 + 앱 정보 -->
+      <!-- 앱 정보 + API 사용량 (전체) -->
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">⚙️ 앱 정보</div>
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">⚙️ 앱 정보 · API 사용량</div>
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
           <span style="font-size:13px;color:rgba(255,255,255,0.6)">SW 버전</span>
-          <span style="font-size:13px;color:#ffd700;font-weight:700">v36</span>
+          <span style="font-size:13px;color:#ffd700;font-weight:700">${APP_VERSION}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
-          <span style="font-size:13px;color:rgba(255,255,255,0.6)">채팅 잔여 (내 기기)</span>
-          <span style="font-size:13px;color:#22c55e;font-weight:700">${cLeft}/${CHAT_LIMIT}회</span>
+        <!-- ① 오늘 전체 API 호출 -->
+        <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:13px;color:rgba(255,255,255,0.6)">오늘 API 호출</span>
+            <span style="font-size:13px;font-weight:700;color:${todayCalls!=null&&todayCalls>=GROQ_RPD*0.9?'#ef4444':todayCalls!=null&&todayCalls>=GROQ_RPD*0.7?'#f59e0b':'#22c55e'}">${todayCalls!=null?todayCalls.toLocaleString():ph} / ${GROQ_RPD.toLocaleString()}</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:4px;height:6px;overflow:hidden">
+            <div style="width:${todayCalls!=null?Math.min(100,Math.round(todayCalls/GROQ_RPD*100)):0}%;height:100%;border-radius:4px;background:${todayCalls!=null&&todayCalls>=GROQ_RPD*0.9?'#ef4444':todayCalls!=null&&todayCalls>=GROQ_RPD*0.7?'#f59e0b':'#22c55e'};transition:width .4s"></div>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:5px">채팅+리포트+오류 합계 · Groq 무료 한도 1,000회/일 (UTC 자정 리셋)</div>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0">
-          <span style="font-size:13px;color:rgba(255,255,255,0.6)">리포트 잔여 (내 기기)</span>
-          <span style="font-size:13px;color:#22c55e;font-weight:700">${rLeft}/${REPORT_LIMIT}회</span>
-        </div>
-      </div>
-      <!-- 업종별 사용 통계 (내 기기) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">🏭 업종별 사용 통계 (내 기기)</div>
+        <!-- ③ Groq 실시간 잔여 -->
         ${(()=>{
-          try {
-            const stats = JSON.parse(localStorage.getItem('_indStats')||'{}');
-            const IMAP = {const1:'건설',mfg:'제조',chem:'화학',food:'식품',log:'물류',elec:'전기',weld:'용접·도장',wood:'목재',auto:'자동차',disp:'디스플레이',semi:'반도체',ship:'조선',plant:'플랜트',farm:'농업',fish:'어업',print:'인쇄',recycle:'재활용',clean:'청소',cafe:'카페·식당',beauty:'미용',hospital:'의료',office:'사무',construct_nr:'건설비정형',mfg_nr:'제조비정형'};
-            const entries = Object.entries(stats).sort((a,b)=>b[1]-a[1]).slice(0,5);
-            if(!entries.length) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">아직 데이터 없음</div>';
-            const max = entries[0][1];
-            return entries.map(([id,cnt])=>`
-              <div style="margin-bottom:8px">
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-                  <span style="font-size:12px;color:#fff">${IMAP[id]||id}</span>
-                  <span style="font-size:12px;color:#ffd700;font-weight:700">${cnt}회</span>
-                </div>
-                <div style="background:rgba(255,255,255,0.08);border-radius:4px;height:5px">
-                  <div style="width:${Math.round(cnt/max*100)}%;height:100%;border-radius:4px;background:#ffd700"></div>
-                </div>
-              </div>`).join('');
-          } catch(e) { return ''; }
+          if(loading) return '<div style="padding:10px 0;font-size:12px;color:rgba(255,255,255,0.3)">Groq 잔여량 불러오는 중…</div>';
+          if(!g) return '<div style="padding:10px 0;font-size:12px;color:rgba(255,255,255,0.3)">Groq 잔여량 없음 — AI 한 번 호출되면 표시됩니다</div>';
+          const remReq=g.remainingRequests??'?', limReq=g.limitRequests??'?';
+          const remTok=g.remainingTokens, reset=g.resetRequests||'?';
+          const at=g.at?new Date(g.at).toLocaleString('ko-KR',{hour12:false,month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+          return `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.6)">Groq 잔여 호출</span>
+            <span style="font-size:13px;font-weight:700;color:#7c6ee0">${remReq} / ${limReq}</span>
+          </div>
+          ${remTok!=null?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="font-size:13px;color:rgba(255,255,255,0.6)">Groq 잔여 토큰</span>
+            <span style="font-size:13px;font-weight:700;color:#7c6ee0">${Number(remTok).toLocaleString()}</span>
+          </div>`:''}
+          <div style="display:flex;justify-content:space-between;padding:8px 0">
+            <span style="font-size:13px;color:rgba(255,255,255,0.6)">한도 리셋까지</span>
+            <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.75)">${reset}</span>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px">Groq 실시간 기준 · 마지막 호출 ${at}</div>`;
+        })()}
+      </div>
+      <!-- 업종별 사용 통계 (전체) -->
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">🏭 업종별 사용 통계 (전체)</div>
+        ${(()=>{
+          const IMAP = {logging:'벌목·임업',auto:'제조업',construction:'건설',chemical:'화학·도료',food:'식품가공',metal:'금속가공',electronics:'전기·전자',logistics:'물류·창고',building:'건물관리·청소',shipbuilding:'조선·중공업',printing:'인쇄·출판',textile:'섬유·봉제',steel:'철강·제강'};
+          if(loading) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">불러오는 중…</div>';
+          const stats = ws?.industry || {};
+          const entries = Object.entries(stats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+          if(!entries.length) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">아직 데이터 없음</div>';
+          const max = entries[0][1];
+          return entries.map(([id,cnt])=>`
+            <div style="margin-bottom:8px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                <span style="font-size:12px;color:#fff">${IMAP[id]||id}</span>
+                <span style="font-size:12px;color:#ffd700;font-weight:700">${cnt}회</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.08);border-radius:4px;height:5px">
+                <div style="width:${Math.round(cnt/max*100)}%;height:100%;border-radius:4px;background:#ffd700"></div>
+              </div>
+            </div>`).join('');
         })()}
       </div>
 
-      <!-- 날짜별 사용 기록 (최근 7일, 내 기기) -->
+      <!-- 날짜별 사용 기록 (최근 7일, 전체) -->
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">📅 날짜별 사용 기록 (내 기기)</div>
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">📅 날짜별 사용 기록 (전체)</div>
         ${(()=>{
-          const rows = [];
-          for(let i=6;i>=0;i--){
-            const d=new Date(); d.setDate(d.getDate()-i);
-            const dateStr=d.toISOString().slice(0,10);
-            const cnt=parseInt(localStorage.getItem('_daily_'+dateStr)||'0');
-            const isToday=i===0;
-            rows.push(`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-              <span style="font-size:12px;color:${isToday?'#ffd700':'rgba(255,255,255,0.5)'}">${dateStr.slice(5)}${isToday?' (오늘)':''}</span>
-              <span style="font-size:12px;font-weight:700;color:${cnt>0?'#fff':'rgba(255,255,255,0.2)'}">${cnt}회</span>
-            </div>`);
-          }
-          return rows.join('');
+          if(loading) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">불러오는 중…</div>';
+          const week = ws?.week || [];
+          if(!week.length) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">아직 데이터 없음</div>';
+          const todayStr = new Date().toISOString().slice(0,10);
+          return week.map(d=>{
+            const isToday = d.date === todayStr;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+              <span style="font-size:12px;color:${isToday?'#ffd700':'rgba(255,255,255,0.5)'}">${d.date.slice(5)}${isToday?' (오늘)':''}</span>
+              <span style="font-size:11px;color:rgba(255,255,255,0.7)">접속 <b style="color:#ffd700">${d.visits}</b> · 채팅 <b style="color:#7c6ee0">${d.chat}</b> · 리포트 <b style="color:#22c55e">${d.report}</b></span>
+            </div>`;
+          }).join('');
         })()}
       </div>
 
@@ -2390,7 +2428,6 @@ async function _showAdminDash(){
       <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.2);margin-top:16px">실시간 · Cloudflare Worker 연동</div>
     </div>
   `;
-  document.body.appendChild(dash);
 }
 
 function go(step){
@@ -2447,6 +2484,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
+const APP_VERSION='v39'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -2554,6 +2592,7 @@ async function generateAiReport(){
   body.className='ai-result-body typing';body.textContent='';
   try{
     const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        type:'report',
         system_instruction:{parts:[{text:isEn
           ?'You are an industrial safety expert. Never use Chinese characters or any non-English/Korean scripts.'
           :'당신은 산업안전 전문가입니다. 반드시 순수 한글로만 작성하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
@@ -2648,6 +2687,7 @@ async function sendAiChat(exText){
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
     const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      type:'chat',
       system_instruction:{parts:[{text:isEn2
         ?'You are an AI safety manager. Never use Chinese characters.'
         :'당신은 현장 전문안전관리자 AI입니다. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
@@ -2778,45 +2818,78 @@ initAiUI();
 })();
 
 if("serviceWorker" in navigator){
+  let _refreshing=false;
+  let _hadController=!!navigator.serviceWorker.controller; // 최초 설치와 업데이트 구분
+  let _reg=null;
+
+  // 새 SW가 제어권을 잡으면 1회 새로고침 (최초 설치 시에는 새로고침 안 함)
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(_refreshing) return;
+    if(!_hadController){ _hadController=true; return; }
+    _refreshing=true;
+    window.location.reload();
+  });
+
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("./service-worker.js").then(reg=>{
+      _reg=reg;
       console.log("SW 등록 완료");
-
-      // 새 버전 감지 시 자동 업데이트
+      // 이미 대기 중인 새 버전 처리
+      if(reg.waiting && navigator.serviceWorker.controller) _maybeApplyUpdate(reg.waiting);
+      // 새 버전 설치 감지
       reg.addEventListener("updatefound",()=>{
-        const newSW = reg.installing;
-        newSW.addEventListener("statechange",()=>{
-          if(newSW.state==="installed" && navigator.serviceWorker.controller){
-            showUpdateBanner();
+        const sw=reg.installing;
+        if(!sw) return;
+        sw.addEventListener("statechange",()=>{
+          if(sw.state==="installed" && navigator.serviceWorker.controller){
+            _maybeApplyUpdate(sw); // 기존 SW가 있을 때만 = 진짜 업데이트
           }
         });
       });
-
-      // 주기적으로 업데이트 확인 (30분마다)
-      setInterval(()=>reg.update(), 30*60*1000);
-
+      // 주기적 업데이트 확인 (30분마다)
+      setInterval(()=>reg.update().catch(()=>{}), 30*60*1000);
     }).catch(e=>console.log("SW 오류:",e));
 
-    // SW 교체 완료 시 자동 새로고침
-    let refreshing=false;
-    navigator.serviceWorker.addEventListener("controllerchange",()=>{
-      if(!refreshing){ refreshing=true; window.location.reload(); }
+    // 앱이 다시 보일 때마다 최신 버전 확인 + 보류된 업데이트 적용
+    document.addEventListener("visibilitychange",()=>{
+      if(document.visibilityState!=="visible" || !_reg) return;
+      _reg.update().catch(()=>{});
+      if(_reg.waiting) _maybeApplyUpdate(_reg.waiting);
     });
   });
 }
 
+// 새 버전 발견 시: 안전하면 즉시 자동 적용, 사용 중이면 배너로 안내
+let _pendingSW=null;
+function _maybeApplyUpdate(sw){
+  if(_updateSafe()){
+    sw.postMessage({type:"SKIP_WAITING"}); // → controllerchange → 자동 새로고침
+  } else {
+    _pendingSW=sw;
+    showUpdateBanner();
+  }
+}
+// 채팅 입력 중·AI 응답 대기 중·관리자 화면 열림 시 자동 새로고침 보류(작업 보호)
+function _updateSafe(){
+  if(document.getElementById("admin-dash")) return false;
+  if(typeof aiChatLoading!=="undefined" && aiChatLoading) return false;
+  const ta=document.getElementById("ai-chat-ta");
+  if(ta && (document.activeElement===ta || (ta.value && ta.value.trim()))) return false;
+  return true;
+}
+
 function showUpdateBanner(){
-  const banner = document.getElementById("update-banner");
+  const banner=document.getElementById("update-banner");
   if(banner) banner.style.display="flex";
 }
 
 function applyUpdate(){
+  const banner=document.getElementById("update-banner");
+  if(banner) banner.style.display="none";
+  if(_pendingSW){ _pendingSW.postMessage({type:"SKIP_WAITING"}); return; }
   navigator.serviceWorker.getRegistration().then(reg=>{
-    if(reg && reg.waiting){
-      reg.waiting.postMessage({type:"SKIP_WAITING"});
-    }
+    if(reg && reg.waiting) reg.waiting.postMessage({type:"SKIP_WAITING"});
   });
-  document.getElementById("update-banner").style.display="none";
 }
 
 let dP;
