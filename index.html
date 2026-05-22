@@ -2119,7 +2119,16 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         </div>
       </div>
     </div>`;
-    setTimeout(()=>{aiUpdateLimitUI();},0);
+    setTimeout(()=>{
+      aiUpdateLimitUI();
+      // AI 채팅 진입 시 키보드 자동 활성화
+      const ta = document.getElementById('ai-chat-ta');
+      if(ta){
+        ta.focus();
+        // iOS Safari: focus 후 visualViewport 위치 재계산
+        setTimeout(updateChatPos, 150);
+      }
+    },0);
   }
 }
 
