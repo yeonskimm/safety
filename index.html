@@ -202,11 +202,11 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Chat screen */
-.ai-chat-wrap{display:flex;flex-direction:column;min-height:calc(100vh - 160px)}
+.ai-chat-wrap{display:flex;flex-direction:column;height:calc(100dvh - 56px);height:calc(var(--vvh,100vh) - 56px);overflow:hidden}
 .ai-chat-ctx{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:10px;padding:9px 12px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ai-chat-ctx-label{font-size:9px;color:var(--txt-3);font-weight:700}
 .ai-chat-ctx-val{font-size:10px;font-weight:700;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 7px;border-radius:20px}
-.ai-chat-msgs{flex:1;display:flex;flex-direction:column;gap:9px;overflow-y:auto;padding-bottom:8px;max-height:calc(100vh - 340px);min-height:220px}
+.ai-chat-msgs{flex:1;display:flex;flex-direction:column;gap:9px;overflow-y:auto;padding-bottom:8px;min-height:0}
 .ai-msg{display:flex;gap:7px;align-items:flex-start;animation:msgIn .2s ease}
 @keyframes msgIn{from{opacity:0;transform:translateY(5px)}}
 .ai-msg.user{flex-direction:row-reverse}
@@ -227,7 +227,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-chat-send{width:32px;height:32px;background:linear-gradient(135deg,#7c5fe0,#4f46e5);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ai-chat-send:disabled{opacity:0.3}
 .ai-chat-send svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.ai-chat-limit{display:flex;justify-content:space-between;margin-top:5px;font-size:9px;color:var(--txt-3)}
+.ai-chat-limit{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:10px;color:var(--txt-2);padding:0 2px}
 .ai-chat-limit-num.ok{color:var(--green)}
 .ai-chat-limit-num.warn{color:#f59e0b}
 .ai-chat-limit-num.empty{color:var(--red)}
@@ -2102,15 +2102,20 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const workLabel=s.workType||(s.lang==='ko'?'일반 작업':'General');
     app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:9px;background:rgba(124,95,224,0.25);color:#b39af0;border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700">Beta</span></div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button></div></div>
     <div class="body ai-chat-wrap">
-
       <div class="ai-chat-msgs" id="ai-chat-msgs">
-        <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">${s.lang==='ko'?'안녕하세요! AI 안전관리자입니다. 안전 관련 질문을 자유롭게 물어보세요.':'Hello! I am your Safety AI. Feel free to ask any safety-related questions.'}</div></div>
+        <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">
+          <div>${s.lang==='ko'?'안녕하세요! 🛡️ AI 안전관리자입니다. 산업안전 관련 질문을 자유롭게 물어보세요.':'Hello! 🛡️ I am your AI Safety Manager. Feel free to ask any industrial safety questions.'}</div>
+          <div style="margin-top:8px;padding:7px 9px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:7px;font-size:11px;line-height:1.6;color:#d97706">
+            ⚠️ ${s.lang==='ko'?'AI는 실수할 수 있습니다. 참고용으로만 이용하시고, 중요한 사항은 관리자·전문가에게 확인하세요.':'AI can make mistakes. Use for reference only. Always verify important matters with a qualified professional.'}
+          </div>
+        </div></div>
       </div>
-      <div>
+      <div id="ai-chat-bottom" style="flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px)">
         <div class="ai-chat-input-area"><textarea class="ai-chat-ta" id="ai-chat-ta" rows="1" ${s.lang==='ko'?'placeholder="안전 관련 질문을 입력하세요..."':'placeholder="Ask a safety question..."'} oninput="aiChatAutoResize(this)" onkeydown="aiChatKeydown(event)"></textarea><button class="ai-chat-send" id="ai-chat-send" onclick="sendAiChat()" disabled><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>
         <div class="ai-chat-limit">
-          <span style="color:var(--txt-3)">${s.lang==='ko'?'남은 채팅':'Chat left'} <span class="ai-chat-limit-num" id="ai-chat-lnum">${aiGetLeft('ai_chat',CHAT_LIMIT)}/${CHAT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
-          <span style="color:var(--txt-3)">${s.lang==='ko'?'리포트':'Report'} <span class="ai-chat-limit-num" id="ai-rpt-lnum">${aiGetLeft('ai_report',REPORT_LIMIT)}/${REPORT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
+          <span>${s.lang==='ko'?'남은 채팅':'Chat'} <span class="ai-chat-limit-num" id="ai-chat-lnum">${aiGetLeft('ai_chat',CHAT_LIMIT)}/${CHAT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
+          <span style="color:var(--txt-3);font-size:9px">${s.lang==='ko'?'매일 오전 9시 초기화':'Resets daily 9AM'}</span>
+          <span>${s.lang==='ko'?'리포트':'Report'} <span class="ai-chat-limit-num" id="ai-rpt-lnum">${aiGetLeft('ai_report',REPORT_LIMIT)}/${REPORT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
         </div>
       </div>
     </div>`;
@@ -2375,8 +2380,8 @@ async function sendAiChat(exText){
   const indLabel=ind?ind.label:'현장';
   const isEn2=state.lang==='en';
   const sys=isEn2?
-    `You are an AI professional safety manager with expertise in industrial safety regulations and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond in English concisely and practically as a certified safety manager. Only answer safety-related questions.`:
-    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법과 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 근로자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 한국어로 답변하세요. 안전 관련 질문에만 답변하세요.`;
+    `You are an AI professional safety manager with expertise in industrial safety regulations, OSHA standards, and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond concisely and practically as a certified safety manager. Answer in the same language as the question (English only — do not use Chinese characters or other scripts). Only answer industrial safety-related questions.`:
+    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
   const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'근로자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
@@ -2446,6 +2451,20 @@ initAiUI();
 // 처음 로드 시 즉시 배지 표시 (setTimeout 없이)
 </script>
 <script>
+// ── 키보드 대응: visualViewport로 --vvh 업데이트 ──
+(function(){
+  function updateVVH(){
+    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--vvh', h + 'px');
+  }
+  updateVVH();
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateVVH);
+    window.visualViewport.addEventListener('scroll', updateVVH);
+  }
+  window.addEventListener('resize', updateVVH);
+})();
+
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("./service-worker.js").then(reg=>{
