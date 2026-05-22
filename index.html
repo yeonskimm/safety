@@ -202,7 +202,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* Chat screen */
-.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:0;right:0;bottom:0;overflow:hidden;z-index:1;transition:bottom .15s ease}
+.ai-chat-wrap{display:flex;flex-direction:column;position:fixed;top:57px;left:50%;transform:translateX(-50%);width:min(100%,600px);bottom:0;overflow:hidden;z-index:1;transition:bottom .15s ease}
 .ai-chat-ctx{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:10px;padding:9px 12px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ai-chat-ctx-label{font-size:9px;color:var(--txt-3);font-weight:700}
 .ai-chat-ctx-val{font-size:10px;font-weight:700;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:2px 7px;border-radius:20px}
@@ -2119,15 +2119,12 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         </div>
       </div>
     </div>`;
+    // 버그 수정: iOS Safari는 setTimeout 밖에서 focus() 해야 user gesture 인정
+    const _ta = document.getElementById('ai-chat-ta');
+    if(_ta) _ta.focus();
     setTimeout(()=>{
       aiUpdateLimitUI();
-      // AI 채팅 진입 시 키보드 자동 활성화
-      const ta = document.getElementById('ai-chat-ta');
-      if(ta){
-        ta.focus();
-        // iOS Safari: focus 후 visualViewport 위치 재계산
-        setTimeout(updateChatPos, 150);
-      }
+      updateChatPos();
     },0);
   }
 }
@@ -2296,7 +2293,7 @@ async function generateAiReport(){
   const isEn=state.lang==='en';
   const prompt=isEn?
     `You are an industrial safety expert. Based on the checklist results below, write a concise safety diagnosis report in English.\n\nIndustry: ${indLabel}\nTask: ${WORK_KEY_MAP[state.workType]||state.workType}\nCompleted items: ${yesItems.join(', ')||'None'}\nIncomplete items: ${noItems.join(', ')||'None'}\nCritical unchecked items: ${warnItems.join(', ')||'None'}\n\nFormat (under 200 words):\n[Overall Assessment]\n(2-3 sentences)\n\n[Key Hazards]\n(2-3 points)\n\n[Immediate Action Required]\n(3 specific actions)`:
-    `당신은 산업안전 전문가입니다. 아래 체크리스트 결과를 바탕으로 현장 안전 진단 리포트를 한국어로 작성하세요.\n\n업종: ${indLabel}\n작업: ${state.workType}\n이행 항목: ${yesItems.join(', ')||'없음'}\n미이행 항목: ${noItems.join(', ')||'없음'}\n중요 위험 항목(미이행): ${warnItems.join(', ')||'없음'}\n\n다음 형식으로 300자 이내로 간결하게 작성하세요:\n【오늘의 현장 종합 평가】\n(2~3문장)\n\n【주요 위험 요인】\n(핵심 2~3개)\n\n【즉시 개선 조치 권고】\n(구체적 3개)`;
+    `당신은 산업안전 전문가입니다. 아래 체크리스트 결과를 바탕으로 현장 안전 진단 리포트를 한국어로 작성하세요.\n\n업종: ${indLabel}\n작업: ${state.workType}\n이행 항목: ${yesItems.join(', ')||'없음'}\n미이행 항목: ${noItems.join(', ')||'없음'}\n중요 위험 항목(미이행): ${warnItems.join(', ')||'없음'}\n\n반드시 순수 한국어(한글)로만 작성하세요. 한자(漢字)나 중국어 문자는 절대 사용하지 마세요.\n\n다음 형식으로 300자 이내로 간결하게 작성하세요:\n【오늘의 현장 종합 평가】\n(2~3문장)\n\n【주요 위험 요인】\n(핵심 2~3개)\n\n【즉시 개선 조치 권고】\n(구체적 3개)`;
   const btn=document.getElementById('ai-report-btn');
   const btnTxt=document.getElementById('ai-report-btn-txt');
   btn.disabled=true;btnTxt.innerHTML='<div class="ai-spinner"></div> AI 분석 중...';
