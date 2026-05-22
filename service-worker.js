@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v27';
+const CACHE_NAME = 'onul-safety-v28';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -32,24 +32,32 @@ self.addEventListener('message', event => {
   }
 });
 
-// 요청 처리 — 네트워크 우선, 실패 시 캐시
+// 요청 처리 — 캐시 우선(Stale-While-Revalidate)
+// 1) 캐시에서 즉시 응답 → 빠른 초기 로딩
+// 2) 동시에 백그라운드에서 새 버전 fetch → 캐시 갱신
+// 3) 새 SW 감지 시 업데이트 배너 자동 표시 → 즉시 반영 가능
 self.addEventListener('fetch', event => {
   const url = event.request.url;
-  // POST 요청 또는 외부 API(Gemini 등)는 캐시 처리 제외
-  if(event.request.method !== 'GET' || url.includes('googleapis.com')){
+
+  // POST 또는 외부 API는 캐시 제외
+  if(event.request.method !== 'GET' || url.includes('googleapis.com') || url.includes('anthropic.com')){
     event.respondWith(fetch(event.request));
     return;
   }
+
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // GET 요청만 캐시에 저장
-        if(response && response.status === 200 && response.type === 'basic'){
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
+    caches.open(CACHE_NAME).then(cache =>
+      cache.match(event.request).then(cached => {
+        const networkFetch = fetch(event.request).then(response => {
+          if(response && response.status === 200 && response.type === 'basic'){
+            cache.put(event.request, response.clone());
+          }
+          return response;
+        }).catch(() => cached);
+
+        // 캐시 있으면 즉시 반환, 없으면 네트워크 대기
+        return cached || networkFetch;
       })
-      .catch(() => caches.match(event.request))
+    )
   );
 });
