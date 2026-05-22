@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v28';
+const CACHE_NAME = 'onul-safety-v29';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -35,12 +35,18 @@ self.addEventListener('message', event => {
 // 요청 처리 — 캐시 우선(Stale-While-Revalidate)
 // 1) 캐시에서 즉시 응답 → 빠른 초기 로딩
 // 2) 동시에 백그라운드에서 새 버전 fetch → 캐시 갱신
-// 3) 새 SW 감지 시 업데이트 배너 자동 표시 → 즉시 반영 가능
+// 3) 새 SW 감지 시 업데이트 배너 자동 표시 → 즉시 반영
 self.addEventListener('fetch', event => {
   const url = event.request.url;
 
   // POST 또는 외부 API는 캐시 제외
-  if(event.request.method !== 'GET' || url.includes('googleapis.com') || url.includes('anthropic.com')){
+  if(
+    event.request.method !== 'GET' ||
+    url.includes('googleapis.com') ||
+    url.includes('anthropic.com') ||
+    url.includes('groq.com') ||
+    url.includes('workers.dev')
+  ){
     event.respondWith(fetch(event.request));
     return;
   }
