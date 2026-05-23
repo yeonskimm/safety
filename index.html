@@ -289,7 +289,51 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
   background:radial-gradient(ellipse at 38% 20%,rgba(230,165,40,0.22) 0%,transparent 52%);
   pointer-events:none
 }
-@keyframes pinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}</style>
+@keyframes pinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* ===== 내 점검이력 (v42) ===== */
+.home-btn-history{margin-top:12px;width:100%;max-width:310px;background:rgba(201,168,76,0.07);border:1.5px solid rgba(201,168,76,0.45);color:var(--gold-l,#e3c86e);border-radius:16px;padding:14px 30px;font-size:17px;font-weight:800;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.home-btn-history:active{background:rgba(201,168,76,0.14)}
+.home-btn-history .cnt{font-size:11px;font-weight:700;background:rgba(201,168,76,0.18);color:var(--gold-l,#e3c86e);border-radius:10px;padding:2px 8px}
+.hist-clear-btn{background:rgba(217,80,80,0.1);border:1px solid rgba(217,80,80,0.3);color:#d95050;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.seg{display:flex;gap:6px;background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:12px;padding:4px;margin:4px 0 14px}
+.seg button{flex:1;padding:9px;border:none;border-radius:9px;background:transparent;color:var(--txt-2);font-size:14px;font-weight:700;cursor:pointer}
+.seg button.on{background:linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.1));color:var(--gold-l,#e3c86e)}
+.sumbar{display:flex;gap:8px;margin-bottom:14px}
+.sumbar .hs{flex:1;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:12px;padding:11px 8px;text-align:center}
+.sumbar .hs .v{font-size:20px;font-weight:900;color:var(--gold-l,#e3c86e)}
+.sumbar .hs .l{font-size:11px;color:var(--txt-3);margin-top:2px}
+.badge{display:inline-flex;align-items:center;font-size:12px;font-weight:800;padding:3px 9px;border-radius:20px}
+.b-red{background:rgba(217,80,80,0.13);color:#d95050}
+.b-amber{background:rgba(216,168,56,0.14);color:#d8a838}
+.b-green{background:rgba(58,184,122,0.13);color:#3ab87a}
+.hcard{position:relative;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:14px;padding:14px;margin-bottom:11px;-webkit-user-select:none;user-select:none}
+.hcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.hcard .hdate{font-size:12px;color:var(--txt-3);font-weight:700}
+.hcard .hwork{font-size:15px;font-weight:700;margin-top:3px}
+.hcard .hwork .orig{font-size:11px;color:var(--txt-3);font-weight:500;margin-left:3px}
+.hcard .pbar{height:7px;border-radius:4px;background:var(--bg-3);margin-top:11px;overflow:hidden}
+.hcard .pfill{height:100%;border-radius:4px}
+.hcard .pct{font-size:12px;color:var(--txt-2);margin-top:6px;display:flex;justify-content:space-between}
+.hcard .pct b{color:var(--txt-1)}
+.hcard .del-x{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(217,80,80,0.15);border:1px solid rgba(217,80,80,0.35);color:#d95050;font-size:14px;font-weight:800;display:none;align-items:center;justify-content:center;cursor:pointer}
+.hcard.show-del .del-x{display:flex}
+.hcard.show-del{border-color:rgba(217,80,80,0.4)}
+.histmonth{font-size:16px;font-weight:800;margin:2px 2px 12px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-grid .dow{font-size:11px;color:var(--txt-3);text-align:center;padding:3px 0;font-weight:700}
+.day{aspect-ratio:1;border-radius:10px;background:var(--bg-2);border:1px solid var(--bdr-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px}
+.day.empty{background:transparent;border:none}
+.day.today{outline:2px solid var(--gold,#c9a84c)}
+.day.sel{transform:scale(1.05)}
+.day .dot{width:7px;height:7px;border-radius:50%;margin-top:3px}
+.dot.g{background:#3ab87a}.dot.a{background:#d8a838}.dot.r{background:#d95050}
+.day.g{border-color:rgba(58,184,122,.4)}.day.a{border-color:rgba(216,168,56,.45)}.day.r{border-color:rgba(217,80,80,.45)}
+.legend{display:flex;gap:14px;justify-content:center;margin:14px 0;font-size:12px;color:var(--txt-2)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:1px}
+.hist-empty{color:var(--txt-3);font-size:14px;text-align:center;padding:50px 20px;line-height:1.8}
+.hist-foot{text-align:center;color:var(--txt-3);font-size:11px;padding:18px 16px;line-height:1.6}
+.hist-hint{font-size:11px;color:var(--txt-3);text-align:center;margin:-6px 2px 12px}
+</style>
 </head>
 <body>
 <div id="update-banner">
@@ -1840,6 +1884,116 @@ const PLEDGE_ITEM = {
 //  상태 & 헬퍼
 // ══════════════════════════════════════
 let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'m',gearOpen:false};
+/* ===== 점검이력 (이 기기에 저장) ===== */
+var HIST_KEY='_inspHistory';
+var histView='list', histSelDay=null, histMonth=null, histDelId=null;
+function getHist(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); }catch(e){ return []; } }
+function setHist(arr){ try{ localStorage.setItem(HIST_KEY, JSON.stringify(arr)); }catch(e){} }
+function histVINFO(v,ko){ return v==='g'?{t:(ko?'양호':'Good'),cls:'b-green',col:'#3ab87a'}:(v==='a'?{t:(ko?'주의':'Caution'),cls:'b-amber',col:'#d8a838'}:{t:(ko?'위험':'Danger'),cls:'b-red',col:'#d95050'}); }
+function verdictOf(items){
+  var total=items.length;
+  var done=items.filter(function(_,i){return state.checked[i];}).length;
+  var crit=items.filter(function(it,i){return it.w && !state.checked[i];}).length;
+  var pct=total?Math.round(done/total*100):0;
+  return {pct:pct, v:(crit>0?'r':(done<total?'a':'g'))};
+}
+function saveHistRecord(items){
+  var r=verdictOf(items);
+  var d=new Date();
+  var rec={ts:d.getTime(), y:d.getFullYear(), m:d.getMonth()+1, day:d.getDate(),
+    indId:state.industry||'', workKey:(state.workType||''), isNR:!!state.isNR, pct:r.pct, v:r.v};
+  var arr=getHist(); arr.unshift(rec); if(arr.length>200) arr=arr.slice(0,200); setHist(arr);
+}
+function histIndLabel(indId,ko){
+  var src=ko?INDUSTRIES:INDUSTRIES_EN;
+  var f=src.find(function(x){return x.id===indId;});
+  return f?f.label:(indId||'');
+}
+function histWorkLabel(workKey,ko){
+  if(!workKey) return '';
+  if(ko) return workKey;
+  var en=WORK_KEY_MAP[workKey];
+  if(en && en!==workKey) return en;
+  return workKey+' <span class="orig">('+workKey+')</span>';
+}
+function fmtDate(rec,ko){
+  var dows=ko?['일','월','화','수','목','금','토']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var pad=function(n){return (n<10?'0':'')+n;};
+  var dt=new Date(rec.y,rec.m-1,rec.day);
+  return rec.y+'.'+pad(rec.m)+'.'+pad(rec.day)+' ('+dows[dt.getDay()]+')';
+}
+function setHistView(v){ histView=v; histSelDay=null; histDelId=null; render(); }
+function selHistDay(d){ histSelDay=d; render(); }
+var _histPressTimer=null;
+function histPressStart(ts){ _histPressTimer=setTimeout(function(){ histDelId=ts; render(); }, 500); }
+function histPressEnd(){ if(_histPressTimer){ clearTimeout(_histPressTimer); _histPressTimer=null; } }
+function histDelete(ts){
+  var ko=state.lang==='ko';
+  if(!confirm(ko?'이 점검 기록을 삭제할까요?':'Delete this record?')) return;
+  setHist(getHist().filter(function(h){return h.ts!==ts;}));
+  histDelId=null; render();
+}
+function histClearAll(){
+  var ko=state.lang==='ko';
+  if(!confirm(ko?'모든 점검 기록을 삭제할까요?\n(되돌릴 수 없습니다)':'Delete ALL records?\n(Cannot be undone)')) return;
+  setHist([]); histDelId=null; render();
+}
+function histCardHTML(h,ko,withDate){
+  var vi=histVINFO(h.v,ko);
+  var nr=h.isNR?' <span style="font-size:11px;color:var(--txt-3)">('+(ko?'비정형':'NR')+')</span>':'';
+  var dateRow=withDate?'<div class="hdate">'+fmtDate(h,ko)+'</div>':'';
+  var delCls=(histDelId===h.ts)?' show-del':'';
+  return '<div class="hcard'+delCls+'" '
+    +'onmousedown="histPressStart('+h.ts+')" onmouseup="histPressEnd()" onmouseleave="histPressEnd()" '
+    +'ontouchstart="histPressStart('+h.ts+')" ontouchend="histPressEnd()" ontouchmove="histPressEnd()">'
+    +'<div class="del-x" onclick="histDelete('+h.ts+')">✕</div>'
+    +'<div class="top"><div>'+dateRow+'<div class="hwork">'+histIndLabel(h.indId,ko)+(h.workKey?' · '+histWorkLabel(h.workKey,ko):'')+nr+'</div></div><span class="badge '+vi.cls+'">'+vi.t+'</span></div>'
+    +'<div class="pbar"><div class="pfill" style="width:'+h.pct+'%;background:'+vi.col+'"></div></div>'
+    +'<div class="pct"><span>'+(ko?'이행률':'Rate')+'</span><b style="color:'+vi.col+'">'+h.pct+'%</b></div></div>';
+}
+function histListHTML(arr,ko){ return arr.map(function(h){return histCardHTML(h,ko,true);}).join(''); }
+function histCalHTML(arr,ko){
+  var base=histMonth||{y:arr[0].y,m:arr[0].m};
+  var y=base.y, m=base.m, byDay={};
+  arr.forEach(function(h){ if(h.y===y&&h.m===m){ (byDay[h.day]=byDay[h.day]||[]).push(h); } });
+  var worst=function(list){ if(list.some(function(x){return x.v==='r';}))return 'r'; if(list.some(function(x){return x.v==='a';}))return 'a'; return 'g'; };
+  var first=new Date(y,m-1,1).getDay(), days=new Date(y,m,0).getDate();
+  var dows=ko?['일','월','화','수','목','금','토']:['S','M','T','W','T','F','S'];
+  var t=new Date();
+  var grid=dows.map(function(d){return '<div class="dow">'+d+'</div>';}).join('');
+  for(var i=0;i<first;i++) grid+='<div class="day empty"></div>';
+  for(var d=1;d<=days;d++){
+    var list=byDay[d], wv=list?worst(list):'', cls=list?wv:'';
+    var isT=(t.getFullYear()===y&&t.getMonth()+1===m&&t.getDate()===d);
+    var sel=(histSelDay===d), dot=list?'<span class="dot '+wv+'"></span>':'';
+    grid+='<div class="day '+cls+(isT?' today':'')+(sel?' sel':'')+'" '+(list?'onclick="selHistDay('+d+')"':'')+'>'+d+dot+'</div>';
+  }
+  var legend='<div class="legend"><span><i style="background:#3ab87a"></i>'+(ko?'양호':'Good')+'</span><span><i style="background:#d8a838"></i>'+(ko?'주의':'Caution')+'</span><span><i style="background:#d95050"></i>'+(ko?'위험':'Danger')+'</span></div>';
+  var detail='';
+  if(histSelDay&&byDay[histSelDay]){
+    var dayList=byDay[histSelDay];
+    var cntTxt=dayList.length>1?(' <span style="color:var(--txt-3);font-weight:500">('+dayList.length+(ko?'건':'')+')</span>'):'';
+    detail='<div style="font-size:13px;font-weight:700;color:var(--txt-2);margin:4px 2px 8px">'+m+(ko?'월 ':'/')+histSelDay+(ko?'일 기록':'')+cntTxt+'</div>'+dayList.map(function(h){return histCardHTML(h,ko,false);}).join('');
+  }
+  return '<div class="histmonth">'+y+(ko?'년 ':'-')+m+(ko?'월':'')+'</div><div class="cal-grid">'+grid+'</div>'+legend+detail;
+}
+function histScreenHTML(s){
+  var ko=s.lang==='ko', arr=getHist();
+  var clearBtn=arr.length?'<button class="hist-clear-btn" onclick="histClearAll()">🗑 '+(ko?'전체 비우기':'Clear All')+'</button>':'<div style="width:60px"></div>';
+  var head='<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">'+(ko?'← 뒤로':'← Back')+'</button><div class="h-title">📅 '+(ko?'내 점검이력':'My History')+'</div>'+clearBtn+'</div></div>';
+  if(arr.length===0){
+    return head+'<div class="body"><div class="hist-empty">'+(ko?'아직 점검 기록이 없습니다.<br>체크리스트를 완료하면<br>이곳에 자동으로 기록됩니다.':'No records yet.<br>Completed checklists<br>are saved here automatically.')+'</div></div>';
+  }
+  var n=arr.length;
+  var avg=Math.round(arr.reduce(function(a,b){return a+b.pct;},0)/n);
+  var recent=arr[0].m+'/'+arr[0].day;
+  var sumbar='<div class="sumbar"><div class="hs"><div class="v">'+n+'</div><div class="l">'+(ko?'총 점검':'Total')+'</div></div><div class="hs"><div class="v">'+avg+'%</div><div class="l">'+(ko?'평균 이행률':'Avg Rate')+'</div></div><div class="hs"><div class="v">'+recent+'</div><div class="l">'+(ko?'최근 점검':'Recent')+'</div></div></div>';
+  var seg='<div class="seg"><button class="'+(histView==='list'?'on':'')+'" onclick="setHistView(\''+'list'+'\')">📋 '+(ko?'리스트':'List')+'</button><button class="'+(histView==='cal'?'on':'')+'" onclick="setHistView(\''+'cal'+'\')">📅 '+(ko?'달력':'Calendar')+'</button></div>';
+  var hint='<div class="hist-hint">'+(ko?'💡 카드를 길게 누르면 삭제할 수 있어요':'💡 Long-press a card to delete')+'</div>';
+  var content=histView==='list'?(histListHTML(arr,ko)):histCalHTML(arr,ko);
+  var foot='<div class="hist-foot">'+(ko?'※ 점검 기록은 이 기기에만 저장됩니다.':'※ Stored on this device only.')+'</div>';
+  return head+'<div class="body">'+sumbar+seg+(histView==='list'?hint:'')+content+foot+'</div>';
+}
 function setState(p){Object.assign(state,p);render();}
 function getItems(){
   if(!state.workType)return[];
@@ -1977,7 +2131,7 @@ function render(){
       <div class="home-sub-line"></div>
       <div class="home-desc">${s.lang==='ko'?'업종·작업을 선택하면 맞춤 수칙을 알려드려요<br>비정형작업(수리·점검·교체)도 따로 있어요':'Select industry &amp; task for tailored safety rules.<br>Non-routine work (repair·inspection) included.'}</div>
       <div class="font-bar"><span class="font-bar-label">${s.lang==='ko'?'글자 크기':'Font Size'}</span><button class="fbar-btn${s.fontSize==='s'?' active':''}" id="fbar-s" onclick="setFontSize('s')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="fbar-btn${s.fontSize==='m'?' active':''}" id="fbar-m" onclick="setFontSize('m')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="fbar-btn${s.fontSize==='l'?' active':''}" id="fbar-l" onclick="setFontSize('l')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'크게':'Lg'}</span></button></div>
-      <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
+      <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button class="home-btn-history" onclick="go(6)">📅 ${s.lang==='ko'?'내 점검이력':'My History'} <span class="cnt">${getHist().length}${s.lang==='ko'?'회':''}</span></button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
       <button class="home-btn-purple" id="home-ai-chat-btn" onclick="go(5)">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:2px 7px;margin-left:7px;font-weight:700;letter-spacing:0.3px">Beta</span></button>
       <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:10px 14px;margin-top:6px;text-align:center">
         <div style="font-size:11px;color:var(--txt-2);line-height:1.6">${s.lang==='ko'?'산업안전보건법 기반의 현장 전문 AI가<br>안전수칙·위험 요인·사고 예방을 안내해드립니다':'Field safety AI based on industrial safety regulations.<br>Guidance on safety rules, hazards & accident prevention.'}</div>
@@ -2099,6 +2253,9 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       <button class="dl-btn" onclick="downloadImg()">${s.lang==='ko'?'⬇️ 이미지 다운로드 (관리감독자 제출용)':'⬇️ Download Image (For Supervisor)'}</button>
       <div class="btn-row" style="margin-top:8px"><button class="sm-btn" onclick="go(3)">${s.lang==='ko'?'← 체크리스트로':'← Checklist'}</button><button class="sm-btn" onclick="go(0)">${s.lang==='ko'?'🏠 처음으로':'🏠 Home'}</button></div>
     </div>`;
+  }
+  else if(s.step===6){
+    app.innerHTML=histScreenHTML(s);
   }
   else if(s.step===5){
     const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===s.industry);
@@ -2486,6 +2643,7 @@ function saveReport(){
   const items=getItems();
   const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===state.industry);
   const cv=buildReport(items,state.checked,ind,(state.lang==='en'?(WORK_KEY_MAP[state.workType]||state.workType):state.workType),state.isNR,state.workerName,state.team,getDate(),state.lang);
+  try{ saveHistRecord(items); }catch(e){}
   setState({previewUrl:cv.toDataURL("image/png"),step:4});
   window.scrollTo(0,0);
 }
@@ -2504,7 +2662,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v41'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v42'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
