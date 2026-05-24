@@ -2267,7 +2267,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">
           <div>${s.lang==='ko'?'안녕하세요! 🛡️ AI 안전관리자입니다. 산업안전 관련 질문을 자유롭게 물어보세요.':'Hello! 🛡️ I am your AI Safety Manager. Feel free to ask any industrial safety questions.'}</div>
           <div style="margin-top:8px;padding:7px 9px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:7px;font-size:11px;line-height:1.6;color:#d97706">
-            ⚠️ ${s.lang==='ko'?'AI는 실수할 수 있습니다. 참고용으로만 이용하시고, 중요한 사항은 관리자·전문가에게 확인하세요.':'AI can make mistakes. Use for reference only. Always verify important matters with a qualified professional.'}
+            ⚠️ ${s.lang==='ko'?'AI는 실수할 수 있습니다. 참고용으로만 이용하시고, 법 조항 등 중요한 사항은 국가법령정보센터(law.go.kr)·KOSHA 등 공식 출처나 전문가에게 확인하세요.':'AI can make mistakes. Use for reference only. Verify legal provisions and important matters with official sources (e.g., KOSHA) or a qualified professional.'}
           </div>
         </div></div>
       </div>
@@ -2662,7 +2662,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v42'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v43'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -2762,7 +2762,7 @@ async function generateAiReport(){
   const isEn=state.lang==='en';
   const prompt=isEn?
     `You are an industrial safety expert. Based on the checklist results below, write a concise safety diagnosis report in English.\n\nIndustry: ${indLabel}\nTask: ${WORK_KEY_MAP[state.workType]||state.workType}\nWork type: ${isNR?'Non-routine (maintenance/repair, HIGH RISK, LOTO required)':'Routine'}\nCompletion: ${doneCnt}/${totalCnt} (${donePct}%)\nCompleted items: ${yesItems.join(', ')||'None'}\nIncomplete items: ${noItems.join(', ')||'None'}\nCritical unchecked items: ${warnItems.join(', ')||'None'}\n\n[Verdict rule] If ANY critical item is unchecked, verdict MUST be DANGER. If there are incomplete items but all critical items are done, CAUTION. If all done, SAFE.\n[Principle] If any item is incomplete, do NOT praise. Warn specifically about the risk. For non-routine work, emphasize LOTO/power isolation first.\n\nFormat (under 200 words):\n[Verdict] DANGER / CAUTION / SAFE\n\n[Overall Assessment]\n(2-3 sentences)\n\n[Key Hazards]\n(2-3 points)\n\n[Immediate Action Required]\n(3 specific actions)`:
-    `당신은 산업안전 전문가입니다. 아래 체크리스트 결과를 바탕으로 현장 안전 진단 리포트를 한국어로 작성하세요.\n\n업종: ${indLabel}\n작업: ${state.workType}\n작업 유형: ${isNR?'비정형 작업(정비·수리 등 고위험, 전원격리(LOTO)가 핵심)':'정형(일상) 작업'}\n이행률: ${doneCnt}/${totalCnt}개 (${donePct}%)\n이행 항목: ${yesItems.join(', ')||'없음'}\n미이행 항목: ${noItems.join(', ')||'없음'}\n중요 위험 항목(미이행): ${warnItems.join(', ')||'없음'}\n\n[판정 기준] 중요 위험 항목이 1개라도 미이행이면 반드시 '위험'. 미이행이 있으나 중요항목은 모두 이행이면 '주의'. 모든 항목 이행이면 '안전'.\n[작성 원칙] 미이행 항목이 있으면 절대 칭찬하지 말고 그 위험을 구체적으로 경고하세요. 비정형 작업이면 전원격리(LOTO)를 우선 강조하세요.\n\n반드시 순수 한국어(한글)로만 작성하세요. 한자(漢字)나 중국어 문자는 절대 사용하지 마세요.\n\n다음 형식으로 300자 이내로 간결하게 작성하세요:\n【판정】 위험 / 주의 / 안전 중 하나\n\n【오늘의 현장 종합 평가】\n(2~3문장)\n\n【주요 위험 요인】\n(핵심 2~3개)\n\n【즉시 개선 조치 권고】\n(구체적 3개)`;
+    `당신은 산업안전 전문가입니다. 아래 체크리스트 결과를 바탕으로 현장 안전 진단 리포트를 한국어로 작성하세요.\n\n업종: ${indLabel}\n작업: ${state.workType}\n작업 유형: ${isNR?'비정형 작업(정비·수리 등 고위험, 전원격리(LOTO)가 핵심)':'정형(일상) 작업'}\n이행률: ${doneCnt}/${totalCnt}개 (${donePct}%)\n이행 항목: ${yesItems.join(', ')||'없음'}\n미이행 항목: ${noItems.join(', ')||'없음'}\n중요 위험 항목(미이행): ${warnItems.join(', ')||'없음'}\n\n[판정 기준] 중요 위험 항목이 1개라도 미이행이면 반드시 '위험'. 미이행이 있으나 중요항목은 모두 이행이면 '주의'. 모든 항목 이행이면 '안전'.\n[작성 원칙] 미이행 항목이 있으면 절대 칭찬하지 말고 그 위험을 구체적으로 경고하세요. 비정형 작업이면 전원격리(LOTO)를 우선 강조하세요. 법 조항 번호나 정확한 조문은 확실하지 않으면 지어내지 말고 언급하지 마세요.\n\n반드시 순수 한국어(한글)로만 작성하세요. 한자(漢字)나 중국어 문자는 절대 사용하지 마세요.\n\n다음 형식으로 300자 이내로 간결하게 작성하세요:\n【판정】 위험 / 주의 / 안전 중 하나\n\n【오늘의 현장 종합 평가】\n(2~3문장)\n\n【주요 위험 요인】\n(핵심 2~3개)\n\n【즉시 개선 조치 권고】\n(구체적 3개)`;
   const btn=document.getElementById('ai-report-btn');
   const btnTxt=document.getElementById('ai-report-btn-txt');
   btn.disabled=true;btnTxt.innerHTML='<div class="ai-spinner"></div> AI 분석 중...';
@@ -2777,14 +2777,15 @@ async function generateAiReport(){
           ?'You are an industrial safety expert. Never use Chinese characters or any non-English/Korean scripts.'
           :'당신은 산업안전 전문가입니다. 반드시 순수 한글로만 작성하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
         contents:[{parts:[{text:prompt}]}],
-        generationConfig:{maxOutputTokens:600,temperature:0.7}})});
+        generationConfig:{maxOutputTokens:600,temperature:0.3}})});
     const data=await res.json();
     if(data.error){
       body.className='ai-result-body';
       body.textContent=aiFormatErrorMsg(res.status,data.error,state.lang==='en');
       return;
     }
-    const text=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'No response received.':'응답을 받지 못했습니다.'));
+    let text=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'No response received.':'응답을 받지 못했습니다.'));
+    text+=(state.lang==='en'?'\n\n※ This AI report is for reference only; verify legal points with official sources.':'\n\n※ AI 안내는 참고용이며, 법적 사항은 공식 출처에서 확인하세요.');
     aiIncUsage('ai_report');aiUpdateLimitUI();
     let i=0;body.textContent='';body.className='ai-result-body typing';
     clearInterval(__reportTypeTimer);          // 이전 타이핑이 끝나기 전 재요청 시 중복 인터벌 제거(멈춤 방지)
@@ -2868,8 +2869,8 @@ async function sendAiChat(exText){
   const indLabel=ind?ind.label:'현장';
   const isEn2=state.lang==='en';
   const sys=isEn2?
-    `You are an AI professional safety manager with expertise in industrial safety regulations, OSHA standards, and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond concisely and practically as a certified safety manager. Answer in the same language as the question (English only — do not use Chinese characters or other scripts). Only answer industrial safety-related questions.`:
-    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 사용자를 부를 때는 반드시 '작업자님'이라고 호칭하고, '근로자님'이라는 표현은 절대 쓰지 마세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
+    `You are an AI professional safety manager with expertise in industrial safety regulations, OSHA standards, and field practice. The worker is in [${indLabel}] industry, [${WORK_KEY_MAP[state.workType]||state.workType||'General'}] task. Respond concisely and practically as a certified safety manager. Never fabricate law or regulation article numbers; if unsure, do not cite a number and advise checking official sources (e.g., KOSHA). If you do not know, say so honestly. Answer in the same language as the question (English only — do not use Chinese characters or other scripts). Only answer industrial safety-related questions.`:
+    `당신은 현장 전문안전관리자 AI입니다. 산업안전보건법, 관련 고시·지침, KOSHA GUIDE와 현장 실무에 정통한 전문가로서 답변하세요. 현재 상담 작업자는 [${indLabel}] 업종 [${state.workType||'일반'}] 작업 현장에서 근무 중입니다. 전문안전관리자로서 간결하고 실용적으로 답변하세요. 사용자를 부를 때는 반드시 '작업자님'이라고 호칭하고, '근로자님'이라는 표현은 절대 쓰지 마세요. 법 조항 번호(예: 제○조)나 고시·지침의 정확한 명칭·조문은 확실하지 않으면 절대 지어내지 마세요. 확실하지 않으면 조문 번호를 말하지 말고, 정확한 조항은 국가법령정보센터(law.go.kr)나 안전보건공단(KOSHA)에서 확인하라고 안내하세요. 모르거나 불확실하면 추측하지 말고 솔직히 확실하지 않다고 답하세요. 반드시 순수 한글로만 답변하고 한자(漢字)나 다른 언어 문자는 절대 사용하지 마세요. 산업안전 관련 질문에만 답변하세요.`;
   const hist=aiChatHistory.slice(-6).map(h=>(h.role==='user'?'작업자: ':'AI: ')+h.text).join('\n');
   const prompt=sys+'\n\n대화:\n'+hist;
   try{
@@ -2877,9 +2878,9 @@ async function sendAiChat(exText){
       type:'chat',
       system_instruction:{parts:[{text:isEn2
         ?'You are an AI safety manager. Never use Chinese characters.'
-        :'당신은 현장 전문안전관리자 AI입니다. 사용자는 반드시 "작업자님"으로 호칭하고 "근로자님"은 쓰지 마세요. 반드시 순수 한글로만 답변하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
+        :'당신은 현장 전문안전관리자 AI입니다. 사용자는 반드시 "작업자님"으로 호칭하고 "근로자님"은 쓰지 마세요. 반드시 순수 한글로만 답변하세요. 법 조항 번호나 고시·지침 조문은 확실하지 않으면 절대 지어내지 말고, 모르면 솔직히 모른다고 답하세요. 한자(漢字), 중국어 문자는 단 한 글자도 사용하면 안 됩니다. 이것은 절대 규칙입니다.'}]},
       contents:[{parts:[{text:prompt}]}],
-      generationConfig:{maxOutputTokens:400,temperature:0.6}})});
+      generationConfig:{maxOutputTokens:400,temperature:0.2}})});
     const data=await res.json();
     if(data.error){
       if(typing)typing.remove();
