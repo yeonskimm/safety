@@ -53,15 +53,15 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .body{max-width:600px;margin:0 auto;padding:16px 14px}
 
 /* ── HOME ── */
-.home-wrap{display:flex;flex-direction:column;align-items:center;padding:40px 24px 32px;gap:0;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(201,168,76,0.11) 0%,transparent 65%)}
+.home-wrap{display:flex;flex-direction:column;align-items:center;padding:14px 24px 18px;gap:0;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(201,168,76,0.11) 0%,transparent 65%)}
 .home-logo{font-size:60px}
-.home-title{font-size:calc(var(--fs-home-title) + 3px);font-weight:900;background:linear-gradient(160deg,#f5dc80 0%,#d4a843 50%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-top:22px;letter-spacing:-0.5px;line-height:1.2}
-.home-sub{font-size:var(--fs-home-sub);color:#b0b8cc;margin-top:10px;font-weight:500;letter-spacing:0.02em}
-.home-sub-line{width:40px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.55),transparent);margin:12px auto 0;border-radius:2px}
-.home-desc{font-size:var(--fs-home-desc);color:#707888;text-align:center;line-height:1.9;margin-top:14px}
-.home-btn{margin-top:30px;width:100%;max-width:310px;background:linear-gradient(160deg,#e0b045 0%,#c9a030 50%,#a87028 100%);color:#07090d;border-radius:16px;padding:17px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(201,168,76,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.2);position:relative;overflow:hidden;letter-spacing:0.3px}
+.home-title{font-size:calc(var(--fs-home-title) + 3px);font-weight:900;background:linear-gradient(160deg,#f5dc80 0%,#d4a843 50%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-top:12px;letter-spacing:-0.5px;line-height:1.2}
+.home-sub{font-size:var(--fs-home-sub);color:#b0b8cc;margin-top:7px;font-weight:500;letter-spacing:0.02em}
+.home-sub-line{width:40px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.55),transparent);margin:9px auto 0;border-radius:2px}
+.home-desc{font-size:var(--fs-home-desc);color:#707888;text-align:center;line-height:1.65;margin-top:10px}
+.home-btn{margin-top:18px;width:100%;max-width:310px;background:linear-gradient(160deg,#e0b045 0%,#c9a030 50%,#a87028 100%);color:#07090d;border-radius:16px;padding:15px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(201,168,76,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.2);position:relative;overflow:hidden;letter-spacing:0.3px}
 .home-btn::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:sheen 4s 1s infinite}
-.home-btn-purple{margin-top:10px;width:100%;max-width:310px;background:linear-gradient(160deg,#9b7bf0 0%,#7c5fe0 50%,#4f46e5 100%);color:#fff;border-radius:16px;padding:17px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(124,95,224,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);position:relative;overflow:hidden;letter-spacing:0.3px}
+.home-btn-purple{margin-top:9px;width:100%;max-width:310px;background:linear-gradient(160deg,#9b7bf0 0%,#7c5fe0 50%,#4f46e5 100%);color:#fff;border-radius:16px;padding:15px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(124,95,224,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);position:relative;overflow:hidden;letter-spacing:0.3px}
 .home-btn-purple::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:skewX(-20deg);animation:sheen 4s 2s infinite}
 @keyframes sheen{0%,100%{left:-80%}50%{left:120%}}
 
@@ -242,6 +242,8 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 /* ── GEAR / FONT SIZE POPUP ── */
 .gear-btn{background:none;border:none;cursor:pointer;font-size:16px;padding:3px 5px;border-radius:6px;flex-shrink:0;transition:background 0.15s;line-height:1;color:var(--txt-3)}
 .gear-btn:hover{background:var(--bg-3)}
+.gear-btn-home{display:inline-flex;align-items:center;gap:3px;color:var(--txt-2);font-size:13px;font-weight:600;padding:4px 8px;border:1px solid var(--bdr-dim);background:var(--bg-2)}
+.gear-btn-label{font-size:12px;letter-spacing:-0.3px}
 .gear-popup{display:none;position:absolute;top:52px;right:12px;background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:12px;padding:12px 14px;z-index:100;box-shadow:0 8px 28px rgba(0,0,0,0.7);min-width:170px}
 .gear-popup.open{display:block}
 .gear-popup-title{font-size:10px;color:var(--txt-3);font-weight:700;margin-bottom:10px;letter-spacing:0.5px}
@@ -255,6 +257,35 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .gear-popup-btn:nth-child(1) .gpc{font-size:11px}
 .gear-popup-btn:nth-child(2) .gpc{font-size:15px}
 .gear-popup-btn:nth-child(3) .gpc{font-size:19px}
+
+/* ── 홈 체감온도 상태창 ── */
+.feels-card{width:100%;max-width:360px;margin:2px 0 12px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:13px;padding:9px 14px 8px;text-align:left;cursor:pointer;transition:.18s;display:block}
+.feels-card:active{transform:scale(0.985)}
+.fc-head{display:flex;align-items:center;gap:10px}
+.fc-temp-col{min-width:0;flex-shrink:0}
+.fc-temp{font-size:28px;font-weight:800;line-height:1;letter-spacing:-1px}
+.fc-label{font-size:11px;color:var(--txt-2);margin-bottom:3px}
+.fc-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;border-radius:20px;padding:2px 12px 2px 9px;flex-shrink:0}
+.fc-badge .dot{width:9px;height:9px;border-radius:50%}
+.fc-now{margin-left:auto;text-align:right;font-size:11px;color:var(--txt-2);line-height:1.5;flex-shrink:0;white-space:nowrap}
+.fc-now b{color:var(--txt-1);font-weight:700}
+.fc-chev{color:var(--txt-3);font-size:16px;align-self:center;flex-shrink:0}
+.fc-summary{font-size:12px;line-height:1.4;color:var(--txt-1);margin-top:7px;padding-top:7px;border-top:1px solid var(--bdr-dim)}
+.fc-loc{font-size:10px;color:var(--txt-3);margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fc-calc-hint{color:var(--gold-d);font-weight:600;white-space:nowrap;flex-shrink:0}
+.fc-loading{font-size:13px;color:var(--txt-3);padding:4px 2px}
+/* 단계 색상 (계산기와 동일 팔레트) */
+.feels-card.lv-none .fc-temp{color:#94a3b8}
+.feels-card.lv-none .fc-badge{background:rgba(148,163,184,0.14);color:#cbd5e1}.feels-card.lv-none .dot{background:#94a3b8}
+.feels-card.lv-attn .fc-temp{color:#d8a72e}
+.feels-card.lv-attn .fc-badge{background:rgba(216,167,46,0.16);color:#e3c86e}.feels-card.lv-attn .dot{background:#d8a72e}
+.feels-card.lv-caution .fc-temp{color:#e8821e}
+.feels-card.lv-caution .fc-badge{background:rgba(232,130,30,0.16);color:#f0a458}.feels-card.lv-caution .dot{background:#e8821e}
+.feels-card.lv-warn .fc-temp{color:#e0531f}
+.feels-card.lv-warn .fc-badge{background:rgba(224,83,31,0.18);color:#f1764a}.feels-card.lv-warn .dot{background:#e0531f}
+.feels-card.lv-danger{border-color:rgba(211,59,59,0.5);box-shadow:0 0 0 1px rgba(211,59,59,0.16),0 0 22px rgba(211,59,59,0.1)}
+.feels-card.lv-danger .fc-temp{color:#d33b3b}
+.feels-card.lv-danger .fc-badge{background:rgba(211,59,59,0.18);color:#f06b6b}.feels-card.lv-danger .dot{background:#d33b3b}
 
 /* ── FONT SIZE BAR ── */
 .font-bar{display:flex;align-items:center;gap:6px;margin-bottom:14px;padding:9px 10px;background:var(--bg-1);border-radius:10px;border:1px solid var(--bdr-dim)}
@@ -278,20 +309,21 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 @media(min-width:414px){.i-grid{grid-template-columns:repeat(3,1fr)}}
 
 .home-hero-icon{
-  width:130px;height:130px;
+  width:96px;height:96px;
   background:linear-gradient(145deg,#26190a 0%,#1a1106 45%,#0e0b05 100%);
-  border-radius:30px;display:flex;align-items:center;justify-content:center;
+  border-radius:24px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 0 1px rgba(201,168,76,0.22),0 14px 44px rgba(0,0,0,0.65),0 0 70px rgba(170,110,15,0.28),inset 0 1px 0 rgba(255,220,80,0.06);
-  margin-bottom:4px;position:relative
+  margin-bottom:2px;margin-top:4px;position:relative
 }
+.home-hero-icon svg{width:52px;height:55px}
 .home-hero-icon::before{
-  content:'';position:absolute;inset:0;border-radius:30px;
+  content:'';position:absolute;inset:0;border-radius:24px;
   background:radial-gradient(ellipse at 38% 20%,rgba(230,165,40,0.22) 0%,transparent 52%);
   pointer-events:none
 }
 @keyframes pinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 /* ===== 내 점검이력 (v42) ===== */
-.home-btn-history{margin-top:12px;width:100%;max-width:310px;background:rgba(201,168,76,0.07);border:1.5px solid rgba(201,168,76,0.45);color:var(--gold-l,#e3c86e);border-radius:16px;padding:14px 30px;font-size:17px;font-weight:800;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.home-btn-history{margin-top:9px;width:100%;max-width:310px;background:rgba(201,168,76,0.07);border:1.5px solid rgba(201,168,76,0.45);color:var(--gold-l,#e3c86e);border-radius:16px;padding:12px 30px;font-size:17px;font-weight:800;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
 .home-btn-history:active{background:rgba(201,168,76,0.14)}
 .home-btn-history .cnt{font-size:11px;font-weight:700;background:rgba(201,168,76,0.18);color:var(--gold-l,#e3c86e);border-radius:10px;padding:2px 8px}
 .hist-clear-btn{background:rgba(217,80,80,0.1);border:1px solid rgba(217,80,80,0.3);color:#d95050;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer}
@@ -333,6 +365,46 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .hist-empty{color:var(--txt-3);font-size:14px;text-align:center;padding:50px 20px;line-height:1.8}
 .hist-foot{text-align:center;color:var(--txt-3);font-size:11px;padding:18px 16px;line-height:1.6}
 .hist-hint{font-size:11px;color:var(--txt-3);text-align:center;margin:-6px 2px 12px}
+
+/* ── HEAT INDEX (체감온도) ── */
+.home-btn-heat{margin-top:10px;width:100%;max-width:310px;background:linear-gradient(160deg,#e0662e 0%,#d24a2a 55%,#b5371f 100%);color:#fff;border-radius:16px;padding:15px 30px;font-size:17px;font-weight:800;letter-spacing:0.3px;box-shadow:0 8px 26px rgba(210,74,42,0.42),inset 0 1px 0 rgba(255,255,255,0.18);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px}
+.home-btn-heat::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:skewX(-20deg);animation:sheen 4s 3s infinite}
+.heat-wrap{max-width:600px;margin:0 auto;padding:14px 14px 40px}
+.heat-intro{font-size:13px;color:var(--txt-2);line-height:1.7;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:12px;padding:13px 14px;margin-bottom:14px}
+.heat-intro b{color:var(--gold-l)}
+.heat-input-card{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:14px;padding:16px 15px;margin-bottom:14px}
+.heat-irow{margin-bottom:16px}
+.heat-irow:last-child{margin-bottom:0}
+.heat-ilabel{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.heat-ilabel .nm{font-size:14px;font-weight:700;color:var(--txt-1)}
+.heat-ilabel .val{font-size:22px;font-weight:900;color:var(--gold-l);font-variant-numeric:tabular-nums}
+.heat-ilabel .val .u{font-size:13px;color:var(--txt-2);font-weight:700;margin-left:2px}
+.heat-slider{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:6px;background:linear-gradient(90deg,#2a3a4d,#4a6b86);outline:none;cursor:pointer}
+.heat-slider.hum{background:linear-gradient(90deg,#274a4a,#3f7d7d)}
+.heat-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e3c86e 60%,#c9a84c);box-shadow:0 2px 7px rgba(0,0,0,0.5);cursor:pointer;border:2px solid #fff}
+.heat-slider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#e3c86e;border:2px solid #fff;cursor:pointer}
+.heat-result{border-radius:16px;padding:20px 16px;text-align:center;margin-bottom:14px;border:1.5px solid;transition:all 0.35s;position:relative;overflow:hidden}
+.heat-result .rlabel{font-size:13px;font-weight:700;letter-spacing:0.05em;opacity:0.85}
+.heat-result .rval{font-size:54px;font-weight:900;line-height:1.05;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.heat-result .rval .u{font-size:24px;font-weight:800;margin-left:2px}
+.heat-badge{display:inline-flex;align-items:center;gap:6px;font-size:18px;font-weight:900;padding:6px 16px;border-radius:30px;margin-top:8px;letter-spacing:0.04em}
+.heat-airtemp{font-size:12px;opacity:0.8;margin-top:10px}
+.heat-gauge{margin-bottom:14px}
+.heat-gauge-bar{position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,#4a8f6a 0%,#4a8f6a 30%,#d8a72e 38%,#e8821e 52%,#e0531f 66%,#d33b3b 86%,#d33b3b 100%);overflow:visible}
+.heat-gauge-mark{position:absolute;top:-6px;width:4px;height:28px;background:#fff;border-radius:3px;box-shadow:0 0 0 2px rgba(0,0,0,0.45),0 2px 6px rgba(0,0,0,0.5);transition:left 0.35s}
+.heat-gauge-ticks{display:flex;justify-content:space-between;margin-top:7px;font-size:10px;color:var(--txt-3);font-weight:700}
+.heat-gauge-ticks span{flex:1;text-align:center}
+.heat-actions{background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:14px;padding:15px 15px;margin-bottom:14px}
+.heat-actions-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin-bottom:11px;color:var(--txt-1)}
+.heat-actions-h .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.heat-act-list{list-style:none;margin:0;padding:0}
+.heat-act-list li{position:relative;padding:7px 0 7px 22px;font-size:13.5px;line-height:1.55;color:#c2cad8;border-top:1px solid var(--bdr-dim)}
+.heat-act-list li:first-child{border-top:none}
+.heat-act-list li::before{content:'';position:absolute;left:4px;top:14px;width:7px;height:7px;border-radius:2px;background:var(--gold)}
+.heat-act-list li.legal::before{background:#d33b3b}
+.heat-act-list li.legal{color:#f0b8b8}
+.heat-disc{font-size:11px;color:var(--txt-3);line-height:1.7;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:11px 12px}
+.heat-disc b{color:#d9a23c}
 </style>
 </head>
 <body>
@@ -1883,7 +1955,7 @@ const PLEDGE_ITEM = {
 // ══════════════════════════════════════
 //  상태 & 헬퍼
 // ══════════════════════════════════════
-let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'m',gearOpen:false};
+let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'m',gearOpen:false,heatTemp:32,heatHum:60};
 /* ===== 점검이력 (이 기기에 저장) ===== */
 var HIST_KEY='_inspHistory';
 var histView='list', histSelDay=null, histMonth=null, histDelId=null;
@@ -2123,20 +2195,21 @@ function render(){
   const commonLen=s.isNR?DB._common.length+DB._nonroutine_common.length:DB._common.length;
 
   if(s.step===0){
-    app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="18" height="18" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" fill="#c9a84c" opacity="0.95"/><polyline points="32,52 45,65 68,38" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="18" height="18" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" fill="#c9a84c" opacity="0.95"/><polyline points="32,52 45,65 68,38" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body"><div class="home-wrap">
+      <div id="feels-card-wrap"></div>
       <div class="home-hero-icon" onclick="_adminTap()" id="home-hero-icon"><svg width="68" height="72" viewBox="0 0 100 108" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e3c86e"/><stop offset="100%" stop-color="#a87028"/></linearGradient></defs><path d="M50,4 L92,20 L92,58 C92,80 74,96 50,104 C26,96 8,80 8,58 L8,20 Z" fill="url(#sg)"/><polyline points="30,56 45,71 70,40" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="home-title">${s.lang==='ko'?'나는 오늘 안전한가?'  :'Am I Safe Today?'}</div>
       <div class="home-sub">${s.lang==='ko'?'작업 전 안전 체크리스트':'Pre-Work Safety Checklist'}</div>
       <div class="home-sub-line"></div>
       <div class="home-desc">${s.lang==='ko'?'업종·작업을 선택하면 맞춤 수칙을 알려드려요<br>비정형작업(수리·점검·교체)도 따로 있어요':'Select industry &amp; task for tailored safety rules.<br>Non-routine work (repair·inspection) included.'}</div>
-      <div class="font-bar"><span class="font-bar-label">${s.lang==='ko'?'글자 크기':'Font Size'}</span><button class="fbar-btn${s.fontSize==='s'?' active':''}" id="fbar-s" onclick="setFontSize('s')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="fbar-btn${s.fontSize==='m'?' active':''}" id="fbar-m" onclick="setFontSize('m')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="fbar-btn${s.fontSize==='l'?' active':''}" id="fbar-l" onclick="setFontSize('l')"><span class="fbc">가</span><span class="fbl">${s.lang==='ko'?'크게':'Lg'}</span></button></div>
       <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button class="home-btn-history" onclick="go(6)">📅 ${s.lang==='ko'?'내 점검이력':'My History'} <span class="cnt">${getHist().length}${s.lang==='ko'?'회':''}</span></button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
       <button class="home-btn-purple" id="home-ai-chat-btn" onclick="go(5)">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:2px 7px;margin-left:7px;font-weight:700;letter-spacing:0.3px">Beta</span></button>
-      <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:10px 14px;margin-top:6px;text-align:center">
+      <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:9px 14px;margin-top:9px;text-align:center">
         <div style="font-size:11px;color:var(--txt-2);line-height:1.6">${s.lang==='ko'?'산업안전보건법 기반의 현장 전문 AI가<br>안전수칙·위험 요인·사고 예방을 안내해드립니다':'Field safety AI based on industrial safety regulations.<br>Guidance on safety rules, hazards & accident prevention.'}</div>
       </div>
     </div></div>`;
+    mountFeels();
   }
   else if(s.step===1){
     const indList=s.lang==='en'?INDUSTRIES_EN:INDUSTRIES;
@@ -2284,6 +2357,44 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       aiUpdateLimitUI();
       updateChatPos();
     }, 0);
+  }
+  else if(s.step===7){
+    const ko=s.lang==='ko';
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🌡️ ${ko?'오늘의 체감온도':"Today's Heat Index"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
+    <div class="heat-wrap">
+      <div class="heat-intro">${ko?'기온과 습도를 조절하면 <b>체감온도</b>와 <b>폭염 단계</b>, 단계별 조치사항을 즉시 보여드립니다. <b>체감온도 31℃ 이상</b>은 산업안전보건기준 규칙상 ‘폭염작업’에 해당합니다(2025.6 시행).':'Adjust temperature & humidity to see the <b>heat index</b>, <b>heat level</b>, and required actions. <b>31℃ or above</b> counts as "heat work" under Korean OSH rules (effective Jun 2025).'}</div>
+
+      <div class="heat-input-card">
+        <div class="heat-irow">
+          <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><span id="heat-temp-val">${s.heatTemp}</span><span class="u">°C</span></span></div>
+          <input type="range" class="heat-slider" id="heat-temp" min="-10" max="45" step="1" value="${s.heatTemp}" oninput="updateHeatIndex()">
+        </div>
+        <div class="heat-irow">
+          <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><span id="heat-hum-val">${s.heatHum}</span><span class="u">%</span></span></div>
+          <input type="range" class="heat-slider hum" id="heat-hum" min="0" max="100" step="1" value="${s.heatHum}" oninput="updateHeatIndex()">
+        </div>
+      </div>
+
+      <div class="heat-result" id="heat-result">
+        <div class="rlabel">${ko?'체감온도':'Heat index'}</div>
+        <div class="rval"><span id="heat-val">--</span><span class="u">°C</span></div>
+        <div class="heat-badge" id="heat-badge">--</div>
+        <div class="heat-airtemp" id="heat-airtemp"></div>
+      </div>
+
+      <div class="heat-gauge">
+        <div class="heat-gauge-bar"><div class="heat-gauge-mark" id="heat-mark" style="left:0%"></div></div>
+        <div class="heat-gauge-ticks"><span>31</span><span>33</span><span>35</span><span>38℃</span></div>
+      </div>
+
+      <div class="heat-actions">
+        <div class="heat-actions-h"><span class="dot" id="heat-act-dot"></span><span id="heat-act-h">${ko?'단계별 조치사항':'Actions by level'}</span></div>
+        <ul class="heat-act-list" id="heat-act-list"></ul>
+      </div>
+
+      <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·습도 기반 기상청 여름철 체감온도 식으로 계산하며, 실제 현장값과 다를 수 있습니다. 법적 판단은 기상청 <b>폭염영향예보</b>와 현장 <b>온·습도(WBGT) 측정값</b>을 기준으로 하세요. 단계 기준: 관심 31℃ / 주의 33℃ / 경고 35℃ / 위험 38℃ 이상.':'※ <b>Estimate for reference only.</b> Computed from the KMA summer heat-index formula; on-site values may differ. Use the KMA heat advisory and measured WBGT for legal determinations. Levels: Attention 31 / Caution 33 / Warning 35 / Danger 38℃+.'}</div>
+    </div>`;
+    setTimeout(updateHeatIndex,0);
   }
 }
 
@@ -2653,6 +2764,188 @@ function downloadImg(){
   a.download="안전점검확인서_"+getDate().replace(/[:.]/g,"-")+".png";a.click();
 }
 
+// ═══════════════════ 체감온도 (HEAT INDEX) ═══════════════════
+// 기상청 여름철 체감온도 식: 습구온도(Stull 근사) → 체감온도.
+// 참고용 추정치이며, 법적 기준은 기상청 폭염영향예보·현장 WBGT 측정값을 따른다.
+function _wetBulb(ta, rh){
+  rh=Math.max(0,Math.min(100,rh));
+  return ta*Math.atan(0.151977*Math.sqrt(rh+8.313659))
+       + Math.atan(ta+rh)
+       - Math.atan(rh-1.67633)
+       + 0.00391838*Math.pow(rh,1.5)*Math.atan(0.023101*rh)
+       - 4.686035;
+}
+function computeHeatIndex(ta, rh){
+  const tw=_wetBulb(ta, rh);
+  return -0.2442 + 0.55399*tw + 0.45535*ta - 0.0022*tw*tw + 0.00278*tw*ta + 3.0;
+}
+// ===== 홈 체감온도 상태창 =====
+const FEELS_SUMMARY={
+  none:    {ko:'체감온도는 괜찮아요. 물과 휴식 챙기며 안전하게 작업하세요.', en:'Feels-like is fine. Stay safe with water and rest.'},
+  attn:    {ko:'더운 날씨예요. 물 자주 마시고 틈틈이 쉬세요.', en:'Hot today. Drink water often and take breaks.'},
+  caution: {ko:'2시간마다 20분 이상 쉬고, 물을 자주 마시세요.', en:'Rest 20+ min every 2 hours. Drink often.'},
+  warn:    {ko:'가장 더운 시간(오후 2~5시)엔 작업을 줄이거나 멈추세요.', en:'Cut back or stop work during 2–5 PM.'},
+  danger:  {ko:'야외작업을 멈추세요. 쉬면서 몸 상태를 살피세요.', en:'Stop outdoor work. Rest and watch how you feel.'}
+};
+const FEELS_LVCLS={none:'lv-none',attn:'lv-attn',caution:'lv-caution',warn:'lv-warn',danger:'lv-danger'};
+let feelsData={hi:null,ta:null,rh:null,loc:null,status:'loading'}, feelsFetched=false;
+
+function renderFeelsCard(){
+  const wrap=document.getElementById('feels-card-wrap');
+  if(!wrap) return;
+  const ko=state.lang==='ko';
+  if(feelsData.status==='loading'){
+    wrap.innerHTML=`<div class="feels-card" style="cursor:default"><div class="fc-loading">📍 ${ko?'체감온도 확인 중…':'Checking feels-like temp…'}</div></div>`;
+    return;
+  }
+  const hi=feelsData.hi, st=heatStage(hi, ko);
+  const cls=FEELS_LVCLS[st.key]||'lv-none';
+  const sm=FEELS_SUMMARY[st.key]||FEELS_SUMMARY.none;
+  const summary=ko?sm.ko:sm.en;
+  const locTxt=feelsData.loc||(ko?'서울 (기본)':'Seoul (default)');
+  const ta=feelsData.ta, rh=feelsData.rh;
+  const nowHtml=(ta!=null&&rh!=null)
+    ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'습도':'RH'} <b>${Math.round(rh)}%</b></div></div>`
+    : '';
+  wrap.innerHTML=
+    `<button class="feels-card ${cls}" onclick="openHeatFromHome()">`
+    +`<div class="fc-head">`
+      +`<div class="fc-temp-col"><div class="fc-label">${ko?'체감온도':'Feels-like'}</div><div class="fc-temp">${hi.toFixed(1)}°</div></div>`
+      +`<div class="fc-badge"><span class="dot"></span>${st.name}</div>`
+      +nowHtml
+    +`</div>`
+    +`<div class="fc-summary">${summary}</div>`
+    +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 체감온도 계산기 ›':'Reference only · Tap for heat calculator ›'}</span></div>`
+    +`</button>`;
+}
+function openHeatFromHome(){
+  // 현재 위치 기온·습도를 계산기에 미리 채워서 진입
+  if(feelsData.ta!=null) state.heatTemp=Math.round(feelsData.ta);
+  if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh);
+  go(7);
+}
+function shortRegion(s){ return s? s.replace(/특별자치도$|특별자치시$|특별시$|광역시$|자치도$|도$/,'') : ''; }
+function dedupeLoc(region, local){
+  region=shortRegion(region); local=(local||'').trim();
+  if(!region && !local) return '';
+  if(!local) return region;
+  if(!region) return local;
+  // 중복 방지: 한쪽이 다른 쪽을 포함하면 더 구체적인 쪽만
+  if(local.indexOf(region)>-1) return local;     // local 이 region 포함 → local
+  if(region.indexOf(local)>-1) return region;
+  return region+' '+local;                        // 예: 대구 중구
+}
+async function feelsReverseGeo(lat,lon){
+  try{
+    const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ko`);
+    const d=await r.json();
+    // 구(district) 우선: localityInfo.administrative 에서 '구/군' 단위를 찾는다
+    let district='';
+    const admin=(d.localityInfo&&d.localityInfo.administrative)||[];
+    for(const a of admin){ const n=(a.name||''); if(/(구|군)$/.test(n)){ district=n; } }
+    const region=d.principalSubdivision||'';
+    const local=district||d.city||d.locality||'';
+    const out=dedupeLoc(region, local);
+    return out||(state.lang==='ko'?'현재 위치':'Current location');
+  }catch(e){ return state.lang==='ko'?'현재 위치':'Current location'; }
+}
+async function feelsWeather(lat,lon,label){
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature`);
+    const d=await r.json();
+    const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m;
+    const hi=computeHeatIndex(ta, rh);   // 계산기와 동일한 식으로 통일
+    feelsData={hi:hi, ta:ta, rh:rh, loc:label, status:'ok'};
+  }catch(e){
+    feelsData={hi:(feelsData.hi!=null?feelsData.hi:25), ta:feelsData.ta, rh:feelsData.rh,
+               loc:(state.lang==='ko'?'날씨 연결 안됨':'Weather unavailable'), status:'ok'};
+  }
+  renderFeelsCard();
+}
+function mountFeels(){
+  renderFeelsCard();
+  if(feelsFetched){ return; }   // 이미 받아왔으면 재호출 안 함
+  feelsFetched=true;
+  const SEOUL=[37.5665,126.9780], ko=state.lang==='ko';
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(async p=>{
+      const name=await feelsReverseGeo(p.coords.latitude,p.coords.longitude);
+      feelsWeather(p.coords.latitude,p.coords.longitude,name);
+    }, ()=>{ feelsWeather(SEOUL[0],SEOUL[1], ko?'서울 (기본)':'Seoul (default)'); },
+    {timeout:6000,maximumAge:600000});
+  }else{
+    feelsWeather(SEOUL[0],SEOUL[1], ko?'서울 (기본)':'Seoul (default)');
+  }
+}
+
+// 단계 기준(고용노동부 온열질환 예방지침): 관심31 / 주의33 / 경고35 / 위험38
+function heatStage(hi, ko){
+  if(hi>=38) return {key:'danger', name:ko?'위험':'Danger', color:'#d33b3b',
+    acts: ko?['옥외작업 <b>중지를 강력 권고</b>합니다.','불가피한 작업은 무더위 시간대(14~17시)를 피하고 추가 보호조치를 적용하세요.','매시간 충분한 휴식·냉방·수분 보충을 보장하세요.','온열질환 응급대응체계(119 신고·냉각)를 즉시 가동할 수 있게 준비하세요.']
+            :['Outdoor work <b>strongly advised to stop.</b>','Avoid peak hours (14:00–17:00); apply extra protection if unavoidable.','Ensure ample rest, cooling and hydration every hour.','Keep the heat-illness emergency response (call 119, cooling) ready.'],
+    legal: ko?'체감온도 35℃ 이상에서 작업 강행 중 온열질환 사망 시 작업중지 명령·엄중 처벌 대상이 될 수 있습니다.'
+              :'Forcing work at 35℃+ with a resulting heat-illness death may trigger a stop-work order and strict penalties.'};
+  if(hi>=35) return {key:'warn', name:ko?'경고':'Warning', color:'#e0531f',
+    acts: ko?['무더위 시간대(14~17시) 옥외작업 <b>단축·중지를 적극 검토</b>하세요.','매시간 휴식을 부여하고, 위험 신호 시 즉시 작업 중단 경고체계(방송·호각 등)를 운영하세요.','그늘·냉방, 시원한 물, 보냉장구를 충분히 제공하세요.','온열질환 민감군(고령자·기저질환자·신규 배치자)은 별도 관리하세요.']
+            :['<b>Strongly consider shortening/stopping</b> outdoor work at peak hours (14–17).','Give hourly rest; run an alert system (broadcast/whistle) to halt work on warning signs.','Provide shade/cooling, cold water and cooling gear.','Manage vulnerable workers (elderly, chronic illness, newly assigned) separately.'],
+    legal: ko?'체감온도 35℃ 이상 작업 시 온열질환 사망사고는 무관용 처벌 방침의 대상입니다.'
+              :'Heat-illness deaths during work at 35℃+ fall under a zero-tolerance enforcement policy.'};
+  if(hi>=33) return {key:'caution', name:ko?'주의':'Caution', color:'#e8821e',
+    acts: ko?['<b>매 2시간 이내 20분 이상 휴식</b>을 부여하세요.','무더위 시간대 작업시간을 조정하고 옥외작업을 단축하세요.','시원하고 깨끗한 물을 자주 마시도록 하고, (이동식) 에어컨·선풍기 등 냉방을 가동하세요.','작업 중 온열질환 증상(어지럼·메스꺼움·두통 등)을 주기적으로 확인하세요.']
+            :['Give <b>at least 20 min rest within every 2 hours.</b>','Adjust work hours and shorten outdoor work at peak heat.','Provide frequent cool water; run AC/fans (incl. portable).','Check for heat-illness symptoms (dizziness, nausea, headache) regularly.'],
+    legal: ko?'기상청 폭염주의보(체감온도 33℃ 이상) 수준입니다.'
+              :'Equivalent to a KMA heat advisory (heat index 33℃+).'};
+  if(hi>=31) return {key:'attn', name:ko?'관심':'Attention', color:'#d8a72e',
+    acts: ko?['산업안전보건기준 규칙상 <b>‘폭염작업’(체감온도 31℃ 이상)</b>에 해당합니다.','사업주는 작업특성에 맞게 <b>주기적으로 휴식</b>을 부여해야 합니다(의무).','충분한 물과 그늘·휴게시설을 제공하세요.','체감온도 상승에 대비해 작업계획·휴식주기를 미리 점검하세요.']
+            :['Counts as <b>"heat work" (heat index 31℃+)</b> under OSH rules.','Employer <b>must give periodic rest</b> suited to the work (mandatory).','Provide ample water, shade and rest facilities.','Pre-check work plans and rest cycles for rising heat.'],
+    legal: ''};
+  return {key:'none', name:ko?'정상':'Normal', color:'#4a8f6a',
+    acts: ko?['현재 폭염 단계 기준(체감온도 31℃) 미만입니다.','폭염 5대 기본수칙(물·그늘·휴식)을 평소대로 유지하세요.','기온·습도가 오르면 다시 확인하세요.']
+            :['Below the heat-level threshold (31℃ heat index).','Keep the basic heat rules (water, shade, rest) as usual.','Re-check as temperature/humidity rise.'],
+    legal: ''};
+}
+function updateHeatIndex(){
+  const tEl=document.getElementById('heat-temp');
+  const hEl=document.getElementById('heat-hum');
+  if(!tEl||!hEl) return;
+  const ta=parseFloat(tEl.value), rh=parseFloat(hEl.value);
+  const ko=state.lang==='ko';
+  state.heatTemp=ta; state.heatHum=rh; // 화면 재진입 시 값 유지 (재렌더 없이 저장)
+  document.getElementById('heat-temp-val').textContent=ta;
+  document.getElementById('heat-hum-val').textContent=rh;
+
+  const hi=computeHeatIndex(ta, rh);
+  const hiR=Math.round(hi*10)/10;
+  const st=heatStage(hi, ko);
+
+  document.getElementById('heat-val').textContent=hiR.toFixed(1);
+  const airTxt=(ko?'기온 ':'Air ')+ta+'°C · '+(ko?'습도 ':'RH ')+rh+'%';
+  document.getElementById('heat-airtemp').textContent=airTxt;
+
+  // 결과 패널 색
+  const panel=document.getElementById('heat-result');
+  panel.style.background=st.color+'1f';
+  panel.style.borderColor=st.color+'66';
+  panel.style.color=st.color;
+  const badge=document.getElementById('heat-badge');
+  badge.textContent=st.name;
+  badge.style.background=st.color;
+  badge.style.color='#fff';
+
+  // 게이지 마커: 28℃~40℃ 구간을 0~100%로 매핑
+  const pct=Math.max(0,Math.min(100,((hi-28)/(40-28))*100));
+  document.getElementById('heat-mark').style.left=pct+'%';
+
+  // 조치 헤더 색 점
+  document.getElementById('heat-act-dot').style.background=st.color;
+  document.getElementById('heat-act-h').textContent=(ko?'단계별 조치 — ':'Actions — ')+st.name;
+
+  // 조치 리스트
+  let lis=st.acts.map(a=>'<li>'+a+'</li>').join('');
+  if(st.legal) lis+='<li class="legal">⚖️ '+st.legal+'</li>';
+  document.getElementById('heat-act-list').innerHTML=lis;
+}
+
 // ═══════════════════ GEMINI AI FEATURES ═══════════════════
 // Cloudflare Workers를 통한 안전한 Gemini API 호출
 // 사용자가 Cloudflare 셋업 완료 후 아래 URL을 실제 Worker URL로 교체
@@ -2662,7 +2955,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v43'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v45'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
