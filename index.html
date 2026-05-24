@@ -2211,6 +2211,7 @@ function render(){
       </div>
     </div></div>`;
     mountFeels();
+    updateHomeAiCounter(); // 언어변경 등 모든 렌더 경로에서 한도 소진 dim 유지
   }
   else if(s.step===1){
     const indList=s.lang==='en'?INDUSTRIES_EN:INDUSTRIES;
@@ -2345,7 +2346,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
           </div>
         </div></div>
       </div>
-      <div id="ai-chat-bottom" style="flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px)">
+      <div id="ai-chat-bottom" style="flex-shrink:0;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)">
         <div class="ai-chat-input-area"><textarea class="ai-chat-ta" id="ai-chat-ta" rows="1" ${s.lang==='ko'?'placeholder="안전 관련 질문을 입력하세요..."':'placeholder="Ask a safety question..."'} oninput="aiChatAutoResize(this)" onkeydown="aiChatKeydown(event)"></textarea><button class="ai-chat-send" id="ai-chat-send" onclick="sendAiChat()" disabled><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>
         <div class="ai-chat-limit">
           <span>${s.lang==='ko'?'남은 채팅':'Chat'} <span class="ai-chat-limit-num" id="ai-chat-lnum">${aiGetLeft('ai_chat',CHAT_LIMIT)}/${CHAT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
@@ -2960,7 +2961,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v46'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v47'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
