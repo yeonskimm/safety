@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>체감온도 경고 데모 v2</title>
+<style>
+:root{
+  --gold:#c9a84c;--gold-l:#e3c86e;--gold-d:#8c6e29;
+  --bg-0:#0b0e14;--bg-1:#0f1319;--bg-2:#141920;--bg-3:#1a2030;
+  --bdr-gold:rgba(201,168,76,0.14);--bdr-dim:#1c2130;
+  --txt-1:#eaecf4;--txt-2:#8890a4;--txt-3:#414a5c;
+  --green:#3ab87a;--red:#d95050;--amber:#e0922e;--blue:#4a90d9;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg-0);color:var(--txt-1);min-height:100vh;padding:16px;max-width:480px;margin:0 auto}
+h2{font-size:15px;color:var(--gold);margin:18px 0 8px;font-weight:700}
+.note{font-size:12px;color:var(--txt-3);margin-bottom:16px;line-height:1.55}
+.note b{color:var(--txt-2)}
+
+.wx-card{background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:14px;padding:14px 15px;margin-bottom:10px;transition:all .2s}
+.wx-row{display:flex;align-items:center;gap:13px}
+.wx-temp{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.5px}
+.wx-mid{flex:1;min-width:0}
+.wx-feel{font-size:12px;color:var(--txt-2);margin-bottom:3px}
+.wx-badge{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px}
+.wx-act{font-size:13px;color:var(--txt-1);margin-top:9px;padding-top:9px;border-top:1px solid var(--bdr-dim);line-height:1.55;display:none}
+.wx-card.open .wx-act{display:block}
+.wx-chev{font-size:11px;color:var(--txt-3);margin-top:4px;white-space:nowrap}
+.wx-loc{font-size:11px;color:var(--txt-3);margin-top:2px}
+.wx-legal{font-size:10px;color:var(--txt-3);margin-top:6px;font-style:normal}
+
+.lv-safe .wx-temp{color:var(--green)}    .lv-safe .wx-badge{background:rgba(58,184,122,.14);color:var(--green)}
+.lv-attn .wx-temp{color:var(--gold-l)}   .lv-attn .wx-badge{background:rgba(201,168,76,.16);color:var(--gold-l)}
+.lv-warn .wx-temp{color:var(--amber)}    .lv-warn .wx-badge{background:rgba(224,146,46,.16);color:var(--amber)}
+.lv-danger .wx-temp{color:var(--red)}    .lv-danger .wx-badge{background:rgba(217,80,80,.16);color:var(--red)}
+.lv-danger{border-color:rgba(217,80,80,.4);animation:pulse 2s infinite}
+.lv-cold .wx-temp{color:var(--blue)}     .lv-cold .wx-badge{background:rgba(74,144,217,.16);color:var(--blue)}
+.lv-cold{border-color:rgba(74,144,217,.35)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(217,80,80,.0)}50%{box-shadow:0 0 0 3px rgba(217,80,80,.12)}}
+
+.divider{height:1px;background:var(--bdr-dim);margin:6px 0 14px}
+</style>
+</head>
+<body>
+
+<div class="note">시작화면에 들어갈 <b>체감온도 경고 카드</b>입니다. 카드를 <b>탭하면</b> 권고 조치가 펼쳐집니다.<br>여름 폭염 기준·조치는 <b>2025.7 개정 산업안전보건기준 규칙</b>을 반영했고, 겨울 한랭은 법적 단계가 없어 KOSHA 권고 기준으로 표시합니다.</div>
+
+<h2>실제 동작 (내 위치 실시간)</h2>
+<div id="live"></div>
+<div class="divider"></div>
+
+<h2>상태별 미리보기 (탭 해보세요)</h2>
+<div id="samples"></div>
+
+<script>
+// 여름: 2025.7 개정 산업안전보건기준 규칙 / 겨울: KOSHA 한랭질환 예방 권고
+function grade(feel){
+  // ── 폭염 (체감온도 기준, 법적 의무) ──
+  if(feel>=38) return {lv:'lv-danger',icon:'🔴',label:'위험(최고)',
+    act:'매시간 15분 이상 휴식 필수. 무더위 시간대(오후 2~5시)에는 긴급작업 외 옥외작업 중지. 온열질환 민감군 옥외작업 제한.',
+    legal:'산안기준규칙(2025.7 개정) · 체감 38℃↑'};
+  if(feel>=35) return {lv:'lv-danger',icon:'🔴',label:'위험',
+    act:'무더위 시간대(오후 2~5시) 옥외작업 중지. 담당자가 작업자 건강상태 수시 확인. 물·그늘·휴식 철저히.',
+    legal:'산안기준규칙(2025.7 개정) · 체감 35℃↑'};
+  if(feel>=33) return {lv:'lv-warn',icon:'🟠',label:'경고',
+    act:'2시간마다 20분 이상 휴식 부여(현장 여건에 따라 1시간마다 10분도 가능). 충분한 수분 섭취.',
+    legal:'산안기준규칙(2025.7 개정) · 체감 33℃↑'};
+  if(feel>=31) return {lv:'lv-attn',icon:'🟡',label:'주의',
+    act:'2시간 이상 작업 시 냉방·통풍 설치, 작업시간대 조정, 주기적 휴식 중 하나 이상 조치. 온열질환 초기증상 주의.',
+    legal:'산안기준규칙(2025.7 개정) · 체감 31℃↑'};
+  // ── 한랭 (KOSHA 권고, 법적 단계 아님) ──
+  if(feel<=-12) return {lv:'lv-cold',icon:'🥶',label:'한랭 위험',
+    act:'동상·저체온증(중심체온 35℃↓) 위험. 옥외작업 최소화, 따뜻한 물 섭취, 방한장구 착용, 매시간 실내 휴식. 2인 1조 작업.',
+    legal:'KOSHA 한랭질환 예방 권고'};
+  if(feel<=-5) return {lv:'lv-cold',icon:'❄️',label:'한랭 경고',
+    act:'방한복·방한장갑 착용, 작업 전 준비운동. 젖은 옷은 즉시 교체. 따뜻한 휴게공간 확보.',
+    legal:'KOSHA 한랭질환 예방 권고'};
+  if(feel<=4) return {lv:'lv-cold',icon:'🧤',label:'한랭 주의',
+    act:'보온 유의, 빙판 미끄럼 사고 주의. 따뜻한 음료로 체온 유지.',
+    legal:'KOSHA 한랭질환 예방 권고'};
+  // ── 관심 ──
+  return {lv:'lv-safe',icon:'🟢',label:'관심',
+    act:'온열·한랭 위험 낮음. 평소대로 작업하되 수분 섭취는 꾸준히 하세요.',
+    legal:'위험 낮음'};
+}
+
+function card(feel, loc, opened){
+  const g=grade(feel);
+  return `<div class="wx-card ${g.lv} ${opened?'open':''}" onclick="this.classList.toggle('open')">
+    <div class="wx-row">
+      <div class="wx-temp">${feel}°</div>
+      <div class="wx-mid">
+        <div class="wx-feel">🌡️ 체감온도</div>
+        <span class="wx-badge">${g.icon} ${g.label}</span>
+        <div class="wx-loc">📍 ${loc}</div>
+      </div>
+      <div class="wx-chev">▾ 조치</div>
+    </div>
+    <div class="wx-act">✅ ${g.act}<div class="wx-legal">근거: ${g.legal}</div></div>
+  </div>`;
+}
+
+const samples=[[28,'관심 예시'],[32,'주의 예시'],[34,'경고 예시'],[36,'위험 예시'],[39,'위험(최고) 예시'],[-8,'한랭 예시']];
+document.getElementById('samples').innerHTML=samples.map(s=>card(s[0],s[1],false)).join('');
+
+const live=document.getElementById('live');
+live.innerHTML='<div class="wx-card"><div class="wx-feel">📡 위치 확인 중…</div></div>';
+function loadWx(lat,lon,loc){
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=apparent_temperature,temperature_2m`)
+    .then(r=>r.json())
+    .then(d=>{
+      const feel=Math.round(d.current.apparent_temperature);
+      live.innerHTML=card(feel,loc,true);
+    })
+    .catch(()=>{live.innerHTML='<div class="wx-card"><div class="wx-feel">날씨를 불러오지 못했습니다.</div></div>';});
+}
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(
+    p=>loadWx(p.coords.latitude,p.coords.longitude,'현재 위치'),
+    ()=>loadWx(37.5665,126.9780,'서울 (위치 거부됨)'),
+    {timeout:8000}
+  );
+}else{
+  loadWx(37.5665,126.9780,'서울 (위치 미지원)');
+}
+</script>
+</body>
+</html>
