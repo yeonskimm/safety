@@ -53,15 +53,15 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .body{max-width:600px;margin:0 auto;padding:16px 14px}
 
 /* ── HOME ── */
-.home-wrap{display:flex;flex-direction:column;align-items:center;padding:18px 24px 32px;gap:0;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(201,168,76,0.11) 0%,transparent 65%)}
+.home-wrap{display:flex;flex-direction:column;align-items:center;padding:14px 24px 18px;gap:0;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(201,168,76,0.11) 0%,transparent 65%)}
 .home-logo{font-size:60px}
-.home-title{font-size:calc(var(--fs-home-title) + 3px);font-weight:900;background:linear-gradient(160deg,#f5dc80 0%,#d4a843 50%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-top:22px;letter-spacing:-0.5px;line-height:1.2}
-.home-sub{font-size:var(--fs-home-sub);color:#b0b8cc;margin-top:10px;font-weight:500;letter-spacing:0.02em}
-.home-sub-line{width:40px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.55),transparent);margin:12px auto 0;border-radius:2px}
-.home-desc{font-size:var(--fs-home-desc);color:#707888;text-align:center;line-height:1.9;margin-top:14px}
-.home-btn{margin-top:30px;width:100%;max-width:310px;background:linear-gradient(160deg,#e0b045 0%,#c9a030 50%,#a87028 100%);color:#07090d;border-radius:16px;padding:17px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(201,168,76,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.2);position:relative;overflow:hidden;letter-spacing:0.3px}
+.home-title{font-size:calc(var(--fs-home-title) + 3px);font-weight:900;background:linear-gradient(160deg,#f5dc80 0%,#d4a843 50%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-top:12px;letter-spacing:-0.5px;line-height:1.2}
+.home-sub{font-size:var(--fs-home-sub);color:#b0b8cc;margin-top:7px;font-weight:500;letter-spacing:0.02em}
+.home-sub-line{width:40px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.55),transparent);margin:9px auto 0;border-radius:2px}
+.home-desc{font-size:var(--fs-home-desc);color:#707888;text-align:center;line-height:1.65;margin-top:10px}
+.home-btn{margin-top:18px;width:100%;max-width:310px;background:linear-gradient(160deg,#e0b045 0%,#c9a030 50%,#a87028 100%);color:#07090d;border-radius:16px;padding:15px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(201,168,76,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.2);position:relative;overflow:hidden;letter-spacing:0.3px}
 .home-btn::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:sheen 4s 1s infinite}
-.home-btn-purple{margin-top:10px;width:100%;max-width:310px;background:linear-gradient(160deg,#9b7bf0 0%,#7c5fe0 50%,#4f46e5 100%);color:#fff;border-radius:16px;padding:17px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(124,95,224,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);position:relative;overflow:hidden;letter-spacing:0.3px}
+.home-btn-purple{margin-top:9px;width:100%;max-width:310px;background:linear-gradient(160deg,#9b7bf0 0%,#7c5fe0 50%,#4f46e5 100%);color:#fff;border-radius:16px;padding:15px 36px;font-size:var(--fs-home-btn);font-weight:800;box-shadow:0 8px 30px rgba(124,95,224,0.5),0 2px 10px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);position:relative;overflow:hidden;letter-spacing:0.3px}
 .home-btn-purple::before{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:skewX(-20deg);animation:sheen 4s 2s infinite}
 @keyframes sheen{0%,100%{left:-80%}50%{left:120%}}
 
@@ -259,18 +259,19 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .gear-popup-btn:nth-child(3) .gpc{font-size:19px}
 
 /* ── 홈 체감온도 상태창 ── */
-.feels-card{width:100%;max-width:340px;margin:4px 0 18px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:14px;padding:11px 15px 10px;text-align:left;cursor:pointer;transition:.18s;display:block}
+.feels-card{width:100%;max-width:360px;margin:2px 0 12px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:13px;padding:9px 14px 8px;text-align:left;cursor:pointer;transition:.18s;display:block}
 .feels-card:active{transform:scale(0.985)}
-.fc-head{display:flex;align-items:center;gap:13px}
-.fc-temp{font-size:32px;font-weight:800;line-height:1;letter-spacing:-1px;min-width:54px}
+.fc-head{display:flex;align-items:center;gap:12px}
+.fc-temp{font-size:29px;font-weight:800;line-height:1;letter-spacing:-1px;min-width:50px}
 .fc-mid{flex:1;min-width:0}
-.fc-label{font-size:11px;color:var(--txt-2);margin-bottom:4px}
-.fc-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;border-radius:20px;padding:3px 12px 3px 9px}
+.fc-label{font-size:11px;color:var(--txt-2);margin-bottom:3px}
+.fc-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;border-radius:20px;padding:2px 12px 2px 9px}
 .fc-badge .dot{width:9px;height:9px;border-radius:50%}
 .fc-chev{color:var(--txt-3);font-size:16px;align-self:center;flex-shrink:0}
-.fc-summary{font-size:12.5px;line-height:1.45;color:var(--txt-1);margin-top:9px;padding-top:9px;border-top:1px solid var(--bdr-dim)}
-.fc-loc{font-size:10.5px;color:var(--txt-3);margin-top:7px;display:flex;align-items:center;gap:4px}
-.fc-loading{font-size:13px;color:var(--txt-3);padding:5px 2px}
+.fc-summary{font-size:12px;line-height:1.4;color:var(--txt-1);margin-top:7px;padding-top:7px;border-top:1px solid var(--bdr-dim)}
+.fc-loc{font-size:10px;color:var(--txt-3);margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fc-calc-hint{color:var(--gold-d);font-weight:600;white-space:nowrap;flex-shrink:0}
+.fc-loading{font-size:13px;color:var(--txt-3);padding:4px 2px}
 /* 단계 색상 (계산기와 동일 팔레트) */
 .feels-card.lv-none .fc-temp{color:#94a3b8}
 .feels-card.lv-none .fc-badge{background:rgba(148,163,184,0.14);color:#cbd5e1}.feels-card.lv-none .dot{background:#94a3b8}
@@ -306,20 +307,21 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 @media(min-width:414px){.i-grid{grid-template-columns:repeat(3,1fr)}}
 
 .home-hero-icon{
-  width:130px;height:130px;
+  width:96px;height:96px;
   background:linear-gradient(145deg,#26190a 0%,#1a1106 45%,#0e0b05 100%);
-  border-radius:30px;display:flex;align-items:center;justify-content:center;
+  border-radius:24px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 0 1px rgba(201,168,76,0.22),0 14px 44px rgba(0,0,0,0.65),0 0 70px rgba(170,110,15,0.28),inset 0 1px 0 rgba(255,220,80,0.06);
-  margin-bottom:4px;position:relative
+  margin-bottom:2px;margin-top:4px;position:relative
 }
+.home-hero-icon svg{width:52px;height:55px}
 .home-hero-icon::before{
-  content:'';position:absolute;inset:0;border-radius:30px;
+  content:'';position:absolute;inset:0;border-radius:24px;
   background:radial-gradient(ellipse at 38% 20%,rgba(230,165,40,0.22) 0%,transparent 52%);
   pointer-events:none
 }
 @keyframes pinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 /* ===== 내 점검이력 (v42) ===== */
-.home-btn-history{margin-top:12px;width:100%;max-width:310px;background:rgba(201,168,76,0.07);border:1.5px solid rgba(201,168,76,0.45);color:var(--gold-l,#e3c86e);border-radius:16px;padding:14px 30px;font-size:17px;font-weight:800;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.home-btn-history{margin-top:9px;width:100%;max-width:310px;background:rgba(201,168,76,0.07);border:1.5px solid rgba(201,168,76,0.45);color:var(--gold-l,#e3c86e);border-radius:16px;padding:12px 30px;font-size:17px;font-weight:800;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
 .home-btn-history:active{background:rgba(201,168,76,0.14)}
 .home-btn-history .cnt{font-size:11px;font-weight:700;background:rgba(201,168,76,0.18);color:var(--gold-l,#e3c86e);border-radius:10px;padding:2px 8px}
 .hist-clear-btn{background:rgba(217,80,80,0.1);border:1px solid rgba(217,80,80,0.3);color:#d95050;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer}
@@ -2201,7 +2203,7 @@ function render(){
       <div class="home-desc">${s.lang==='ko'?'업종·작업을 선택하면 맞춤 수칙을 알려드려요<br>비정형작업(수리·점검·교체)도 따로 있어요':'Select industry &amp; task for tailored safety rules.<br>Non-routine work (repair·inspection) included.'}</div>
       <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button class="home-btn-history" onclick="go(6)">📅 ${s.lang==='ko'?'내 점검이력':'My History'} <span class="cnt">${getHist().length}${s.lang==='ko'?'회':''}</span></button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
       <button class="home-btn-purple" id="home-ai-chat-btn" onclick="go(5)">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:2px 7px;margin-left:7px;font-weight:700;letter-spacing:0.3px">Beta</span></button>
-      <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:10px 14px;margin-top:6px;text-align:center">
+      <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:9px 14px;margin-top:9px;text-align:center">
         <div style="font-size:11px;color:var(--txt-2);line-height:1.6">${s.lang==='ko'?'산업안전보건법 기반의 현장 전문 AI가<br>안전수칙·위험 요인·사고 예방을 안내해드립니다':'Field safety AI based on industrial safety regulations.<br>Guidance on safety rules, hazards & accident prevention.'}</div>
       </div>
     </div></div>`;
@@ -2808,7 +2810,7 @@ function renderFeelsCard(){
       +`<span class="fc-chev">›</span>`
     +`</div>`
     +`<div class="fc-summary">${summary}</div>`
-    +`<div class="fc-loc">📍 ${locTxt}</div>`
+    +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'탭하면 체감온도 계산기 ›':'Tap for heat calculator ›'}</span></div>`
     +`</button>`;
 }
 function openHeatFromHome(){
@@ -2892,7 +2894,7 @@ function heatStage(hi, ko){
     acts: ko?['산업안전보건기준 규칙상 <b>‘폭염작업’(체감온도 31℃ 이상)</b>에 해당합니다.','사업주는 작업특성에 맞게 <b>주기적으로 휴식</b>을 부여해야 합니다(의무).','충분한 물과 그늘·휴게시설을 제공하세요.','체감온도 상승에 대비해 작업계획·휴식주기를 미리 점검하세요.']
             :['Counts as <b>"heat work" (heat index 31℃+)</b> under OSH rules.','Employer <b>must give periodic rest</b> suited to the work (mandatory).','Provide ample water, shade and rest facilities.','Pre-check work plans and rest cycles for rising heat.'],
     legal: ''};
-  return {key:'none', name:ko?'해당없음':'Normal', color:'#4a8f6a',
+  return {key:'none', name:ko?'정상':'Normal', color:'#4a8f6a',
     acts: ko?['현재 폭염 단계 기준(체감온도 31℃) 미만입니다.','폭염 5대 기본수칙(물·그늘·휴식)을 평소대로 유지하세요.','기온·습도가 오르면 다시 확인하세요.']
             :['Below the heat-level threshold (31℃ heat index).','Keep the basic heat rules (water, shade, rest) as usual.','Re-check as temperature/humidity rise.'],
     legal: ''};
