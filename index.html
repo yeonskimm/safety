@@ -230,7 +230,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .ai-chat-send{width:32px;height:32px;background:linear-gradient(135deg,#7c5fe0,#4f46e5);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ai-chat-send:disabled{opacity:0.3}
 .ai-chat-send svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.ai-chat-limit{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:10px;color:var(--txt-2);padding:0 2px}
+.ai-chat-limit{display:flex;justify-content:space-between;align-items:center;margin-top:6px;margin-bottom:4px;font-size:10px;color:var(--txt-2);padding:0 2px}
 .ai-chat-limit-num.ok{color:var(--green)}
 .ai-chat-limit-num.warn{color:#f59e0b}
 .ai-chat-limit-num.empty{color:var(--red)}
@@ -376,9 +376,12 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .heat-input-card{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:14px;padding:16px 15px;margin-bottom:14px}
 .heat-irow{margin-bottom:16px}
 .heat-irow:last-child{margin-bottom:0}
-.heat-ilabel{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.heat-ilabel{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .heat-ilabel .nm{font-size:14px;font-weight:700;color:var(--txt-1)}
-.heat-ilabel .val{font-size:22px;font-weight:900;color:var(--gold-l);font-variant-numeric:tabular-nums}
+.heat-ilabel .val{display:inline-flex;align-items:center;gap:8px;font-size:22px;font-weight:900;color:var(--gold-l);font-variant-numeric:tabular-nums}
+#heat-temp-val{min-width:48px;text-align:center;display:inline-block}
+.heat-fine{position:relative;z-index:2;width:34px;height:34px;border-radius:10px;border:1px solid var(--bdr-dim);background:var(--bg-1);color:var(--gold-l);font-size:22px;font-weight:900;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .08s;user-select:none}
+.heat-fine:active{background:var(--gold-l);color:#1a1f29;transform:scale(0.9)}
 .heat-ilabel .val .u{font-size:13px;color:var(--txt-2);font-weight:700;margin-left:2px}
 .heat-slider{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:6px;background:linear-gradient(90deg,#2a3a4d,#4a6b86);outline:none;cursor:pointer}
 .heat-slider.hum{background:linear-gradient(90deg,#274a4a,#3f7d7d)}
@@ -2346,7 +2349,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
           </div>
         </div></div>
       </div>
-      <div id="ai-chat-bottom" style="flex-shrink:0;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)">
+      <div id="ai-chat-bottom" style="flex-shrink:0;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px)">
         <div class="ai-chat-input-area"><textarea class="ai-chat-ta" id="ai-chat-ta" rows="1" ${s.lang==='ko'?'placeholder="안전 관련 질문을 입력하세요..."':'placeholder="Ask a safety question..."'} oninput="aiChatAutoResize(this)" onkeydown="aiChatKeydown(event)"></textarea><button class="ai-chat-send" id="ai-chat-send" onclick="sendAiChat()" disabled><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>
         <div class="ai-chat-limit">
           <span>${s.lang==='ko'?'남은 채팅':'Chat'} <span class="ai-chat-limit-num" id="ai-chat-lnum">${aiGetLeft('ai_chat',CHAT_LIMIT)}/${CHAT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
@@ -2368,8 +2371,8 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
 
       <div class="heat-input-card">
         <div class="heat-irow">
-          <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><span id="heat-temp-val">${s.heatTemp}</span><span class="u">°C</span></span></div>
-          <input type="range" class="heat-slider" id="heat-temp" min="-10" max="45" step="1" value="${s.heatTemp}" oninput="updateHeatIndex()">
+          <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatTemp(-0.1)" aria-label="-0.1">−</button><span id="heat-temp-val">${fmtTemp(s.heatTemp)}</span><span class="u">°C</span><button type="button" class="heat-fine" onclick="nudgeHeatTemp(0.1)" aria-label="+0.1">+</button></span></div>
+          <input type="range" class="heat-slider" id="heat-temp" min="-10" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
         </div>
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><span id="heat-hum-val">${s.heatHum}</span><span class="u">%</span></span></div>
@@ -2910,14 +2913,31 @@ function heatStage(hi, ko){
             :['Below the heat-level threshold (31℃ heat index).','Keep the basic heat rules (water, shade, rest) as usual.','Re-check as temperature/humidity rise.'],
     legal: ''};
 }
+// 온도 표시 포맷: 정수면 그대로, 소수면 첫째자리 (예: 32 / 32.4)
+function fmtTemp(v){ const n=Math.round(v*10)/10; return Number.isInteger(n)? String(n) : n.toFixed(1); }
+// 온도 미세조정(±0.1): state.heatTemp를 단일 출처로 증감 → 슬라이더 step 제약 우회
+function nudgeHeatTemp(delta){
+  let v=Math.round((state.heatTemp+delta)*10)/10;
+  v=Math.max(-10,Math.min(45,v));
+  state.heatTemp=v;
+  const tEl=document.getElementById('heat-temp'); if(tEl) tEl.value=Math.round(v); // 슬라이더 thumb 위치도 대략 맞춤
+  updateHeatIndex();
+}
+// 슬라이더 조작: 정수값을 state에 반영 후 재계산
+function onHeatSlider(){
+  const tEl=document.getElementById('heat-temp'); if(!tEl) return;
+  state.heatTemp=parseFloat(tEl.value);
+  updateHeatIndex();
+}
 function updateHeatIndex(){
   const tEl=document.getElementById('heat-temp');
   const hEl=document.getElementById('heat-hum');
   if(!tEl||!hEl) return;
-  const ta=parseFloat(tEl.value), rh=parseFloat(hEl.value);
+  const rh=parseFloat(hEl.value);
+  const ta=Math.round(state.heatTemp*10)/10; // 온도는 state가 단일 출처(슬라이더 step에 막히지 않게)
   const ko=state.lang==='ko';
-  state.heatTemp=ta; state.heatHum=rh; // 화면 재진입 시 값 유지 (재렌더 없이 저장)
-  document.getElementById('heat-temp-val').textContent=ta;
+  state.heatHum=rh; // 화면 재진입 시 값 유지
+  document.getElementById('heat-temp-val').textContent=fmtTemp(ta);
   document.getElementById('heat-hum-val').textContent=rh;
 
   const hi=computeHeatIndex(ta, rh);
@@ -2925,7 +2945,7 @@ function updateHeatIndex(){
   const st=heatStage(hi, ko);
 
   document.getElementById('heat-val').textContent=hiR.toFixed(1);
-  const airTxt=(ko?'기온 ':'Air ')+ta+'°C · '+(ko?'습도 ':'RH ')+rh+'%';
+  const airTxt=(ko?'기온 ':'Air ')+fmtTemp(ta)+'°C · '+(ko?'습도 ':'RH ')+rh+'%';
   document.getElementById('heat-airtemp').textContent=airTxt;
 
   // 결과 패널 색
@@ -2961,7 +2981,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v47'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v48'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
