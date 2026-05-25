@@ -2502,6 +2502,19 @@ function _adminClose(){
   const ov=document.getElementById('admin-overlay'); if(ov) ov.remove();
   const dash=document.getElementById('admin-dash'); if(dash) dash.remove();
 }
+function _toggleAdminDays(){
+  const d7=document.getElementById('adminDay7');
+  const dAll=document.getElementById('adminDayAll');
+  const btn=document.getElementById('adminDayToggle');
+  if(!d7||!dAll||!btn) return;
+  const expanded = dAll.style.display!=='none';
+  if(expanded){
+    dAll.style.display='none'; d7.style.display=''; btn.textContent=btn.dataset.more||'더보기 ▾';
+  } else {
+    d7.style.display='none'; dAll.style.display='';
+    btn.dataset.more=btn.textContent; btn.textContent='접기 (최근 7일) ▴';
+  }
+}
 async function _showAdminDash(){
   // 1) 대시보드를 즉시 띄움 (네트워크 대기 중 홈 화면 멈춤 방지)
   const dash = document.createElement('div');
@@ -2539,10 +2552,11 @@ function _buildAdminDash(ws){
   const GROQ_RPD = 1000; // Groq 무료 한도(요청/일) - 참고선
   const g = ws?.groq || null;
 
-  // 주간 차트 막대
+  // 주간 차트 막대 (week이 30일이어도 최근 7일만 표시)
   const week = ws?.week || [];
-  const maxV = Math.max(...week.map(d=>d.visits), 1);
-  const weekBars = week.map(d => {
+  const week7 = week.slice(-7);
+  const maxV = Math.max(...week7.map(d=>d.visits), 1);
+  const weekBars = week7.map(d => {
     const h = Math.round((d.visits/maxV)*60);
     const isToday = d.date === new Date().toISOString().slice(0,10);
     return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
@@ -2599,7 +2613,7 @@ function _buildAdminDash(ws){
       </div>
 
       <!-- 앱 정보 + API 사용량 (전체) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px">
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
         <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">⚙️ 앱 정보 · API 사용량</div>
         <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
           <span style="font-size:13px;color:rgba(255,255,255,0.6)">SW 버전</span>
@@ -2639,6 +2653,15 @@ function _buildAdminDash(ws){
           <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px">Groq 실시간 기준 · 마지막 호출 ${at}</div>`;
         })()}
       </div>
+      <!-- 체감온도 계산기 사용 (전체) -->
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:10px">🌡️ 체감온도 계산기 사용 (전체)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center">
+          <div><div style="font-size:22px;font-weight:800;color:#7c6ee0">${ws?.calc?.total!=null?Number(ws.calc.total).toLocaleString():ph}</div><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">총 사용횟수</div></div>
+          <div><div style="font-size:22px;font-weight:800;color:#ffd700">${ws?.calc?.today!=null?ws.calc.today:ph}</div><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">오늘</div></div>
+        </div>
+      </div>
+
       <!-- 업종별 사용 통계 (전체) -->
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
         <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">🏭 업종별 사용 통계 (전체)</div>
@@ -2662,7 +2685,7 @@ function _buildAdminDash(ws){
         })()}
       </div>
 
-      <!-- 날짜별 사용 기록 (최근 7일, 전체) -->
+      <!-- 날짜별 사용 기록 (기본 7일 + 더보기 30일) -->
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
         <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">📅 날짜별 사용 기록 (전체)</div>
         ${(()=>{
@@ -2670,13 +2693,22 @@ function _buildAdminDash(ws){
           const week = ws?.week || [];
           if(!week.length) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">아직 데이터 없음</div>';
           const todayStr = new Date().toISOString().slice(0,10);
-          return week.map(d=>{
+          // 최신순으로 정렬 (Worker는 오래된→최신 순으로 줌)
+          const recent = [...week].reverse();
+          const rowHTML = (d)=>{
             const isToday = d.date === todayStr;
             return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
               <span style="font-size:12px;color:${isToday?'#ffd700':'rgba(255,255,255,0.5)'}">${d.date.slice(5)}${isToday?' (오늘)':''}</span>
               <span style="font-size:11px;color:rgba(255,255,255,0.7)">접속 <b style="color:#ffd700">${d.visits}</b> · 채팅 <b style="color:#7c6ee0">${d.chat}</b> · 리포트 <b style="color:#22c55e">${d.report}</b></span>
             </div>`;
-          }).join('');
+          };
+          const rows7 = recent.slice(0,7).map(rowHTML).join('');
+          const rowsAll = recent.map(rowHTML).join('');
+          // 7일 이하면 더보기 버튼 불필요
+          if(recent.length<=7) return `<div id="adminDay7">${rows7}</div>`;
+          return `<div id="adminDay7">${rows7}</div>`
+            + `<div id="adminDayAll" style="display:none">${rowsAll}</div>`
+            + `<button id="adminDayToggle" onclick="_toggleAdminDays()" style="width:100%;margin-top:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;padding:9px;border-radius:8px;font-family:inherit;cursor:pointer">더보기 (최근 ${recent.length}일) ▾</button>`;
         })()}
       </div>
 
@@ -2831,6 +2863,14 @@ function openHeatFromHome(){
   // 현재 위치 기온·습도를 계산기에 미리 채워서 진입
   if(feelsData.ta!=null) state.heatTemp=Math.round(feelsData.ta);
   if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh);
+  // 계산기 사용 집계 (로컬 + Worker 합산, 실패해도 무관)
+  try{
+    const today=new Date().toISOString().slice(0,10);
+    localStorage.setItem('_calcUses', parseInt(localStorage.getItem('_calcUses')||'0')+1);
+    const ck='_calcDaily_'+today;
+    localStorage.setItem(ck, parseInt(localStorage.getItem(ck)||'0')+1);
+    fetch(GEMINI_URL+'/track-calc', {method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
+  }catch(e){}
   go(7);
 }
 const REGION_ABBR={'서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원도':'강원','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전라북도':'전북','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주','제주도':'제주'};
@@ -2993,7 +3033,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v49'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v50'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
