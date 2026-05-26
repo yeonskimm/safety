@@ -2390,7 +2390,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       <div class="heat-input-card">
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatTemp(-0.1)" aria-label="-0.1">−</button><span id="heat-temp-val">${fmtTemp(s.heatTemp)}</span><span class="u">°C</span><button type="button" class="heat-fine" onclick="nudgeHeatTemp(0.1)" aria-label="+0.1">+</button></span></div>
-          <input type="range" class="heat-slider" id="heat-temp" min="-10" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
+          <input type="range" class="heat-slider" id="heat-temp" min="15" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
         </div>
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatHum(-0.1)" aria-label="-0.1">−</button><span id="heat-hum-val">${fmtTemp(s.heatHum)}</span><span class="u">%</span><button type="button" class="heat-fine" onclick="nudgeHeatHum(0.1)" aria-label="+0.1">+</button></span></div>
@@ -3041,14 +3041,18 @@ function openFeelsCalc(){
     else if(ta!=null && ta<=10) mode='cold';
     else mode='comfort';
   }
+  // 쾌적 구간(10~25℃)은 기온 15℃ 기준으로 가까운 계산기로 연결
+  if(mode==='comfort'){
+    mode=(ta!=null && ta<15) ? 'cold' : 'hot';
+  }
   if(mode==='cold'){
     // 한랭 계산기로 진입 (현재 기온·풍속 미리 채움)
     if(feelsData.ta!=null) state.coldTemp=Math.round(feelsData.ta*10)/10;
     if(feelsData.ws!=null) state.coldWind=Math.round(feelsData.ws*10)/10;
     go(8);
   } else {
-    // 온열 계산기로 진입 (쾌적 구간도 온열 계산기 사용)
-    if(feelsData.ta!=null) state.heatTemp=Math.round(feelsData.ta*10)/10;
+    // 온열 계산기로 진입
+    if(feelsData.ta!=null) state.heatTemp=Math.max(15,Math.min(45,Math.round(feelsData.ta*10)/10));
     if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh*10)/10;
     go(7);
   }
@@ -3150,7 +3154,7 @@ function fmtTemp(v){ const n=Math.round(v*10)/10; return Number.isInteger(n)? St
 // 온도 미세조정(±0.1): state.heatTemp를 단일 출처로 증감 → 슬라이더 step 제약 우회
 function nudgeHeatTemp(delta){
   let v=Math.round((state.heatTemp+delta)*10)/10;
-  v=Math.max(-10,Math.min(45,v));
+  v=Math.max(15,Math.min(45,v));
   state.heatTemp=v;
   const tEl=document.getElementById('heat-temp'); if(tEl) tEl.value=Math.round(v); // 슬라이더 thumb 위치도 대략 맞춤
   updateHeatIndex();
@@ -3290,7 +3294,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v53'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v54'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
