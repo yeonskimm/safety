@@ -2738,37 +2738,6 @@ function _buildAdminDash(ws){
         </div>
         <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px">현재: ${seasonMode==='auto'?'자동 (기온 기준)':seasonMode==='hot'?'온열 고정':'한랭 고정'}</div>
       </div>
-      <!-- 체감온도 계산기 사용 (전체) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:10px">🌡️ 체감온도 계산기 사용 (전체)</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center">
-          <div><div style="font-size:22px;font-weight:800;color:#7c6ee0">${ws?.calc?.total!=null?Number(ws.calc.total).toLocaleString():ph}</div><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">총 사용횟수</div></div>
-          <div><div style="font-size:22px;font-weight:800;color:#ffd700">${ws?.calc?.today!=null?ws.calc.today:ph}</div><div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">오늘</div></div>
-        </div>
-      </div>
-
-      <!-- 업종별 사용 통계 (전체) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">🏭 업종별 사용 통계 (전체)</div>
-        ${(()=>{
-          const IMAP = {logging:'벌목·임업',auto:'제조업',construction:'건설',chemical:'화학·도료',food:'식품가공',metal:'금속가공',electronics:'전기·전자',logistics:'물류·창고',building:'건물관리·청소',shipbuilding:'조선·중공업',printing:'인쇄·출판',textile:'섬유·봉제',steel:'철강·제강'};
-          if(loading) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">불러오는 중…</div>';
-          const stats = ws?.industry || {};
-          const entries = Object.entries(stats).sort((a,b)=>b[1]-a[1]).slice(0,8);
-          if(!entries.length) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">아직 데이터 없음</div>';
-          const max = entries[0][1];
-          return entries.map(([id,cnt])=>`
-            <div style="margin-bottom:8px">
-              <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-                <span style="font-size:12px;color:#fff">${IMAP[id]||id}</span>
-                <span style="font-size:12px;color:#ffd700;font-weight:700">${cnt}회</span>
-              </div>
-              <div style="background:rgba(255,255,255,0.08);border-radius:4px;height:5px">
-                <div style="width:${Math.round(cnt/max*100)}%;height:100%;border-radius:4px;background:#ffd700"></div>
-              </div>
-            </div>`).join('');
-        })()}
-      </div>
 
       <!-- 날짜별 사용 기록 (기본 7일 + 더보기 30일) -->
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
@@ -2804,19 +2773,6 @@ function _buildAdminDash(ws){
           <span style="font-size:13px;color:#ffd700;font-weight:700">${localStorage.getItem('_installDate')||'기록 없음'}</span>
         </div>
       </div>
-
-      <!-- 국가별 접속 (Worker) -->
-      ${ws?.country && Object.keys(ws.country).length ? `
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">🌍 국가별 접속 (오늘)</div>
-        ${Object.entries(ws.country).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([c,n])=>{
-          const flags={'KR':'🇰🇷','US':'🇺🇸','JP':'🇯🇵','CN':'🇨🇳','VN':'🇻🇳','TH':'🇹🇭','PH':'🇵🇭','ID':'🇮🇩','IN':'🇮🇳','GB':'🇬🇧'};
-          return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-            <span style="font-size:13px">${flags[c]||'🌐'} ${c}</span>
-            <span style="font-size:13px;color:#ffd700;font-weight:700">${n}명</span>
-          </div>`;
-        }).join('')}
-      </div>` : ''}
 
       <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.2);margin-top:16px">실시간 · Cloudflare Worker 연동</div>
     </div>
@@ -2858,12 +2814,7 @@ function selInd(id){
     const stats = JSON.parse(localStorage.getItem('_indStats')||'{}');
     stats[id] = (stats[id]||0) + 1;
     localStorage.setItem('_indStats', JSON.stringify(stats));
-    // Worker에도 전송 (비동기, 실패해도 무관)
-    fetch(GEMINI_URL+'/track-industry', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({industry: id})
-    }).catch(()=>{});
+    // (Worker 업종 집계는 요청 절약을 위해 제거 — 로컬 통계만 유지)
   } catch(e) {}
   go(2);
   gtag('event','industry_selected',{industry_name:id});
@@ -3012,7 +2963,11 @@ function renderFeelsCard(){
     const hi=feelsData.hi, st=heatStage(hi, ko);
     const cls=FEELS_LVCLS[st.key]||'lv-none';
     const sm=FEELS_SUMMARY[st.key]||FEELS_SUMMARY.none;
-    const summary=ko?sm.ko:sm.en;
+    let summary=ko?sm.ko:sm.en;
+    // 양호 단계 중 옛 쾌적 구간(기온 25℃ 이하)은 더위 안내 대신 일반 안전수칙 문구로 표시
+    if(st.key==='none' && ta!=null && ta<=25){
+      summary = ko?'안전수칙을 준수하여 안전하게 작업하세요.':'Follow safety rules and work safely.';
+    }
     wrap.innerHTML=
       `<button class="feels-card ${cls}" onclick="openFeelsCalc()">`
       +`<div class="fc-head">`
@@ -3032,7 +2987,7 @@ function openFeelsCalc(){
     localStorage.setItem('_calcUses', parseInt(localStorage.getItem('_calcUses')||'0')+1);
     const ck='_calcDaily_'+today;
     localStorage.setItem(ck, parseInt(localStorage.getItem(ck)||'0')+1);
-    fetch(GEMINI_URL+'/track-calc', {method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
+    // (Worker 계산기 집계는 요청 절약을 위해 제거 — 로컬 카운터만 유지)
   }catch(e){}
   // 계절 판단 (홈 카드와 동일 로직): 10℃ 이하 → 한랭 계산기, 초과 → 온열 계산기
   const ta=feelsData.ta;
@@ -3333,7 +3288,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v61'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v62'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -3606,8 +3561,14 @@ function updateHomeAiCounter(){
   }
 }
 function initAiUI(){
-  // Worker에 접속 핑 전송 (전체 사용자 통계 카운팅)
-  fetch(GEMINI_URL + '/ping', { method: 'GET' }).catch(()=>{});
+  // Worker에 접속 핑 전송 — 하루 1회만(같은 날 재방문은 요청 절약, Worker 한도 보호)
+  try{
+    const today=new Date().toISOString().slice(0,10);
+    if(localStorage.getItem('_pingDate')!==today){
+      localStorage.setItem('_pingDate', today);
+      fetch(GEMINI_URL + '/ping', { method: 'GET' }).catch(()=>{});
+    }
+  }catch(e){ fetch(GEMINI_URL + '/ping', { method: 'GET' }).catch(()=>{}); }
   // 로컬 실행 카운터 + 설치 날짜 기록
   // (Safari 시크릿 모드 등에서 localStorage 쓰기가 예외를 던져 초기화가 중단되던 문제 방지)
   try{
