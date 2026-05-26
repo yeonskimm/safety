@@ -380,13 +380,16 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .heat-slider.wind{background:linear-gradient(90deg,#2d3748,#90cdf4)}
 .heat-gauge-bar.cold{background:linear-gradient(90deg,#63b3ed,#4299e1,#3182ce,#1a365d)}
 /* 홈 한랭 카드 */
+.feels-card.lv-cold-none{background:linear-gradient(135deg,rgba(91,185,140,0.14),rgba(91,185,140,0.04));border-color:rgba(91,185,140,0.3)}
 .feels-card.lv-cold-attn{background:linear-gradient(135deg,rgba(99,179,237,0.18),rgba(99,179,237,0.05));border-color:rgba(99,179,237,0.4)}
 .feels-card.lv-cold-caution{background:linear-gradient(135deg,rgba(66,153,225,0.22),rgba(66,153,225,0.07));border-color:rgba(66,153,225,0.5)}
 .feels-card.lv-cold-warn{background:linear-gradient(135deg,rgba(49,130,206,0.28),rgba(49,130,206,0.1));border-color:rgba(49,130,206,0.6)}
 .feels-card.lv-cold-danger{background:linear-gradient(135deg,rgba(26,54,93,0.55),rgba(26,54,93,0.2));border-color:rgba(144,205,244,0.5)}
 .feels-card.lv-comfort{background:linear-gradient(135deg,rgba(104,211,145,0.12),rgba(104,211,145,0.03));border-color:rgba(104,211,145,0.25)}
+.feels-card.lv-cold-none .fc-temp{color:#5bb98c}
 .feels-card.lv-cold-attn .fc-temp,.feels-card.lv-cold-caution .fc-temp{color:#90cdf4}
 .feels-card.lv-cold-warn .fc-temp{color:#63b3ed}.feels-card.lv-cold-danger .fc-temp{color:#bee3f8}
+.feels-card.lv-cold-none .fc-badge{background:rgba(91,185,140,0.16);color:#9ae6b4}.feels-card.lv-cold-none .dot{background:#5bb98c}
 .feels-card.lv-cold-attn .fc-badge,.feels-card.lv-cold-caution .fc-badge,.feels-card.lv-cold-warn .fc-badge,.feels-card.lv-cold-danger .fc-badge{background:rgba(99,179,237,0.18);color:#bee3f8}
 .feels-card.lv-cold-attn .dot,.feels-card.lv-cold-caution .dot,.feels-card.lv-cold-warn .dot,.feels-card.lv-cold-danger .dot{background:#63b3ed}
 .feels-card.lv-comfort .fc-temp{color:#68d391}
@@ -2445,7 +2448,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
 
       <div class="heat-gauge">
         <div class="heat-gauge-bar cold"><div class="heat-gauge-mark" id="cold-mark" style="left:0%"></div></div>
-        <div class="heat-gauge-ticks"><span>10</span><span>0</span><span>-12</span><span>-15℃</span></div>
+        <div class="heat-gauge-ticks"><span>4</span><span>0</span><span>-10</span><span>-18℃</span></div>
       </div>
 
       <div class="heat-actions">
@@ -2453,7 +2456,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         <ul class="heat-act-list" id="cold-act-list"></ul>
       </div>
 
-      <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·풍속 기반 체감온도(Wind Chill) 식으로 계산하며, 실제 현장값과 다를 수 있습니다. 한파특보는 기상청 발표 기준이며, 단계 판정은 <b>기온</b> 기준입니다. 단계 기준: 관심 10℃ / 경계 0℃ / 주의보 -12℃ / 경보 -15℃ 이하.':'※ <b>Estimate for reference only.</b> Wind-chill formula based on temp & wind; on-site values may differ. Cold-wave alerts follow KMA; levels are by air temperature. Levels: Watch 10 / Caution 0 / Advisory -12 / Emergency -15℃ or below.'}</div>
+      <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·풍속 기반 체감온도(Wind Chill) 식으로 계산하며, 실제 현장값과 다를 수 있습니다. <b>한파특보(주의보·경보)는 기상청 발표를 확인하세요.</b> 단계 기준(체감온도): 관심 4℃ / 주의 0℃ / 경고 -10℃ / 위험 -18℃ 이하.':'※ <b>Estimate for reference only.</b> Wind-chill formula based on temp & wind; on-site values may differ. <b>Check KMA for official cold-wave alerts.</b> Levels (wind chill): Attention 4 / Caution 0 / Warning -10 / Danger -18℃ or below.'}</div>
     </div>`;
     setTimeout(updateColdIndex,0);
   }
@@ -2907,31 +2910,38 @@ function computeWindChill(ta, ws){
   return 13.12 + 0.6215*ta - 11.37*Math.pow(ws,0.16) + 0.3965*ta*Math.pow(ws,0.16);
 }
 // ── 한랭 단계 (기상청 한파특보 기준 - 기온 기반) ──
-function coldStage(ta, ko){
-  if(ta<=-15) return {key:'jb', name:ko?'한파경보':'Cold Emergency', color:'#3182ce',
-    acts: ko?['추운 새벽 시간대 옥외작업을 <b>중지하거나 최소화</b>하세요.','한랭질환 민감군(고령자·신규배치자·기저질환자)은 추운 작업에서 제외하세요.','30분~1시간마다 따뜻한 쉼터에서 휴식을 부여하세요.','동료가 떨거나 정신이 흐려지면 즉시 119에 신고하고 따뜻한 곳으로 옮기세요.']
-            :['<b>Stop or minimize</b> outdoor work during cold dawn hours.','Exclude vulnerable workers (elderly, newly assigned, chronic illness) from cold work.','Provide rest in a warm shelter every 30–60 minutes.','If a coworker shivers or becomes confused, call 119 and move them to warmth.'],
-    legal: ko?'한파경보: 아침 최저기온 -15℃ 이하가 2일 이상 지속될 것으로 예상될 때 발효됩니다.':'Cold-wave emergency: issued when morning lows ≤ -15℃ persist 2+ days.'};
-  if(ta<=-12) return {key:'jw', name:ko?'한파주의보':'Cold Advisory', color:'#4299e1',
+// 한랭 위험도 단계 — 체감온도(Wind Chill) 기준, 온열 계산기와 대칭(정상/관심/주의/경고/위험)
+// 한파특보(주의보/경보)는 기상청 예보 기준이라 앱이 판정하지 않음 → 자체 위험도로 안내
+function coldStage(wc, ko){
+  if(wc<=-18) return {key:'danger', name:ko?'위험':'Danger', color:'#1a5fb4',
+    acts: ko?['추운 시간대(새벽) 옥외작업을 <b>중지하거나 최소화</b>하세요.','한랭질환 민감군(고령자·신규배치자·기저질환자)은 추운 작업에서 제외하세요.','30분~1시간마다 따뜻한 쉼터에서 휴식을 부여하세요.','동료가 떨거나 정신이 흐려지면 즉시 119에 신고하고 따뜻한 곳으로 옮기세요.']
+            :['<b>Stop or minimize</b> outdoor work during cold hours (dawn).','Exclude vulnerable workers (elderly, newly assigned, chronic illness).','Provide rest in a warm shelter every 30–60 minutes.','If a coworker shivers or seems confused, call 119 and move them to warmth.'],
+    legal: ko?'체감온도 -18℃ 이하는 동상·저체온증 위험이 큽니다. 정확한 한파특보는 기상청 발표를 확인하세요.':'Wind chill ≤ -18℃ poses high frostbite/hypothermia risk. Check KMA for official cold-wave alerts.'};
+  if(wc<=-10) return {key:'warn', name:ko?'경고':'Warning', color:'#1c71d8',
     acts: ko?['작업시간대를 조정하거나 <b>작업시간을 단축</b>하세요.','따뜻한 옷·방한모·장갑을 착용하고 보온·방수 신발을 신으세요.','작업장 가까운 곳에 따뜻한 쉼터를 설치하고 휴식을 부여하세요.','깨끗하고 따뜻한 물을 충분히 제공하세요.']
             :['Adjust or <b>shorten work hours</b>.','Wear warm clothing, hat, gloves and insulated waterproof boots.','Set up a warm shelter near the worksite and provide rest.','Provide ample clean, warm water.'],
-    legal: ko?'한파주의보: 아침 최저기온 -12℃ 이하가 2일 이상 지속될 것으로 예상될 때 발효됩니다.':'Cold advisory: issued when morning lows ≤ -12℃ persist 2+ days.'};
-  if(ta<=0) return {key:'warn', name:ko?'한파경계':'Cold Caution', color:'#63b3ed',
+    legal: ''};
+  if(wc<=0) return {key:'caution', name:ko?'주의':'Caution', color:'#3584e4',
     acts: ko?['방한복·방한모·장갑을 착용하세요.','젖은 옷·장갑은 즉시 갈아입고, 여분의 양말을 준비하세요.','따뜻한 쉼터와 온수를 제공하세요.','빙판길 미끄러짐 사고에 주의하고 미끄럼 방지 안전화를 착용하세요.']
             :['Wear cold-weather clothing, hat and gloves.','Change wet clothes/gloves immediately; keep spare socks.','Provide a warm shelter and hot water.','Beware of slips on ice; wear anti-slip safety shoes.'],
     legal: ''};
-  return {key:'attn', name:ko?'한파관심':'Cold Watch', color:'#90cdf4',
+  if(wc<=4) return {key:'attn', name:ko?'관심':'Attention', color:'#62a0ea',
     acts: ko?['한파안전 5대 기본수칙(따뜻한 옷·쉼터·물·시간조정·119)을 확인하세요.','보온이 잘 되는 작업복을 착용하세요.','기온이 더 떨어질 것에 대비해 휴식 계획을 점검하세요.']
             :['Check the 5 cold-safety basics (warm clothes, shelter, water, schedule, 119).','Wear well-insulated work clothing.','Review rest plans in case temperatures drop further.'],
     legal: ''};
+  return {key:'none', name:ko?'정상':'Normal', color:'#5bb98c',
+    acts: ko?['현재 한랭 위험 단계 미만입니다.','안전수칙을 준수하여 안전하게 작업하세요.','기온이 떨어지면 다시 확인하세요.']
+            :['Below the cold-risk threshold.','Follow safety rules and work safely.','Re-check as temperatures drop.'],
+    legal: ''};
 }
 const COLD_SUMMARY={
-  jb:   {ko:'추운 새벽엔 야외작업을 멈추세요. 몸이 떨리거나 감각이 없으면 바로 쉬세요.', en:'Stop work in cold dawn. Rest immediately if shivering or numb.'},
-  jw:   {ko:'작업 시간을 줄이고, 따뜻하게 입고 자주 쉬세요.', en:'Shorten work, dress warm, rest often.'},
-  warn: {ko:'춥습니다. 방한복을 갖춰 입고 빙판길을 조심하세요.', en:'Cold. Wear warm gear and watch for ice.'},
-  attn: {ko:'쌀쌀해요. 따뜻하게 입고 한파 기본수칙을 확인하세요.', en:'Chilly. Dress warm and check cold-safety basics.'}
+  danger:  {ko:'추운 새벽엔 야외작업을 멈추세요. 몸이 떨리거나 감각이 없으면 바로 쉬세요.', en:'Stop work in cold hours. Rest immediately if shivering or numb.'},
+  warn:    {ko:'작업 시간을 줄이고, 따뜻하게 입고 자주 쉬세요.', en:'Shorten work, dress warm, rest often.'},
+  caution: {ko:'춥습니다. 방한복을 갖춰 입고 빙판길을 조심하세요.', en:'Cold. Wear warm gear and watch for ice.'},
+  attn:    {ko:'쌀쌀해요. 따뜻하게 입고 한파 기본수칙을 확인하세요.', en:'Chilly. Dress warm and check cold-safety basics.'},
+  none:    {ko:'한랭 위험은 낮습니다. 안전수칙을 준수하여 안전하게 작업하세요.', en:'Low cold risk. Follow safety rules and work safely.'}
 };
-const COLD_LVCLS={attn:'lv-cold-attn',warn:'lv-cold-caution',jw:'lv-cold-warn',jb:'lv-cold-danger'};
+const COLD_LVCLS={none:'lv-cold-none',attn:'lv-cold-attn',caution:'lv-cold-caution',warn:'lv-cold-warn',danger:'lv-cold-danger'};
 // ===== 홈 체감온도 상태창 =====
 const FEELS_SUMMARY={
   none:    {ko:'체감온도는 괜찮아요. 물과 휴식 챙기며 안전하게 작업하세요.', en:'Feels-like is fine. Stay safe with water and rest.'},
@@ -2971,9 +2981,9 @@ function renderFeelsCard(){
     // ── 한랭 카드 ──
     const wsVal=(ws!=null?ws:0);
     const wc=computeWindChill(ta!=null?ta:0, wsVal);
-    const st=coldStage(ta!=null?ta:0, ko);
-    const cls=COLD_LVCLS[st.key]||'lv-cold-attn';
-    const sm=COLD_SUMMARY[st.key]||COLD_SUMMARY.attn;
+    const st=coldStage(wc, ko);
+    const cls=COLD_LVCLS[st.key]||'lv-cold-none';
+    const sm=COLD_SUMMARY[st.key]||COLD_SUMMARY.none;
     const summary=ko?sm.ko:sm.en;
     const nowHtml=(ta!=null)
       ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'풍속':'Wind'} <b>${Math.round(wsVal)}km/h</b></div></div>`
@@ -3258,7 +3268,7 @@ function updateColdIndex(){
 
   const wc=computeWindChill(ta, ws);
   const wcR=Math.round(wc*10)/10;
-  const st=coldStage(ta, ko);
+  const st=coldStage(wc, ko);
 
   document.getElementById('cold-val').textContent=wcR.toFixed(1);
   const airTxt=(ko?'기온 ':'Air ')+fmtTemp(ta)+'°C · '+(ko?'풍속 ':'Wind ')+ws+'km/h';
@@ -3273,8 +3283,8 @@ function updateColdIndex(){
   badge.style.background=st.color;
   badge.style.color='#fff';
 
-  // 게이지: 10℃~-20℃ 구간을 0~100%로 매핑
-  const pct=Math.max(0,Math.min(100,((10-ta)/(10-(-20)))*100));
+  // 게이지: 체감온도 10℃~-25℃ 구간을 0~100%로 매핑
+  const pct=Math.max(0,Math.min(100,((10-wc)/(10-(-25)))*100));
   document.getElementById('cold-mark').style.left=pct+'%';
 
   document.getElementById('cold-act-dot').style.background=st.color;
@@ -3294,7 +3304,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v55'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v56'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
