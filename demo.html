@@ -2997,10 +2997,10 @@ function renderFeelsCard(){
       `<button class="feels-card lv-comfort" onclick="openFeelsCalc()">`
       +`<div class="fc-head">`
         +`<div class="fc-temp-col"><div class="fc-label">${ko?'현재 기온':'Current temp'}</div><div class="fc-temp">${ta!=null?ta.toFixed(1):'--'}°</div></div>`
-        +`<div class="fc-badge"><span class="dot"></span>${ko?'쾌적':'Comfortable'}</div>`
+        +`<div class="fc-badge"><span class="dot"></span>${ko?'정상':'Normal'}</div>`
         +nowHtml
       +`</div>`
-      +`<div class="fc-summary">${ko?'온열·한파 위험은 없습니다. 안전수칙을 준수하여 안전하게 작업하세요.':'No heat or cold risk. Follow safety rules and work safely.'}</div>`
+      +`<div class="fc-summary">${ko?'안전수칙을 준수하여 안전하게 작업하세요.':'Follow safety rules and work safely.'}</div>`
       +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 계산기 ›':'Reference · calc ›'}</span></div>`
       +`</button>`;
   } else {
@@ -3294,7 +3294,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v54'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v55'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
