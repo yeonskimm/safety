@@ -373,6 +373,27 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .heat-wrap{max-width:600px;margin:0 auto;padding:14px 14px 40px}
 .heat-intro{font-size:13px;color:var(--txt-2);line-height:1.7;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:12px;padding:13px 14px;margin-bottom:14px}
 .heat-intro b{color:var(--gold-l)}
+/* 한랭 계산기 테마 */
+.heat-intro.cold{background:rgba(99,179,237,0.06);border-color:rgba(99,179,237,0.2)}
+.heat-intro.cold b{color:#90cdf4}
+.heat-slider.cold{background:linear-gradient(90deg,#1a365d,#63b3ed)}
+.heat-slider.wind{background:linear-gradient(90deg,#2d3748,#90cdf4)}
+.heat-gauge-bar.cold{background:linear-gradient(90deg,#63b3ed,#4299e1,#3182ce,#1a365d)}
+/* 홈 한랭 카드 */
+.feels-card.lv-cold-none{background:linear-gradient(135deg,rgba(91,185,140,0.14),rgba(91,185,140,0.04));border-color:rgba(91,185,140,0.3)}
+.feels-card.lv-cold-attn{background:linear-gradient(135deg,rgba(99,179,237,0.18),rgba(99,179,237,0.05));border-color:rgba(99,179,237,0.4)}
+.feels-card.lv-cold-caution{background:linear-gradient(135deg,rgba(66,153,225,0.22),rgba(66,153,225,0.07));border-color:rgba(66,153,225,0.5)}
+.feels-card.lv-cold-warn{background:linear-gradient(135deg,rgba(49,130,206,0.28),rgba(49,130,206,0.1));border-color:rgba(49,130,206,0.6)}
+.feels-card.lv-cold-danger{background:linear-gradient(135deg,rgba(26,54,93,0.55),rgba(26,54,93,0.2));border-color:rgba(144,205,244,0.5)}
+.feels-card.lv-comfort{background:linear-gradient(135deg,rgba(104,211,145,0.12),rgba(104,211,145,0.03));border-color:rgba(104,211,145,0.25)}
+.feels-card.lv-cold-none .fc-temp{color:#5bb98c}
+.feels-card.lv-cold-attn .fc-temp,.feels-card.lv-cold-caution .fc-temp{color:#90cdf4}
+.feels-card.lv-cold-warn .fc-temp{color:#63b3ed}.feels-card.lv-cold-danger .fc-temp{color:#bee3f8}
+.feels-card.lv-cold-none .fc-badge{background:rgba(91,185,140,0.16);color:#9ae6b4}.feels-card.lv-cold-none .dot{background:#5bb98c}
+.feels-card.lv-cold-attn .fc-badge,.feels-card.lv-cold-caution .fc-badge,.feels-card.lv-cold-warn .fc-badge,.feels-card.lv-cold-danger .fc-badge{background:rgba(99,179,237,0.18);color:#bee3f8}
+.feels-card.lv-cold-attn .dot,.feels-card.lv-cold-caution .dot,.feels-card.lv-cold-warn .dot,.feels-card.lv-cold-danger .dot{background:#63b3ed}
+.feels-card.lv-comfort .fc-temp{color:#68d391}
+.feels-card.lv-comfort .fc-badge{background:rgba(104,211,145,0.16);color:#9ae6b4}.feels-card.lv-comfort .dot{background:#68d391}
 .heat-input-card{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:14px;padding:16px 15px;margin-bottom:14px}
 .heat-irow{margin-bottom:16px}
 .heat-irow:last-child{margin-bottom:0}
@@ -1959,7 +1980,7 @@ const PLEDGE_ITEM = {
 // ══════════════════════════════════════
 //  상태 & 헬퍼
 // ══════════════════════════════════════
-let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'m',gearOpen:false,heatTemp:32,heatHum:60};
+let state={step:0,industry:null,workType:null,isNR:false,checked:{},workerName:"",team:"",previewUrl:null,tab:0,lang:'ko',fontSize:'m',gearOpen:false,heatTemp:32,heatHum:60,coldTemp:-5,coldWind:10};
 /* ===== 점검이력 (이 기기에 저장) ===== */
 var HIST_KEY='_inspHistory';
 var histView='list', histSelDay=null, histMonth=null, histDelId=null;
@@ -2372,7 +2393,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       <div class="heat-input-card">
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatTemp(-0.1)" aria-label="-0.1">−</button><span id="heat-temp-val">${fmtTemp(s.heatTemp)}</span><span class="u">°C</span><button type="button" class="heat-fine" onclick="nudgeHeatTemp(0.1)" aria-label="+0.1">+</button></span></div>
-          <input type="range" class="heat-slider" id="heat-temp" min="-10" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
+          <input type="range" class="heat-slider" id="heat-temp" min="15" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
         </div>
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatHum(-0.1)" aria-label="-0.1">−</button><span id="heat-hum-val">${fmtTemp(s.heatHum)}</span><span class="u">%</span><button type="button" class="heat-fine" onclick="nudgeHeatHum(0.1)" aria-label="+0.1">+</button></span></div>
@@ -2400,6 +2421,44 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·습도 기반 기상청 여름철 체감온도 식으로 계산하며, 실제 현장값과 다를 수 있습니다. 법적 판단은 기상청 <b>폭염영향예보</b>와 현장 <b>온·습도(WBGT) 측정값</b>을 기준으로 하세요. 단계 기준: 관심 31℃ / 주의 33℃ / 경고 35℃ / 위험 38℃ 이상.':'※ <b>Estimate for reference only.</b> Computed from the KMA summer heat-index formula; on-site values may differ. Use the KMA heat advisory and measured WBGT for legal determinations. Levels: Attention 31 / Caution 33 / Warning 35 / Danger 38℃+.'}</div>
     </div>`;
     setTimeout(updateHeatIndex,0);
+  }
+  else if(s.step===8){
+    const ko=s.lang==='ko';
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🥶 ${ko?'오늘의 한랭 체감온도':"Today's Wind Chill"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
+    <div class="heat-wrap heat-cold">
+      <div class="heat-intro cold">${ko?'기온과 풍속을 조절하면 <b>체감온도</b>와 <b>한랭 위험 단계</b>, 단계별 조치사항을 즉시 보여드립니다. 겨울철 옥외작업 시 <b>한파안전 5대 기본수칙</b>(따뜻한 옷·쉼터·물·작업시간 조정·119)을 준수하세요.':'Adjust temperature & wind to see the <b>wind chill</b>, <b>cold-risk level</b>, and required actions. Follow the 5 cold-safety basics for winter outdoor work.'}<div style="margin-top:8px;font-size:0.85em;color:rgba(255,255,255,0.45)">✽ ${ko?'숫자 옆 <b style="color:rgba(255,255,255,0.7)">− +</b> 버튼으로 기온·풍속을 <b style="color:rgba(255,255,255,0.7)">0.1 단위</b>로 정밀 조절할 수 있습니다.':' Use <b style="color:rgba(255,255,255,0.7)">− +</b> to fine-tune by <b style="color:rgba(255,255,255,0.7)">0.1 steps</b>.'}</div></div>
+
+      <div class="heat-input-card">
+        <div class="heat-irow">
+          <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeColdTemp(-0.1)" aria-label="-0.1">−</button><span id="cold-temp-val">${fmtTemp(s.coldTemp)}</span><span class="u">°C</span><button type="button" class="heat-fine" onclick="nudgeColdTemp(0.1)" aria-label="+0.1">+</button></span></div>
+          <input type="range" class="heat-slider cold" id="cold-temp" min="-30" max="10" step="1" value="${Math.round(s.coldTemp)}" oninput="onColdTempSlider()">
+        </div>
+        <div class="heat-irow">
+          <div class="heat-ilabel"><span class="nm">💨 ${ko?'풍속':'Wind'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeColdWind(-0.1)" aria-label="-0.1">−</button><span id="cold-wind-val">${fmtTemp(s.coldWind)}</span><span class="u">km/h</span><button type="button" class="heat-fine" onclick="nudgeColdWind(0.1)" aria-label="+0.1">+</button></span></div>
+          <input type="range" class="heat-slider wind" id="cold-wind" min="0" max="60" step="1" value="${Math.round(s.coldWind)}" oninput="onColdWindSlider()">
+        </div>
+      </div>
+
+      <div class="heat-result" id="cold-result">
+        <div class="rlabel">${ko?'체감온도':'Wind chill'}</div>
+        <div class="rval"><span id="cold-val">--</span><span class="u">°C</span></div>
+        <div class="heat-badge" id="cold-badge">--</div>
+        <div class="heat-airtemp" id="cold-airtemp"></div>
+      </div>
+
+      <div class="heat-gauge">
+        <div class="heat-gauge-bar cold"><div class="heat-gauge-mark" id="cold-mark" style="left:0%"></div></div>
+        <div class="heat-gauge-ticks"><span>4</span><span>0</span><span>-10</span><span>-18℃</span></div>
+      </div>
+
+      <div class="heat-actions">
+        <div class="heat-actions-h"><span class="dot" id="cold-act-dot"></span><span id="cold-act-h">${ko?'단계별 조치사항':'Actions by level'}</span></div>
+        <ul class="heat-act-list" id="cold-act-list"></ul>
+      </div>
+
+      <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·풍속 기반 체감온도(Wind Chill) 식으로 계산하며, 실제 현장값과 다를 수 있습니다. <b>한파특보(주의보·경보)는 기상청 발표를 확인하세요.</b> 단계 기준(체감온도): 관심 4℃ / 주의 0℃ / 경고 -10℃ / 위험 -18℃ 이하.':'※ <b>Estimate for reference only.</b> Wind-chill formula based on temp & wind; on-site values may differ. <b>Check KMA for official cold-wave alerts.</b> Levels (wind chill): Attention 4 / Caution 0 / Warning -10 / Danger -18℃ or below.'}</div>
+    </div>`;
+    setTimeout(updateColdIndex,0);
   }
 }
 
@@ -2502,6 +2561,14 @@ function _adminClose(){
   const ov=document.getElementById('admin-overlay'); if(ov) ov.remove();
   const dash=document.getElementById('admin-dash'); if(dash) dash.remove();
 }
+// 계절 표시 강제전환 (관리자 전용)
+function _setSeasonMode(m){
+  seasonMode=m;
+  try{ localStorage.setItem('_seasonMode', m); }catch(e){}
+  // 대시보드 갱신 (버튼 활성 상태 반영)
+  const cur=document.getElementById('admin-dash');
+  if(cur && window._lastAdminWs!==undefined) cur.innerHTML=_buildAdminDash(window._lastAdminWs);
+}
 function _toggleAdminDays(){
   const d7=document.getElementById('adminDay7');
   const dAll=document.getElementById('adminDayAll');
@@ -2521,6 +2588,7 @@ async function _showAdminDash(){
   dash.id = 'admin-dash';
   dash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#0d1117;z-index:9999;overflow-y:auto;font-family:inherit';
   dash.innerHTML = _buildAdminDash(null);  // 로딩 상태로 먼저 표시
+  window._lastAdminWs = null;
   document.body.appendChild(dash);
   // 2) 전체 통계 비동기 로드
   let ws = null;
@@ -2528,6 +2596,7 @@ async function _showAdminDash(){
     const r = await fetch(GEMINI_URL+'/admin-stats', { headers:{'X-Admin-Token':'safety-admin-2024'} });
     if(r.ok) ws = await r.json();
   } catch(e) {}
+  window._lastAdminWs = ws;
   // 3) 대시보드가 아직 열려 있으면 실제 수치로 갱신
   const cur = document.getElementById('admin-dash');
   if(cur) cur.innerHTML = _buildAdminDash(ws);
@@ -2652,6 +2721,20 @@ function _buildAdminDash(ws){
           </div>
           <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px">Groq 실시간 기준 · 마지막 호출 ${at}</div>`;
         })()}
+      </div>
+      <!-- 계절 표시 강제전환 (관리자 전용) -->
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:4px">🔄 홈 카드 계절 표시</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:10px">작업자 화면은 기온 자동 전환. 시연·점검용으로만 강제 전환하세요.</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          ${['auto','hot','cold'].map(m=>{
+            const labels={auto:'🌗 자동',hot:'🌡️ 온열',cold:'🥶 한랭'};
+            const on=seasonMode===m;
+            const onColor=m==='cold'?'#63b3ed':(m==='hot'?'#e8821e':'#ffd700');
+            return `<button onclick="_setSeasonMode('${m}')" style="background:${on?onColor+'22':'rgba(255,255,255,0.04)'};border:1px solid ${on?onColor+'88':'rgba(255,255,255,0.1)'};color:${on?onColor:'rgba(255,255,255,0.6)'};font-size:12px;font-weight:700;padding:9px 6px;border-radius:10px;font-family:inherit;cursor:pointer">${labels[m]}</button>`;
+          }).join('')}
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px">현재: ${seasonMode==='auto'?'자동 (기온 기준)':seasonMode==='hot'?'온열 고정':'한랭 고정'}</div>
       </div>
       <!-- 체감온도 계산기 사용 (전체) -->
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 18px;margin-bottom:12px">
@@ -2819,6 +2902,46 @@ function computeHeatIndex(ta, rh){
   const tw = _wetBulb(ta, rh);
   return -0.2442 + 0.55399*tw + 0.45535*ta - 0.0022*tw*tw + 0.00278*tw*ta + 3.0;
 }
+// ── 한랭 체감온도 (Wind Chill, 캐나다·기상청 표준) ──
+// WC = 13.12 + 0.6215T - 11.37V^0.16 + 0.3965TV^0.16  (T=℃, V=km/h)
+// 기온 10℃ 초과 또는 풍속 4.8km/h 미만이면 기온 그대로 반환
+function computeWindChill(ta, ws){
+  if(ta>10 || ws<4.8) return ta;
+  return 13.12 + 0.6215*ta - 11.37*Math.pow(ws,0.16) + 0.3965*ta*Math.pow(ws,0.16);
+}
+// ── 한랭 단계 (기상청 한파특보 기준 - 기온 기반) ──
+// 한랭 위험도 단계 — 체감온도(Wind Chill) 기준, 온열 계산기와 대칭(정상/관심/주의/경고/위험)
+// 한파특보(주의보/경보)는 기상청 예보 기준이라 앱이 판정하지 않음 → 자체 위험도로 안내
+function coldStage(wc, ko){
+  if(wc<=-18) return {key:'danger', name:ko?'위험':'Danger', color:'#1a5fb4',
+    acts: ko?['추운 시간대(새벽) 옥외작업을 <b>중지하거나 최소화</b>하세요.','한랭질환 민감군(고령자·신규배치자·기저질환자)은 추운 작업에서 제외하세요.','30분~1시간마다 따뜻한 쉼터에서 휴식을 부여하세요.','동료가 떨거나 정신이 흐려지면 즉시 119에 신고하고 따뜻한 곳으로 옮기세요.']
+            :['<b>Stop or minimize</b> outdoor work during cold hours (dawn).','Exclude vulnerable workers (elderly, newly assigned, chronic illness).','Provide rest in a warm shelter every 30–60 minutes.','If a coworker shivers or seems confused, call 119 and move them to warmth.'],
+    legal: ko?'체감온도 -18℃ 이하는 동상·저체온증 위험이 큽니다. 정확한 한파특보는 기상청 발표를 확인하세요.':'Wind chill ≤ -18℃ poses high frostbite/hypothermia risk. Check KMA for official cold-wave alerts.'};
+  if(wc<=-10) return {key:'warn', name:ko?'경고':'Warning', color:'#1c71d8',
+    acts: ko?['작업시간대를 조정하거나 <b>작업시간을 단축</b>하세요.','따뜻한 옷·방한모·장갑을 착용하고 보온·방수 신발을 신으세요.','작업장 가까운 곳에 따뜻한 쉼터를 설치하고 휴식을 부여하세요.','깨끗하고 따뜻한 물을 충분히 제공하세요.']
+            :['Adjust or <b>shorten work hours</b>.','Wear warm clothing, hat, gloves and insulated waterproof boots.','Set up a warm shelter near the worksite and provide rest.','Provide ample clean, warm water.'],
+    legal: ''};
+  if(wc<=0) return {key:'caution', name:ko?'주의':'Caution', color:'#3584e4',
+    acts: ko?['방한복·방한모·장갑을 착용하세요.','젖은 옷·장갑은 즉시 갈아입고, 여분의 양말을 준비하세요.','따뜻한 쉼터와 온수를 제공하세요.','빙판길 미끄러짐 사고에 주의하고 미끄럼 방지 안전화를 착용하세요.']
+            :['Wear cold-weather clothing, hat and gloves.','Change wet clothes/gloves immediately; keep spare socks.','Provide a warm shelter and hot water.','Beware of slips on ice; wear anti-slip safety shoes.'],
+    legal: ''};
+  if(wc<=4) return {key:'attn', name:ko?'관심':'Attention', color:'#62a0ea',
+    acts: ko?['한파안전 5대 기본수칙(따뜻한 옷·쉼터·물·시간조정·119)을 확인하세요.','보온이 잘 되는 작업복을 착용하세요.','기온이 더 떨어질 것에 대비해 휴식 계획을 점검하세요.']
+            :['Check the 5 cold-safety basics (warm clothes, shelter, water, schedule, 119).','Wear well-insulated work clothing.','Review rest plans in case temperatures drop further.'],
+    legal: ''};
+  return {key:'none', name:ko?'정상':'Normal', color:'#5bb98c',
+    acts: ko?['현재 한랭 위험 단계 미만입니다.','안전수칙을 준수하여 안전하게 작업하세요.','기온이 떨어지면 다시 확인하세요.']
+            :['Below the cold-risk threshold.','Follow safety rules and work safely.','Re-check as temperatures drop.'],
+    legal: ''};
+}
+const COLD_SUMMARY={
+  danger:  {ko:'추운 새벽엔 야외작업을 멈추세요. 몸이 떨리거나 감각이 없으면 바로 쉬세요.', en:'Stop work in cold hours. Rest immediately if shivering or numb.'},
+  warn:    {ko:'작업 시간을 줄이고, 따뜻하게 입고 자주 쉬세요.', en:'Shorten work, dress warm, rest often.'},
+  caution: {ko:'춥습니다. 방한복을 갖춰 입고 빙판길을 조심하세요.', en:'Cold. Wear warm gear and watch for ice.'},
+  attn:    {ko:'쌀쌀해요. 따뜻하게 입고 한파 기본수칙을 확인하세요.', en:'Chilly. Dress warm and check cold-safety basics.'},
+  none:    {ko:'안전수칙을 준수하여 안전하게 작업하세요.', en:'Follow safety rules and work safely.'}
+};
+const COLD_LVCLS={none:'lv-cold-none',attn:'lv-cold-attn',caution:'lv-cold-caution',warn:'lv-cold-warn',danger:'lv-cold-danger'};
 // ===== 홈 체감온도 상태창 =====
 const FEELS_SUMMARY={
   none:    {ko:'체감온도는 괜찮아요. 물과 휴식 챙기며 안전하게 작업하세요.', en:'Feels-like is fine. Stay safe with water and rest.'},
@@ -2828,44 +2951,90 @@ const FEELS_SUMMARY={
   danger:  {ko:'야외작업을 멈추세요. 쉬면서 몸 상태를 살피세요.', en:'Stop outdoor work. Rest and watch how you feel.'}
 };
 const FEELS_LVCLS={none:'lv-none',attn:'lv-attn',caution:'lv-caution',warn:'lv-warn',danger:'lv-danger'};
-let feelsData={hi:null,ta:null,rh:null,loc:null,status:'loading'}, feelsFetched=false;
+let feelsData={hi:null,ta:null,rh:null,ws:null,loc:null,status:'loading'}, feelsFetched=false;
+// 계절 표시 모드: 'auto'(기온 자동) | 'hot'(온열 강제) | 'cold'(한랭 강제) — 관리자 전용
+let seasonMode = localStorage.getItem('_seasonMode') || 'auto';
 
 function renderFeelsCard(){
   const wrap=document.getElementById('feels-card-wrap');
   if(!wrap) return;
   const ko=state.lang==='ko';
   if(feelsData.status==='loading'){
-    wrap.innerHTML=`<div class="feels-card" style="cursor:default"><div class="fc-loading">📍 ${ko?'체감온도 확인 중…':'Checking feels-like temp…'}</div></div>`;
+    wrap.innerHTML=`<div class="feels-card" style="cursor:default"><div class="fc-loading">📍 ${ko?'날씨 확인 중…':'Checking weather…'}</div></div>`;
     return;
   }
-  const hi=feelsData.hi, st=heatStage(hi, ko);
-  const cls=FEELS_LVCLS[st.key]||'lv-none';
-  const sm=FEELS_SUMMARY[st.key]||FEELS_SUMMARY.none;
-  const summary=ko?sm.ko:sm.en;
-  // 지역명이 아직 병렬 도착 전이면 '확인 중…'으로 표시(날씨/단계는 이미 보임)
+  const ta=feelsData.ta, rh=feelsData.rh, ws=feelsData.ws;
   const _pending=(ko?'현재 위치':'Current location');
   const locTxt=feelsData.loc
     ? (feelsData.loc===_pending ? (ko?'위치 확인 중…':'Locating…') : feelsData.loc)
     : (ko?'서울 (기본)':'Seoul (default)');
-  const ta=feelsData.ta, rh=feelsData.rh;
-  const nowHtml=(ta!=null&&rh!=null)
-    ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'습도':'RH'} <b>${Math.round(rh)}%</b></div></div>`
-    : '';
-  wrap.innerHTML=
-    `<button class="feels-card ${cls}" onclick="openHeatFromHome()">`
-    +`<div class="fc-head">`
-      +`<div class="fc-temp-col"><div class="fc-label">${ko?'체감온도':'Feels-like'}</div><div class="fc-temp">${hi.toFixed(1)}°</div></div>`
-      +`<div class="fc-badge"><span class="dot"></span>${st.name}</div>`
-      +nowHtml
-    +`</div>`
-    +`<div class="fc-summary">${summary}</div>`
-    +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 체감온도 계산기 ›':'Reference · heat calc ›'}</span></div>`
-    +`</button>`;
+
+  // 계절 판단: 관리자 강제모드(seasonMode) 우선, 아니면 기온 자동
+  let mode = seasonMode;
+  if(mode==='auto'){
+    if(ta!=null && ta>=25) mode='hot';
+    else if(ta!=null && ta<=10) mode='cold';
+    else mode='comfort';
+  }
+
+  if(mode==='cold'){
+    // ── 한랭 카드 ──
+    const wsVal=(ws!=null?ws:0);
+    const wc=computeWindChill(ta!=null?ta:0, wsVal);
+    const st=coldStage(wc, ko);
+    const cls=COLD_LVCLS[st.key]||'lv-cold-none';
+    const sm=COLD_SUMMARY[st.key]||COLD_SUMMARY.none;
+    const summary=ko?sm.ko:sm.en;
+    const nowHtml=(ta!=null)
+      ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'풍속':'Wind'} <b>${Math.round(wsVal)}km/h</b></div></div>`
+      : '';
+    wrap.innerHTML=
+      `<button class="feels-card ${cls}" onclick="openFeelsCalc()">`
+      +`<div class="fc-head">`
+        +`<div class="fc-temp-col"><div class="fc-label">${ko?'한랭 체감온도':'Wind chill'}</div><div class="fc-temp">${wc.toFixed(1)}°</div></div>`
+        +`<div class="fc-badge"><span class="dot"></span>${st.name}</div>`
+        +nowHtml
+      +`</div>`
+      +`<div class="fc-summary">${summary}</div>`
+      +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 한랭 계산기 ›':'Reference · cold calc ›'}</span></div>`
+      +`</button>`;
+  } else if(mode==='comfort'){
+    // ── 쾌적 카드 ──
+    const nowHtml=(ta!=null&&rh!=null)
+      ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'습도':'RH'} <b>${Math.round(rh)}%</b></div></div>`
+      : '';
+    wrap.innerHTML=
+      `<button class="feels-card lv-comfort" onclick="openFeelsCalc()">`
+      +`<div class="fc-head">`
+        +`<div class="fc-temp-col"><div class="fc-label">${ko?'현재 기온':'Current temp'}</div><div class="fc-temp">${ta!=null?ta.toFixed(1):'--'}°</div></div>`
+        +`<div class="fc-badge"><span class="dot"></span>${ko?'정상':'Normal'}</div>`
+        +nowHtml
+      +`</div>`
+      +`<div class="fc-summary">${ko?'안전수칙을 준수하여 안전하게 작업하세요.':'Follow safety rules and work safely.'}</div>`
+      +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 계산기 ›':'Reference · calc ›'}</span></div>`
+      +`</button>`;
+  } else {
+    // ── 온열 카드 (기존) ──
+    const hi=feelsData.hi, st=heatStage(hi, ko);
+    const cls=FEELS_LVCLS[st.key]||'lv-none';
+    const sm=FEELS_SUMMARY[st.key]||FEELS_SUMMARY.none;
+    const summary=ko?sm.ko:sm.en;
+    const nowHtml=(ta!=null&&rh!=null)
+      ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'습도':'RH'} <b>${Math.round(rh)}%</b></div></div>`
+      : '';
+    wrap.innerHTML=
+      `<button class="feels-card ${cls}" onclick="openFeelsCalc()">`
+      +`<div class="fc-head">`
+        +`<div class="fc-temp-col"><div class="fc-label">${ko?'체감온도':'Feels-like'}</div><div class="fc-temp">${hi.toFixed(1)}°</div></div>`
+        +`<div class="fc-badge"><span class="dot"></span>${st.name}</div>`
+        +nowHtml
+      +`</div>`
+      +`<div class="fc-summary">${summary}</div>`
+      +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 체감온도 계산기 ›':'Reference · heat calc ›'}</span></div>`
+      +`</button>`;
+  }
 }
-function openHeatFromHome(){
-  // 현재 위치 기온·습도를 계산기에 미리 채워서 진입
-  if(feelsData.ta!=null) state.heatTemp=Math.round(feelsData.ta*10)/10;
-  if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh*10)/10;
+function openFeelsCalc(){
   // 계산기 사용 집계 (로컬 + Worker 합산, 실패해도 무관)
   try{
     const today=new Date().toISOString().slice(0,10);
@@ -2874,7 +3043,29 @@ function openHeatFromHome(){
     localStorage.setItem(ck, parseInt(localStorage.getItem(ck)||'0')+1);
     fetch(GEMINI_URL+'/track-calc', {method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
   }catch(e){}
-  go(7);
+  // 계절 판단 (홈 카드와 동일 로직)
+  const ta=feelsData.ta;
+  let mode=seasonMode;
+  if(mode==='auto'){
+    if(ta!=null && ta>=25) mode='hot';
+    else if(ta!=null && ta<=10) mode='cold';
+    else mode='comfort';
+  }
+  // 쾌적 구간(10~25℃)은 기온 15℃ 기준으로 가까운 계산기로 연결
+  if(mode==='comfort'){
+    mode=(ta!=null && ta<15) ? 'cold' : 'hot';
+  }
+  if(mode==='cold'){
+    // 한랭 계산기로 진입 (현재 기온·풍속 미리 채움)
+    if(feelsData.ta!=null) state.coldTemp=Math.round(feelsData.ta*10)/10;
+    if(feelsData.ws!=null) state.coldWind=Math.round(feelsData.ws*10)/10;
+    go(8);
+  } else {
+    // 온열 계산기로 진입
+    if(feelsData.ta!=null) state.heatTemp=Math.max(15,Math.min(45,Math.round(feelsData.ta*10)/10));
+    if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh*10)/10;
+    go(7);
+  }
 }
 const REGION_ABBR={'서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천','광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종','경기도':'경기','강원도':'강원','강원특별자치도':'강원','충청북도':'충북','충청남도':'충남','전라북도':'전북','전북특별자치도':'전북','전라남도':'전남','경상북도':'경북','경상남도':'경남','제주특별자치도':'제주','제주도':'제주'};
 function shortRegion(s){ if(!s) return ''; if(REGION_ABBR[s]) return REGION_ABBR[s]; return s.replace(/특별자치도$|특별자치시$|특별시$|광역시$|자치도$|도$/,''); }
@@ -2907,15 +3098,15 @@ async function feelsReverseGeo(lat,lon){
 }
 async function feelsWeather(lat,lon,label){
   try{
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature`);
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`);
     const d=await r.json();
-    const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m;
+    const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m, ws=d.current.wind_speed_10m;
     const hi=computeHeatIndex(ta, rh);   // 계산기와 동일한 식으로 통일
     // label이 null이면 지역명은 아직 도착 전 → 기존 loc 유지(병렬 도착 시 갱신됨)
     const loc = (label!=null) ? label : (feelsData.loc || (state.lang==='ko'?'현재 위치':'Current location'));
-    feelsData={hi:hi, ta:ta, rh:rh, loc:loc, status:'ok'};
+    feelsData={hi:hi, ta:ta, rh:rh, ws:ws, loc:loc, status:'ok'};
   }catch(e){
-    feelsData={hi:(feelsData.hi!=null?feelsData.hi:25), ta:feelsData.ta, rh:feelsData.rh,
+    feelsData={hi:(feelsData.hi!=null?feelsData.hi:25), ta:feelsData.ta, rh:feelsData.rh, ws:feelsData.ws,
                loc:(state.lang==='ko'?'날씨 연결 안됨':'Weather unavailable'), status:'ok'};
   }
   renderFeelsCard();
@@ -2973,7 +3164,7 @@ function fmtTemp(v){ const n=Math.round(v*10)/10; return Number.isInteger(n)? St
 // 온도 미세조정(±0.1): state.heatTemp를 단일 출처로 증감 → 슬라이더 step 제약 우회
 function nudgeHeatTemp(delta){
   let v=Math.round((state.heatTemp+delta)*10)/10;
-  v=Math.max(-10,Math.min(45,v));
+  v=Math.max(15,Math.min(45,v));
   state.heatTemp=v;
   const tEl=document.getElementById('heat-temp'); if(tEl) tEl.value=Math.round(v); // 슬라이더 thumb 위치도 대략 맞춤
   updateHeatIndex();
@@ -3040,6 +3231,70 @@ function updateHeatIndex(){
   document.getElementById('heat-act-list').innerHTML=lis;
 }
 
+// ── 한랭 계산기 ──
+function nudgeColdTemp(delta){
+  let v=Math.round((state.coldTemp+delta)*10)/10;
+  v=Math.max(-30,Math.min(10,v));
+  state.coldTemp=v;
+  const el=document.getElementById('cold-temp'); if(el) el.value=Math.round(v);
+  updateColdIndex();
+}
+function nudgeColdWind(delta){
+  let v=Math.round((state.coldWind+delta)*10)/10;
+  v=Math.max(0,Math.min(60,v));
+  state.coldWind=v;
+  const el=document.getElementById('cold-wind'); if(el) el.value=Math.round(v);
+  updateColdIndex();
+}
+function onColdTempSlider(){
+  const el=document.getElementById('cold-temp'); if(!el) return;
+  state.coldTemp=parseFloat(el.value);
+  updateColdIndex();
+}
+function onColdWindSlider(){
+  const el=document.getElementById('cold-wind'); if(!el) return;
+  state.coldWind=parseFloat(el.value);
+  updateColdIndex();
+}
+function updateColdIndex(){
+  const tEl=document.getElementById('cold-temp');
+  const wEl=document.getElementById('cold-wind');
+  if(!tEl||!wEl) return;
+  const ta=Math.round(state.coldTemp*10)/10;
+  const ws=Math.round(state.coldWind*10)/10;
+  const ko=state.lang==='ko';
+  document.getElementById('cold-temp-val').textContent=fmtTemp(ta);
+  document.getElementById('cold-wind-val').textContent=fmtTemp(ws);
+
+  const wc=computeWindChill(ta, ws);
+  const wcR=Math.round(wc*10)/10;
+  const st=coldStage(wc, ko);
+
+  document.getElementById('cold-val').textContent=wcR.toFixed(1);
+  const airTxt=(ko?'기온 ':'Air ')+fmtTemp(ta)+'°C · '+(ko?'풍속 ':'Wind ')+ws+'km/h';
+  document.getElementById('cold-airtemp').textContent=airTxt;
+
+  const panel=document.getElementById('cold-result');
+  panel.style.background=st.color+'1f';
+  panel.style.borderColor=st.color+'66';
+  panel.style.color=st.color;
+  const badge=document.getElementById('cold-badge');
+  badge.textContent=st.name;
+  badge.style.background=st.color;
+  badge.style.color='#fff';
+
+  // 게이지: 체감온도 10℃~-25℃ 구간을 0~100%로 매핑
+  const pct=Math.max(0,Math.min(100,((10-wc)/(10-(-25)))*100));
+  document.getElementById('cold-mark').style.left=pct+'%';
+
+  document.getElementById('cold-act-dot').style.background=st.color;
+  document.getElementById('cold-act-h').textContent=(ko?'단계별 조치 — ':'Actions — ')+st.name;
+
+  let lis=st.acts.map(a=>'<li>'+a+'</li>').join('');
+  if(st.legal) lis+='<li class="legal">⚖️ '+st.legal+'</li>';
+  document.getElementById('cold-act-list').innerHTML=lis;
+}
+
 // ═══════════════════ GEMINI AI FEATURES ═══════════════════
 // Cloudflare Workers를 통한 안전한 Gemini API 호출
 // 사용자가 Cloudflare 셋업 완료 후 아래 URL을 실제 Worker URL로 교체
@@ -3049,7 +3304,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v52'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v57'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
