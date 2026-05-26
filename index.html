@@ -3070,14 +3070,27 @@ async function _srcWttr(lat,lon){
   return {ta:ta, rh:(isNaN(rh)?null:rh), ws:(isNaN(ws)?null:ws)};
 }
 
+// Worker 경유 소스: 우리 Cloudflare Worker가 서버에서 Open-Meteo를 대신 호출 → 통신사 IP 차단 우회
+// (앱이 외부 날씨 API에 직접 못 붙는 망에서도, AI처럼 Worker는 잘 작동하므로 가장 안정적)
+async function _srcWorker(lat,lon){
+  const r=await _fetchTimeout(GEMINI_URL+'/weather?lat='+encodeURIComponent(lat)+'&lon='+encodeURIComponent(lon), 6000);
+  if(!r.ok) throw new Error('worker '+r.status);
+  const d=await r.json();
+  if(d.error || d.ta==null) throw new Error('worker '+(d.error||'empty'));
+  return {ta:d.ta, rh:d.rh, ws:d.ws};
+}
+
 async function feelsWeather(lat,lon,label){
   const myseq=++_feelsSeq;
   let w=null;
-  // Open-Meteo 먼저, 실패하면 wttr.in으로 폴백 (한 소스가 통신사에서 막혀도 다른 소스로 표시)
-  try{ w=await _srcOpenMeteo(lat,lon); }
-  catch(e1){
-    try{ w=await _srcWttr(lat,lon); }
-    catch(e2){ w=null; }
+  // 폴백 순서: ① Worker 경유(통신사 차단 우회, 가장 안정적) → ② Open-Meteo 직접 → ③ wttr.in
+  try{ w=await _srcWorker(lat,lon); }
+  catch(e0){
+    try{ w=await _srcOpenMeteo(lat,lon); }
+    catch(e1){
+      try{ w=await _srcWttr(lat,lon); }
+      catch(e2){ w=null; }
+    }
   }
   if(myseq!==_feelsSeq) return;   // 더 최신 요청이 이미 진행됨 → 이 응답은 버림
   if(w){
@@ -3086,7 +3099,7 @@ async function feelsWeather(lat,lon,label){
     const loc = (label!=null) ? label : (feelsData.loc || (state.lang==='ko'?'현재 위치':'Current location'));
     feelsData={hi:hi, ta:w.ta, rh:w.rh, ws:w.ws, loc:loc, status:'ok'};
   }else{
-    // 두 소스 모두 실패
+    // 세 소스 모두 실패
     feelsData={hi:(feelsData.hi!=null?feelsData.hi:25), ta:feelsData.ta, rh:feelsData.rh, ws:feelsData.ws,
                loc:(feelsData.loc && feelsData.ta!=null)?feelsData.loc:(state.lang==='ko'?'날씨 연결 안됨':'Weather unavailable'), status:'ok'};
   }
@@ -3288,7 +3301,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v62'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v63'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
