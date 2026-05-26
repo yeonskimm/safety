@@ -259,7 +259,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .gear-popup-btn:nth-child(3) .gpc{font-size:19px}
 
 /* ── 홈 체감온도 상태창 ── */
-.feels-card{width:100%;max-width:360px;margin:2px 0 12px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:13px;padding:9px 14px 8px;text-align:left;cursor:pointer;transition:.18s;display:block}
+.feels-card{width:100%;max-width:360px;min-height:104px;margin:2px 0 12px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:13px;padding:9px 14px 8px;text-align:left;cursor:pointer;transition:.18s;display:block}
 .feels-card:active{transform:scale(0.985)}
 .fc-head{display:flex;align-items:center;gap:10px}
 .fc-temp-col{min-width:0;flex-shrink:0}
@@ -271,7 +271,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .fc-now b{color:var(--txt-1);font-weight:700}
 .fc-chev{color:var(--txt-3);font-size:16px;align-self:center;flex-shrink:0}
 .fc-summary{font-size:12px;line-height:1.4;color:var(--txt-1);margin-top:7px;padding-top:7px;border-top:1px solid var(--bdr-dim)}
-.fc-loc{font-size:10px;color:var(--txt-3);margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fc-loc{font-size:10px;color:var(--txt-3);margin-top:auto;padding-top:6px;display:flex;align-items:center;justify-content:space-between;gap:6px}
 .fc-loc>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .fc-calc-hint{color:var(--gold-d);font-weight:600;white-space:nowrap;flex-shrink:0}
 .fc-loading{font-size:13px;color:var(--txt-3);padding:4px 2px}
@@ -284,7 +284,8 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .feels-card.lv-caution .fc-badge{background:rgba(232,130,30,0.16);color:#f0a458}.feels-card.lv-caution .dot{background:#e8821e}
 .feels-card.lv-warn .fc-temp{color:#e0531f}
 .feels-card.lv-warn .fc-badge{background:rgba(224,83,31,0.18);color:#f1764a}.feels-card.lv-warn .dot{background:#e0531f}
-.feels-card.lv-danger{border-color:rgba(211,59,59,0.5);box-shadow:0 0 0 1px rgba(211,59,59,0.16),0 0 22px rgba(211,59,59,0.1)}
+.feels-card.lv-danger{background:linear-gradient(135deg,rgba(211,59,59,0.16),rgba(211,59,59,0.04));border-color:rgba(211,59,59,0.7);box-shadow:0 0 0 1px rgba(211,59,59,0.3),0 0 28px rgba(211,59,59,0.28);animation:fcDangerPulse 2s ease-in-out infinite}
+@keyframes fcDangerPulse{0%,100%{box-shadow:0 0 0 1px rgba(211,59,59,0.3),0 0 22px rgba(211,59,59,0.2)}50%{box-shadow:0 0 0 1px rgba(211,59,59,0.45),0 0 34px rgba(211,59,59,0.4)}}
 .feels-card.lv-danger .fc-temp{color:#d33b3b}
 .feels-card.lv-danger .fc-badge{background:rgba(211,59,59,0.18);color:#f06b6b}.feels-card.lv-danger .dot{background:#d33b3b}
 
@@ -380,20 +381,21 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .heat-slider.wind{background:linear-gradient(90deg,#2d3748,#90cdf4)}
 .heat-gauge-bar.cold{background:linear-gradient(90deg,#63b3ed,#4299e1,#3182ce,#1a365d)}
 /* 홈 한랭 카드 */
-.feels-card.lv-cold-none{background:linear-gradient(135deg,rgba(91,185,140,0.14),rgba(91,185,140,0.04));border-color:rgba(91,185,140,0.3)}
+.feels-card.lv-cold-none{background:var(--bg-1);border-color:var(--bdr-dim)}
 .feels-card.lv-cold-attn{background:linear-gradient(135deg,rgba(99,179,237,0.18),rgba(99,179,237,0.05));border-color:rgba(99,179,237,0.4)}
 .feels-card.lv-cold-caution{background:linear-gradient(135deg,rgba(66,153,225,0.22),rgba(66,153,225,0.07));border-color:rgba(66,153,225,0.5)}
 .feels-card.lv-cold-warn{background:linear-gradient(135deg,rgba(49,130,206,0.28),rgba(49,130,206,0.1));border-color:rgba(49,130,206,0.6)}
-.feels-card.lv-cold-danger{background:linear-gradient(135deg,rgba(26,54,93,0.55),rgba(26,54,93,0.2));border-color:rgba(144,205,244,0.5)}
-.feels-card.lv-comfort{background:linear-gradient(135deg,rgba(104,211,145,0.12),rgba(104,211,145,0.03));border-color:rgba(104,211,145,0.25)}
-.feels-card.lv-cold-none .fc-temp{color:#5bb98c}
+.feels-card.lv-cold-danger{background:linear-gradient(135deg,rgba(26,95,180,0.5),rgba(26,95,180,0.15));border-color:rgba(120,180,250,0.75);box-shadow:0 0 0 1px rgba(90,160,240,0.35),0 0 28px rgba(60,140,240,0.3);animation:fcColdDangerPulse 2s ease-in-out infinite}
+@keyframes fcColdDangerPulse{0%,100%{box-shadow:0 0 0 1px rgba(90,160,240,0.3),0 0 22px rgba(60,140,240,0.22)}50%{box-shadow:0 0 0 1px rgba(120,180,250,0.5),0 0 34px rgba(60,140,240,0.45)}}
+.feels-card.lv-comfort{background:var(--bg-1);border-color:var(--bdr-dim)}
+.feels-card.lv-cold-none .fc-temp{color:#94a3b8}
 .feels-card.lv-cold-attn .fc-temp,.feels-card.lv-cold-caution .fc-temp{color:#90cdf4}
 .feels-card.lv-cold-warn .fc-temp{color:#63b3ed}.feels-card.lv-cold-danger .fc-temp{color:#bee3f8}
-.feels-card.lv-cold-none .fc-badge{background:rgba(91,185,140,0.16);color:#9ae6b4}.feels-card.lv-cold-none .dot{background:#5bb98c}
+.feels-card.lv-cold-none .fc-badge{background:rgba(148,163,184,0.14);color:#cbd5e1}.feels-card.lv-cold-none .dot{background:#94a3b8}
 .feels-card.lv-cold-attn .fc-badge,.feels-card.lv-cold-caution .fc-badge,.feels-card.lv-cold-warn .fc-badge,.feels-card.lv-cold-danger .fc-badge{background:rgba(99,179,237,0.18);color:#bee3f8}
 .feels-card.lv-cold-attn .dot,.feels-card.lv-cold-caution .dot,.feels-card.lv-cold-warn .dot,.feels-card.lv-cold-danger .dot{background:#63b3ed}
-.feels-card.lv-comfort .fc-temp{color:#68d391}
-.feels-card.lv-comfort .fc-badge{background:rgba(104,211,145,0.16);color:#9ae6b4}.feels-card.lv-comfort .dot{background:#68d391}
+.feels-card.lv-comfort .fc-temp{color:#94a3b8}
+.feels-card.lv-comfort .fc-badge{background:rgba(148,163,184,0.14);color:#cbd5e1}.feels-card.lv-comfort .dot{background:#94a3b8}
 .heat-input-card{background:var(--bg-2);border:1px solid var(--bdr-dim);border-radius:14px;padding:16px 15px;margin-bottom:14px}
 .heat-irow{margin-bottom:16px}
 .heat-irow:last-child{margin-bottom:0}
@@ -2222,7 +2224,7 @@ function render(){
   if(s.step===0){
     app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="18" height="18" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" fill="#c9a84c" opacity="0.95"/><polyline points="32,52 45,65 68,38" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body"><div class="home-wrap">
-      <div id="feels-card-wrap"></div>
+      <div id="feels-card-wrap" style="width:100%;max-width:360px"></div>
       <div class="home-hero-icon" onclick="_adminTap()" id="home-hero-icon"><svg width="68" height="72" viewBox="0 0 100 108" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e3c86e"/><stop offset="100%" stop-color="#a87028"/></linearGradient></defs><path d="M50,4 L92,20 L92,58 C92,80 74,96 50,104 C26,96 8,80 8,58 L8,20 Z" fill="url(#sg)"/><polyline points="30,56 45,71 70,40" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="home-title">${s.lang==='ko'?'나는 오늘 안전한가?'  :'Am I Safe Today?'}</div>
       <div class="home-sub">${s.lang==='ko'?'작업 전 안전 체크리스트':'Pre-Work Safety Checklist'}</div>
@@ -2977,17 +2979,22 @@ function renderFeelsCard(){
     else mode='comfort';
   }
 
+  // 세 카드 공통: 기온·습도·풍속 셋 다 오른쪽에 표시
+  const wsVal=(ws!=null?ws:0);
+  const nowHtml=
+    `<div class="fc-now">`
+    +`<div>${ko?'기온':'Air'} <b>${ta!=null?ta.toFixed(1):'--'}°C</b></div>`
+    +`<div>${ko?'습도':'RH'} <b>${rh!=null?Math.round(rh):'--'}%</b></div>`
+    +`<div>${ko?'풍속':'Wind'} <b>${ws!=null?Math.round(wsVal):'--'}km/h</b></div>`
+    +`</div>`;
+
   if(mode==='cold'){
     // ── 한랭 카드 ──
-    const wsVal=(ws!=null?ws:0);
     const wc=computeWindChill(ta!=null?ta:0, wsVal);
     const st=coldStage(wc, ko);
     const cls=COLD_LVCLS[st.key]||'lv-cold-none';
     const sm=COLD_SUMMARY[st.key]||COLD_SUMMARY.none;
     const summary=ko?sm.ko:sm.en;
-    const nowHtml=(ta!=null)
-      ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'풍속':'Wind'} <b>${Math.round(wsVal)}km/h</b></div></div>`
-      : '';
     wrap.innerHTML=
       `<button class="feels-card ${cls}" onclick="openFeelsCalc()">`
       +`<div class="fc-head">`
@@ -2999,10 +3006,7 @@ function renderFeelsCard(){
       +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 한랭 계산기 ›':'Reference · cold calc ›'}</span></div>`
       +`</button>`;
   } else if(mode==='comfort'){
-    // ── 쾌적 카드 ──
-    const nowHtml=(ta!=null&&rh!=null)
-      ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'습도':'RH'} <b>${Math.round(rh)}%</b></div></div>`
-      : '';
+    // ── 쾌적(정상) 카드 ──
     wrap.innerHTML=
       `<button class="feels-card lv-comfort" onclick="openFeelsCalc()">`
       +`<div class="fc-head">`
@@ -3014,14 +3018,11 @@ function renderFeelsCard(){
       +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 계산기 ›':'Reference · calc ›'}</span></div>`
       +`</button>`;
   } else {
-    // ── 온열 카드 (기존) ──
+    // ── 온열 카드 ──
     const hi=feelsData.hi, st=heatStage(hi, ko);
     const cls=FEELS_LVCLS[st.key]||'lv-none';
     const sm=FEELS_SUMMARY[st.key]||FEELS_SUMMARY.none;
     const summary=ko?sm.ko:sm.en;
-    const nowHtml=(ta!=null&&rh!=null)
-      ? `<div class="fc-now"><div>${ko?'기온':'Air'} <b>${ta.toFixed(1)}°C</b></div><div>${ko?'습도':'RH'} <b>${Math.round(rh)}%</b></div></div>`
-      : '';
     wrap.innerHTML=
       `<button class="feels-card ${cls}" onclick="openFeelsCalc()">`
       +`<div class="fc-head">`
@@ -3304,7 +3305,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v57'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v58'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
