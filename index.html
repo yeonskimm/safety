@@ -2395,7 +2395,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       <div class="heat-input-card">
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">🌡️ ${ko?'기온':'Air temp'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatTemp(-0.1)" aria-label="-0.1">−</button><span id="heat-temp-val">${fmtTemp(s.heatTemp)}</span><span class="u">°C</span><button type="button" class="heat-fine" onclick="nudgeHeatTemp(0.1)" aria-label="+0.1">+</button></span></div>
-          <input type="range" class="heat-slider" id="heat-temp" min="15" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
+          <input type="range" class="heat-slider" id="heat-temp" min="10" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
         </div>
         <div class="heat-irow">
           <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatHum(-0.1)" aria-label="-0.1">−</button><span id="heat-hum-val">${fmtTemp(s.heatHum)}</span><span class="u">%</span><button type="button" class="heat-fine" onclick="nudgeHeatHum(0.1)" aria-label="+0.1">+</button></span></div>
@@ -2972,11 +2972,13 @@ function renderFeelsCard(){
     : (ko?'서울 (기본)':'Seoul (default)');
 
   // 계절 판단: 관리자 강제모드(seasonMode) 우선, 아니면 기온 자동
+  // 기온 10℃ 초과 → 온열 카드(체감온도=습도 기반), 10℃ 이하 → 한랭 카드(풍속 기반)
+  // (풍속 체감온도 공식은 10℃ 이하에서만 의미가 있어 경계를 10℃로 둠)
   let mode = seasonMode;
   if(mode==='auto'){
-    if(ta!=null && ta>=25) mode='hot';
-    else if(ta!=null && ta<=10) mode='cold';
-    else mode='comfort';
+    mode = (ta!=null && ta<=10) ? 'cold' : 'hot';
+  } else if(mode==='comfort'){
+    mode = 'hot';   // 구버전 호환: comfort 강제모드는 온열로 처리
   }
 
   // 세 카드 공통: 기온·습도·풍속 셋 다 오른쪽에 표시
@@ -3005,20 +3007,8 @@ function renderFeelsCard(){
       +`<div class="fc-summary">${summary}</div>`
       +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 한랭 계산기 ›':'Reference · cold calc ›'}</span></div>`
       +`</button>`;
-  } else if(mode==='comfort'){
-    // ── 쾌적(정상) 카드 ──
-    wrap.innerHTML=
-      `<button class="feels-card lv-comfort" onclick="openFeelsCalc()">`
-      +`<div class="fc-head">`
-        +`<div class="fc-temp-col"><div class="fc-label">${ko?'현재 기온':'Current temp'}</div><div class="fc-temp">${ta!=null?ta.toFixed(1):'--'}°</div></div>`
-        +`<div class="fc-badge"><span class="dot"></span>${ko?'양호':'Normal'}</div>`
-        +nowHtml
-      +`</div>`
-      +`<div class="fc-summary">${ko?'안전수칙을 준수하여 안전하게 작업하세요.':'Follow safety rules and work safely.'}</div>`
-      +`<div class="fc-loc"><span>📍 ${locTxt}</span><span class="fc-calc-hint">${ko?'참고용 · 탭하면 계산기 ›':'Reference · calc ›'}</span></div>`
-      +`</button>`;
   } else {
-    // ── 온열 카드 ──
+    // ── 온열 카드 (10℃ 초과 전부: 더운 날씨도 선선한 날씨도 여기서 체감온도 표시) ──
     const hi=feelsData.hi, st=heatStage(hi, ko);
     const cls=FEELS_LVCLS[st.key]||'lv-none';
     const sm=FEELS_SUMMARY[st.key]||FEELS_SUMMARY.none;
@@ -3044,17 +3034,13 @@ function openFeelsCalc(){
     localStorage.setItem(ck, parseInt(localStorage.getItem(ck)||'0')+1);
     fetch(GEMINI_URL+'/track-calc', {method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
   }catch(e){}
-  // 계절 판단 (홈 카드와 동일 로직)
+  // 계절 판단 (홈 카드와 동일 로직): 10℃ 이하 → 한랭 계산기, 초과 → 온열 계산기
   const ta=feelsData.ta;
   let mode=seasonMode;
   if(mode==='auto'){
-    if(ta!=null && ta>=25) mode='hot';
-    else if(ta!=null && ta<=10) mode='cold';
-    else mode='comfort';
-  }
-  // 쾌적 구간(10~25℃)은 기온 15℃ 기준으로 가까운 계산기로 연결
-  if(mode==='comfort'){
-    mode=(ta!=null && ta<15) ? 'cold' : 'hot';
+    mode=(ta!=null && ta<=10) ? 'cold' : 'hot';
+  } else if(mode==='comfort'){
+    mode='hot';   // 구버전 호환
   }
   if(mode==='cold'){
     // 한랭 계산기로 진입 (현재 기온·풍속 미리 채움)
@@ -3063,7 +3049,7 @@ function openFeelsCalc(){
     go(8);
   } else {
     // 온열 계산기로 진입
-    if(feelsData.ta!=null) state.heatTemp=Math.max(15,Math.min(45,Math.round(feelsData.ta*10)/10));
+    if(feelsData.ta!=null) state.heatTemp=Math.max(10,Math.min(45,Math.round(feelsData.ta*10)/10));
     if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh*10)/10;
     go(7);
   }
@@ -3207,7 +3193,7 @@ function fmtTemp(v){ const n=Math.round(v*10)/10; return Number.isInteger(n)? St
 // 온도 미세조정(±0.1): state.heatTemp를 단일 출처로 증감 → 슬라이더 step 제약 우회
 function nudgeHeatTemp(delta){
   let v=Math.round((state.heatTemp+delta)*10)/10;
-  v=Math.max(15,Math.min(45,v));
+  v=Math.max(10,Math.min(45,v));
   state.heatTemp=v;
   const tEl=document.getElementById('heat-temp'); if(tEl) tEl.value=Math.round(v); // 슬라이더 thumb 위치도 대략 맞춤
   updateHeatIndex();
@@ -3347,7 +3333,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v60'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v61'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
