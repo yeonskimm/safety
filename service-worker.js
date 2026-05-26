@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v59';
+const CACHE_NAME = 'onul-safety-v60';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -49,6 +49,7 @@ self.addEventListener('fetch', event => {
     url.includes('workers.dev') ||
     url.includes('open-meteo.com') ||
     url.includes('bigdatacloud.net') ||
+    url.includes('wttr.in') ||
     !url.startsWith(self.location.origin)
   ) {
     return;

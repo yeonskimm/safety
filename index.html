@@ -3098,23 +3098,54 @@ async function feelsReverseGeo(lat,lon){
   }catch(e){ return state.lang==='ko'?'현재 위치':'Current location'; }
 }
 let _feelsSeq=0;  // 날씨 요청 순번 (늦게 온 옛 응답이 최신 응답을 덮어쓰지 않도록)
+
+// 타임아웃이 있는 fetch (응답이 없으면 매달리지 않고 reject)
+async function _fetchTimeout(url, ms){
+  const ctrl=new AbortController();
+  const tid=setTimeout(()=>ctrl.abort(), ms);
+  try{ return await fetch(url, {signal:ctrl.signal}); }
+  finally{ clearTimeout(tid); }
+}
+
+// 1차 소스: Open-Meteo → {ta,rh,ws}
+async function _srcOpenMeteo(lat,lon){
+  const r=await _fetchTimeout(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`, 5000);
+  if(!r.ok) throw new Error('open-meteo '+r.status);
+  const d=await r.json();
+  const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m, ws=d.current.wind_speed_10m;
+  if(ta==null) throw new Error('open-meteo empty');
+  return {ta:ta, rh:rh, ws:ws};
+}
+
+// 2차 소스(폴백): wttr.in → {ta,rh,ws}. 값이 모두 문자열이라 숫자 변환 필요
+async function _srcWttr(lat,lon){
+  const r=await _fetchTimeout(`https://wttr.in/${lat},${lon}?format=j1`, 6000);
+  if(!r.ok) throw new Error('wttr '+r.status);
+  const d=await r.json();
+  const c=(d.current_condition&&d.current_condition[0])||null;
+  if(!c) throw new Error('wttr empty');
+  const ta=parseFloat(c.temp_C), rh=parseFloat(c.humidity), ws=parseFloat(c.windspeedKmph);
+  if(isNaN(ta)) throw new Error('wttr parse');
+  return {ta:ta, rh:(isNaN(rh)?null:rh), ws:(isNaN(ws)?null:ws)};
+}
+
 async function feelsWeather(lat,lon,label){
   const myseq=++_feelsSeq;
-  try{
-    // 8초 타임아웃: 응답이 없으면 매달리지 않고 catch로 넘어감(무한 "확인 중" 방지)
-    const ctrl=new AbortController();
-    const tid=setTimeout(()=>ctrl.abort(), 8000);
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`, {signal:ctrl.signal});
-    clearTimeout(tid);
-    const d=await r.json();
-    if(myseq!==_feelsSeq) return;   // 더 최신 요청이 이미 진행됨 → 이 응답은 버림
-    const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m, ws=d.current.wind_speed_10m;
-    const hi=computeHeatIndex(ta, rh);   // 계산기와 동일한 식으로 통일
+  let w=null;
+  // Open-Meteo 먼저, 실패하면 wttr.in으로 폴백 (한 소스가 통신사에서 막혀도 다른 소스로 표시)
+  try{ w=await _srcOpenMeteo(lat,lon); }
+  catch(e1){
+    try{ w=await _srcWttr(lat,lon); }
+    catch(e2){ w=null; }
+  }
+  if(myseq!==_feelsSeq) return;   // 더 최신 요청이 이미 진행됨 → 이 응답은 버림
+  if(w){
+    const hi=computeHeatIndex(w.ta, (w.rh!=null?w.rh:50));   // 계산기와 동일한 식으로 통일
     // label이 null이면 지역명은 아직 도착 전 → 기존 loc 유지(병렬 도착 시 갱신됨)
     const loc = (label!=null) ? label : (feelsData.loc || (state.lang==='ko'?'현재 위치':'Current location'));
-    feelsData={hi:hi, ta:ta, rh:rh, ws:ws, loc:loc, status:'ok'};
-  }catch(e){
-    if(myseq!==_feelsSeq) return;   // 최신 요청이 따로 있으면 이 실패는 무시
+    feelsData={hi:hi, ta:w.ta, rh:w.rh, ws:w.ws, loc:loc, status:'ok'};
+  }else{
+    // 두 소스 모두 실패
     feelsData={hi:(feelsData.hi!=null?feelsData.hi:25), ta:feelsData.ta, rh:feelsData.rh, ws:feelsData.ws,
                loc:(feelsData.loc && feelsData.ta!=null)?feelsData.loc:(state.lang==='ko'?'날씨 연결 안됨':'Weather unavailable'), status:'ok'};
   }
@@ -3316,7 +3347,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v59'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v60'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
