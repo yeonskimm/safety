@@ -2367,7 +2367,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const ko=s.lang==='ko';
     app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🌡️ ${ko?'오늘의 체감온도':"Today's Heat Index"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
     <div class="heat-wrap">
-      <div class="heat-intro">${ko?'기온과 습도를 조절하면 <b>체감온도</b>와 <b>폭염 단계</b>, 단계별 조치사항을 즉시 보여드립니다. <b>체감온도 31℃ 이상</b>은 산업안전보건기준 규칙상 ‘폭염작업’에 해당합니다(2025.6 시행).':'Adjust temperature & humidity to see the <b>heat index</b>, <b>heat level</b>, and required actions. <b>31℃ or above</b> counts as "heat work" under Korean OSH rules (effective Jun 2025).'}</div>
+      <div class="heat-intro">${ko?'기온과 습도를 조절하면 <b>체감온도</b>와 <b>폭염 단계</b>, 단계별 조치사항을 즉시 보여드립니다. <b>체감온도 31℃ 이상</b>은 산업안전보건기준 규칙상 ‘폭염작업’에 해당합니다(2025.6 시행).':'Adjust temperature & humidity to see the <b>heat index</b>, <b>heat level</b>, and required actions. <b>31℃ or above</b> counts as "heat work" under Korean OSH rules (effective Jun 2025).'}<div style="margin-top:8px;font-size:0.85em;color:rgba(255,255,255,0.45)">✽ ${ko?'숫자 옆 <b style="color:rgba(255,255,255,0.7)">− +</b> 버튼으로 기온·습도를 <b style="color:rgba(255,255,255,0.7)">0.1 단위</b>로 정밀 조절할 수 있습니다.':' Use <b style="color:rgba(255,255,255,0.7)">− +</b> to fine-tune by <b style="color:rgba(255,255,255,0.7)">0.1 steps</b>.'}</div></div>
 
       <div class="heat-input-card">
         <div class="heat-irow">
@@ -2375,8 +2375,8 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
           <input type="range" class="heat-slider" id="heat-temp" min="-10" max="45" step="1" value="${s.heatTemp}" oninput="onHeatSlider()">
         </div>
         <div class="heat-irow">
-          <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><span id="heat-hum-val">${s.heatHum}</span><span class="u">%</span></span></div>
-          <input type="range" class="heat-slider hum" id="heat-hum" min="0" max="100" step="1" value="${s.heatHum}" oninput="updateHeatIndex()">
+          <div class="heat-ilabel"><span class="nm">💧 ${ko?'습도':'Humidity'}</span><span class="val"><button type="button" class="heat-fine" onclick="nudgeHeatHum(-0.1)" aria-label="-0.1">−</button><span id="heat-hum-val">${fmtTemp(s.heatHum)}</span><span class="u">%</span><button type="button" class="heat-fine" onclick="nudgeHeatHum(0.1)" aria-label="+0.1">+</button></span></div>
+          <input type="range" class="heat-slider hum" id="heat-hum" min="0" max="100" step="1" value="${s.heatHum}" oninput="onHumSlider()">
         </div>
       </div>
 
@@ -2804,17 +2804,27 @@ function downloadImg(){
 // ═══════════════════ 체감온도 (HEAT INDEX) ═══════════════════
 // 기상청 여름철 체감온도 식: 습구온도(Stull 근사) → 체감온도.
 // 참고용 추정치이며, 법적 기준은 기상청 폭염영향예보·현장 WBGT 측정값을 따른다.
-function _wetBulb(ta, rh){
-  rh=Math.max(0,Math.min(100,rh));
-  return ta*Math.atan(0.151977*Math.sqrt(rh+8.313659))
-       + Math.atan(ta+rh)
-       - Math.atan(rh-1.67633)
-       + 0.00391838*Math.pow(rh,1.5)*Math.atan(0.023101*rh)
-       - 4.686035;
-}
+// 체감온도 계산 — 고용노동부·NWS Rothfusz 공식 (화씨 계산 → 섭씨 변환, 기기와 동일 방식)
+// T < 27℃: 단순 선형식 / T ≥ 27℃: Rothfusz 완전 공식
 function computeHeatIndex(ta, rh){
-  const tw=_wetBulb(ta, rh);
-  return -0.2442 + 0.55399*tw + 0.45535*ta - 0.0022*tw*tw + 0.00278*tw*ta + 3.0;
+  rh = Math.max(0, Math.min(100, rh));
+  const Tf = ta * 9/5 + 32;
+  if(ta < 27){
+    // 단순 선형식 (저온 구간)
+    const hiF = 0.5 * (Tf + 61.0 + (Tf - 68.0) * 1.2 + rh * 0.094);
+    return (hiF - 32) * 5/9;
+  }
+  // Rothfusz 완전 공식 — 화씨로 계산 후 섭씨 변환 (고용노동부 기기와 동일 방식)
+  const hiF = -42.379
+    + 2.04901523  * Tf
+    + 10.14333127 * rh
+    - 0.22475541  * Tf * rh
+    - 0.00683783  * Tf * Tf
+    - 0.05481717  * rh * rh
+    + 0.00122874  * Tf * Tf * rh
+    + 0.00085282  * Tf * rh * rh
+    - 0.00000199  * Tf * Tf * rh * rh;
+  return (hiF - 32) * 5/9;
 }
 // ===== 홈 체감온도 상태창 =====
 const FEELS_SUMMARY={
@@ -2861,8 +2871,8 @@ function renderFeelsCard(){
 }
 function openHeatFromHome(){
   // 현재 위치 기온·습도를 계산기에 미리 채워서 진입
-  if(feelsData.ta!=null) state.heatTemp=Math.round(feelsData.ta);
-  if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh);
+  if(feelsData.ta!=null) state.heatTemp=Math.round(feelsData.ta*10)/10;
+  if(feelsData.rh!=null) state.heatHum=Math.round(feelsData.rh*10)/10;
   // 계산기 사용 집계 (로컬 + Worker 합산, 실패해도 무관)
   try{
     const today=new Date().toISOString().slice(0,10);
@@ -2975,22 +2985,35 @@ function nudgeHeatTemp(delta){
   const tEl=document.getElementById('heat-temp'); if(tEl) tEl.value=Math.round(v); // 슬라이더 thumb 위치도 대략 맞춤
   updateHeatIndex();
 }
+// 습도 미세조정(±0.1): 기온과 동일한 방식
+function nudgeHeatHum(delta){
+  let v=Math.round((state.heatHum+delta)*10)/10;
+  v=Math.max(0,Math.min(100,v));
+  state.heatHum=v;
+  const hEl=document.getElementById('heat-hum'); if(hEl) hEl.value=Math.round(v);
+  updateHeatIndex();
+}
 // 슬라이더 조작: 정수값을 state에 반영 후 재계산
 function onHeatSlider(){
   const tEl=document.getElementById('heat-temp'); if(!tEl) return;
   state.heatTemp=parseFloat(tEl.value);
   updateHeatIndex();
 }
+// 습도 슬라이더 조작: 정수값 반영
+function onHumSlider(){
+  const hEl=document.getElementById('heat-hum'); if(!hEl) return;
+  state.heatHum=parseFloat(hEl.value);
+  updateHeatIndex();
+}
 function updateHeatIndex(){
   const tEl=document.getElementById('heat-temp');
   const hEl=document.getElementById('heat-hum');
   if(!tEl||!hEl) return;
-  const rh=parseFloat(hEl.value);
-  const ta=Math.round(state.heatTemp*10)/10; // 온도는 state가 단일 출처(슬라이더 step에 막히지 않게)
+  const ta=Math.round(state.heatTemp*10)/10; // 온도는 state가 단일 출처
+  const rh=Math.round(state.heatHum*10)/10;  // 습도도 state가 단일 출처
   const ko=state.lang==='ko';
-  state.heatHum=rh; // 화면 재진입 시 값 유지
   document.getElementById('heat-temp-val').textContent=fmtTemp(ta);
-  document.getElementById('heat-hum-val').textContent=rh;
+  document.getElementById('heat-hum-val').textContent=fmtTemp(rh);
 
   const hi=computeHeatIndex(ta, rh);
   const hiR=Math.round(hi*10)/10;
@@ -3033,7 +3056,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v50'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v51'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
