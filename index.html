@@ -2804,27 +2804,20 @@ function downloadImg(){
 // ═══════════════════ 체감온도 (HEAT INDEX) ═══════════════════
 // 기상청 여름철 체감온도 식: 습구온도(Stull 근사) → 체감온도.
 // 참고용 추정치이며, 법적 기준은 기상청 폭염영향예보·현장 WBGT 측정값을 따른다.
-// 체감온도 계산 — 고용노동부·NWS Rothfusz 공식 (화씨 계산 → 섭씨 변환, 기기와 동일 방식)
-// T < 27℃: 단순 선형식 / T ≥ 27℃: Rothfusz 완전 공식
-function computeHeatIndex(ta, rh){
+// 체감온도 계산 — 기상청·고용노동부 공식 (ABM Apparent Temperature, Steadman 1994)
+// 습구온도(Stull 2011) 기반 회귀식 + 한국 기상청 보정(+3.0)
+// → 고용노동부·기상청 체감온도 표와 일치
+function _wetBulb(ta, rh){
   rh = Math.max(0, Math.min(100, rh));
-  const Tf = ta * 9/5 + 32;
-  if(ta < 27){
-    // 단순 선형식 (저온 구간)
-    const hiF = 0.5 * (Tf + 61.0 + (Tf - 68.0) * 1.2 + rh * 0.094);
-    return (hiF - 32) * 5/9;
-  }
-  // Rothfusz 완전 공식 — 화씨로 계산 후 섭씨 변환 (고용노동부 기기와 동일 방식)
-  const hiF = -42.379
-    + 2.04901523  * Tf
-    + 10.14333127 * rh
-    - 0.22475541  * Tf * rh
-    - 0.00683783  * Tf * Tf
-    - 0.05481717  * rh * rh
-    + 0.00122874  * Tf * Tf * rh
-    + 0.00085282  * Tf * rh * rh
-    - 0.00000199  * Tf * Tf * rh * rh;
-  return (hiF - 32) * 5/9;
+  return ta * Math.atan(0.151977 * Math.sqrt(rh + 8.313659))
+       + Math.atan(ta + rh)
+       - Math.atan(rh - 1.67633)
+       + 0.00391838 * Math.pow(rh, 1.5) * Math.atan(0.023101 * rh)
+       - 4.686035;
+}
+function computeHeatIndex(ta, rh){
+  const tw = _wetBulb(ta, rh);
+  return -0.2442 + 0.55399*tw + 0.45535*ta - 0.0022*tw*tw + 0.00278*tw*ta + 3.0;
 }
 // ===== 홈 체감온도 상태창 =====
 const FEELS_SUMMARY={
@@ -3056,7 +3049,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v51'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v52'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
