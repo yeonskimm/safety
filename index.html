@@ -2931,7 +2931,7 @@ function coldStage(wc, ko){
     acts: ko?['한파안전 5대 기본수칙(따뜻한 옷·쉼터·물·시간조정·119)을 확인하세요.','보온이 잘 되는 작업복을 착용하세요.','기온이 더 떨어질 것에 대비해 휴식 계획을 점검하세요.']
             :['Check the 5 cold-safety basics (warm clothes, shelter, water, schedule, 119).','Wear well-insulated work clothing.','Review rest plans in case temperatures drop further.'],
     legal: ''};
-  return {key:'none', name:ko?'정상':'Normal', color:'#5bb98c',
+  return {key:'none', name:ko?'양호':'Normal', color:'#5bb98c',
     acts: ko?['현재 한랭 위험 단계 미만입니다.','안전수칙을 준수하여 안전하게 작업하세요.','기온이 떨어지면 다시 확인하세요.']
             :['Below the cold-risk threshold.','Follow safety rules and work safely.','Re-check as temperatures drop.'],
     legal: ''};
@@ -3011,7 +3011,7 @@ function renderFeelsCard(){
       `<button class="feels-card lv-comfort" onclick="openFeelsCalc()">`
       +`<div class="fc-head">`
         +`<div class="fc-temp-col"><div class="fc-label">${ko?'현재 기온':'Current temp'}</div><div class="fc-temp">${ta!=null?ta.toFixed(1):'--'}°</div></div>`
-        +`<div class="fc-badge"><span class="dot"></span>${ko?'정상':'Normal'}</div>`
+        +`<div class="fc-badge"><span class="dot"></span>${ko?'양호':'Normal'}</div>`
         +nowHtml
       +`</div>`
       +`<div class="fc-summary">${ko?'안전수칙을 준수하여 안전하게 작업하세요.':'Follow safety rules and work safely.'}</div>`
@@ -3097,18 +3097,26 @@ async function feelsReverseGeo(lat,lon){
     return out||(state.lang==='ko'?'현재 위치':'Current location');
   }catch(e){ return state.lang==='ko'?'현재 위치':'Current location'; }
 }
+let _feelsSeq=0;  // 날씨 요청 순번 (늦게 온 옛 응답이 최신 응답을 덮어쓰지 않도록)
 async function feelsWeather(lat,lon,label){
+  const myseq=++_feelsSeq;
   try{
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`);
+    // 8초 타임아웃: 응답이 없으면 매달리지 않고 catch로 넘어감(무한 "확인 중" 방지)
+    const ctrl=new AbortController();
+    const tid=setTimeout(()=>ctrl.abort(), 8000);
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`, {signal:ctrl.signal});
+    clearTimeout(tid);
     const d=await r.json();
+    if(myseq!==_feelsSeq) return;   // 더 최신 요청이 이미 진행됨 → 이 응답은 버림
     const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m, ws=d.current.wind_speed_10m;
     const hi=computeHeatIndex(ta, rh);   // 계산기와 동일한 식으로 통일
     // label이 null이면 지역명은 아직 도착 전 → 기존 loc 유지(병렬 도착 시 갱신됨)
     const loc = (label!=null) ? label : (feelsData.loc || (state.lang==='ko'?'현재 위치':'Current location'));
     feelsData={hi:hi, ta:ta, rh:rh, ws:ws, loc:loc, status:'ok'};
   }catch(e){
+    if(myseq!==_feelsSeq) return;   // 최신 요청이 따로 있으면 이 실패는 무시
     feelsData={hi:(feelsData.hi!=null?feelsData.hi:25), ta:feelsData.ta, rh:feelsData.rh, ws:feelsData.ws,
-               loc:(state.lang==='ko'?'날씨 연결 안됨':'Weather unavailable'), status:'ok'};
+               loc:(feelsData.loc && feelsData.ta!=null)?feelsData.loc:(state.lang==='ko'?'날씨 연결 안됨':'Weather unavailable'), status:'ok'};
   }
   renderFeelsCard();
 }
@@ -3117,21 +3125,24 @@ function mountFeels(){
   if(feelsFetched){ return; }   // 이미 받아왔으면 재호출 안 함
   feelsFetched=true;
   const SEOUL=[37.5665,126.9780], ko=state.lang==='ko';
+
+  // ① 위치를 기다리지 않고 서울 날씨를 '즉시' 호출 → 카드를 최대한 빨리 표시
+  //    (loc는 임시 비표시. 위치가 잡히면 ②에서 실제 위치 날씨·지역명으로 덮어씀)
+  feelsWeather(SEOUL[0], SEOUL[1], ko?'서울 (기본)':'Seoul (default)');
+
+  // ② 동시에 현재 위치를 백그라운드로 시도 → 잡히면 실제 위치 날씨·지역명으로 갱신
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(p=>{
       const lat=p.coords.latitude, lon=p.coords.longitude;
-      // 날씨·지역명을 동시에 호출(병렬). 날씨가 먼저 와도 단계 카드를 즉시 표시하고,
-      // 지역명은 도착하는 대로 그 자리만 채워 갱신한다.
-      feelsWeather(lat, lon, null);
+      feelsWeather(lat, lon, null);              // 위치 날씨로 덮어쓰기(지역명은 ↓에서 채움)
       feelsReverseGeo(lat, lon).then(name=>{
         feelsData.loc = name;
         renderFeelsCard();
       });
-    }, ()=>{ feelsWeather(SEOUL[0],SEOUL[1], ko?'서울 (기본)':'Seoul (default)'); },
-    {timeout:6000,maximumAge:600000});
-  }else{
-    feelsWeather(SEOUL[0],SEOUL[1], ko?'서울 (기본)':'Seoul (default)');
+    }, ()=>{ /* 위치 거부/실패 → 이미 표시 중인 서울 기본값 유지 */ },
+    {timeout:4000,maximumAge:600000});
   }
+  // geolocation 미지원 시에도 ①에서 이미 서울 날씨를 표시했으므로 추가 처리 불필요
 }
 
 // 단계 기준(고용노동부 온열질환 예방지침): 관심31 / 주의33 / 경고35 / 위험38
@@ -3155,7 +3166,7 @@ function heatStage(hi, ko){
     acts: ko?['산업안전보건기준 규칙상 <b>‘폭염작업’(체감온도 31℃ 이상)</b>에 해당합니다.','사업주는 작업특성에 맞게 <b>주기적으로 휴식</b>을 부여해야 합니다(의무).','충분한 물과 그늘·휴게시설을 제공하세요.','체감온도 상승에 대비해 작업계획·휴식주기를 미리 점검하세요.']
             :['Counts as <b>"heat work" (heat index 31℃+)</b> under OSH rules.','Employer <b>must give periodic rest</b> suited to the work (mandatory).','Provide ample water, shade and rest facilities.','Pre-check work plans and rest cycles for rising heat.'],
     legal: ''};
-  return {key:'none', name:ko?'정상':'Normal', color:'#4a8f6a',
+  return {key:'none', name:ko?'양호':'Normal', color:'#4a8f6a',
     acts: ko?['현재 폭염 단계 기준(체감온도 31℃) 미만입니다.','폭염 5대 기본수칙(물·그늘·휴식)을 평소대로 유지하세요.','기온·습도가 오르면 다시 확인하세요.']
             :['Below the heat-level threshold (31℃ heat index).','Keep the basic heat rules (water, shade, rest) as usual.','Re-check as temperature/humidity rise.'],
     legal: ''};
@@ -3305,7 +3316,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v58'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v59'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;

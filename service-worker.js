@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v58';
+const CACHE_NAME = 'onul-safety-v59';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -40,13 +40,15 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', event => {
   const url = event.request.url;
 
-  // POST 또는 외부 API는 캐시 제외 (iOS non-app-bound 도메인 에러 방지)
+  // POST 또는 외부 API는 캐시 제외 (iOS non-app-bound 도메인 에러·지연 방지)
   if (
     event.request.method !== 'GET' ||
     url.includes('googleapis.com') ||
     url.includes('anthropic.com') ||
     url.includes('groq.com') ||
     url.includes('workers.dev') ||
+    url.includes('open-meteo.com') ||
+    url.includes('bigdatacloud.net') ||
     !url.startsWith(self.location.origin)
   ) {
     return;
