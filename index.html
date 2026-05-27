@@ -3050,7 +3050,7 @@ async function _fetchTimeout(url, ms){
 
 // 1차 소스: Open-Meteo → {ta,rh,ws}
 async function _srcOpenMeteo(lat,lon){
-  const r=await _fetchTimeout(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`, 5000);
+  const r=await _fetchTimeout(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m`, 2500);
   if(!r.ok) throw new Error('open-meteo '+r.status);
   const d=await r.json();
   const ta=d.current.temperature_2m, rh=d.current.relative_humidity_2m, ws=d.current.wind_speed_10m;
@@ -3080,18 +3080,46 @@ async function _srcWorker(lat,lon){
   return {ta:d.ta, rh:d.rh, ws:d.ws};
 }
 
+// 날씨 경로 기억: 기기마다 '직접 호출'이 되는 망인지 한 번 판별해 localStorage에 저장.
+// 15분간만 유효(망이 바뀔 수 있으므로) → 만료되면 다음 호출에서 직접 호출부터 재판별.
+const WX_FRESH_MS = 15*60*1000;
+function _wxGetPref(){
+  try{
+    const p = localStorage.getItem('wx_path');
+    const ts = parseInt(localStorage.getItem('wx_path_ts')||'0', 10);
+    if((p==='direct'||p==='worker') && (Date.now()-ts) < WX_FRESH_MS) return p;
+  }catch(e){}
+  return null;   // 미정 또는 만료 → 직접 호출부터 시도
+}
+function _wxSetPref(p){
+  try{ localStorage.setItem('wx_path', p); localStorage.setItem('wx_path_ts', String(Date.now())); }catch(e){}
+}
+
 async function feelsWeather(lat,lon,label){
   const myseq=++_feelsSeq;
   let w=null;
-  // 폴백 순서: ① Worker 경유(통신사 차단 우회, 가장 안정적) → ② Open-Meteo 직접 → ③ wttr.in
-  try{ w=await _srcWorker(lat,lon); }
-  catch(e0){
-    try{ w=await _srcOpenMeteo(lat,lon); }
-    catch(e1){
-      try{ w=await _srcWttr(lat,lon); }
-      catch(e2){ w=null; }
+  const pref=_wxGetPref();   // 'direct' | 'worker' | null(미정/만료)
+
+  // 성공한 경로를 기억해 다음 호출의 시작 경로로 사용
+  const goDirect = async()=>{ const r=await _srcOpenMeteo(lat,lon); _wxSetPref('direct'); return r; };
+  const goWorker = async()=>{ const r=await _srcWorker(lat,lon);    _wxSetPref('worker'); return r; };
+
+  if(pref==='worker'){
+    // 최근 차단망으로 판별됨 → Worker 먼저(타임아웃 대기 없음). 실패 시 직접 재시도(망이 바뀌었을 수 있음) → wttr
+    try{ w=await goWorker(); }
+    catch(e0){
+      try{ w=await goDirect(); }
+      catch(e1){ try{ w=await _srcWttr(lat,lon); }catch(e2){ w=null; } }
+    }
+  }else{
+    // 'direct' / 미정 / 만료 → 직접 먼저(약 2.5초). 실패 시 Worker 폴백(기억을 worker로 갱신) → wttr
+    try{ w=await goDirect(); }
+    catch(e0){
+      try{ w=await goWorker(); }
+      catch(e1){ try{ w=await _srcWttr(lat,lon); }catch(e2){ w=null; } }
     }
   }
+
   if(myseq!==_feelsSeq) return;   // 더 최신 요청이 이미 진행됨 → 이 응답은 버림
   if(w){
     const hi=computeHeatIndex(w.ta, (w.rh!=null?w.rh:50));   // 계산기와 동일한 식으로 통일
@@ -3301,7 +3329,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v63'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v64'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
