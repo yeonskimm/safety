@@ -138,7 +138,9 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .row-content{flex:1;display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap}
 .row-icon{font-size:15px;flex-shrink:0;margin-top:2px}
 .row-text{font-size:var(--fs-body,17px);color:#b0b8cc;line-height:1.55;flex:1;min-width:0}
-.row-text.done-text{text-decoration:line-through;opacity:0.35}
+.row-text.done-text{text-decoration:none;opacity:1;font-weight:700}
+.done-chip{font-size:11px;font-weight:800;color:#fff;background:var(--green);border-radius:20px;padding:2px 9px;flex-shrink:0;align-self:flex-start;margin-top:2px;display:inline-flex;align-items:center;gap:3px;box-shadow:0 1px 4px rgba(22,155,98,0.35)}
+.warn-badge.badge-done,.pledge-badge.badge-done,.loto-badge.badge-done{opacity:.5;filter:saturate(.65)}
 .warn-badge{font-size:9.5px;font-weight:700;color:var(--red);background:rgba(217,80,80,0.1);border:1px solid rgba(217,80,80,0.25);padding:2px 7px;border-radius:20px;flex-shrink:0;align-self:flex-start;margin-top:2px}
 .loto-badge{font-size:9.5px;font-weight:700;color:var(--purple);background:rgba(139,110,224,0.1);border:1px solid rgba(139,110,224,0.28);padding:2px 7px;border-radius:20px;flex-shrink:0;align-self:flex-start;margin-top:2px}
 .pledge-badge{font-size:9.5px;font-weight:800;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.28);padding:2px 7px;border-radius:20px;flex-shrink:0;align-self:flex-start;margin-top:2px}
@@ -432,6 +434,73 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .heat-act-list li.legal{color:#f0b8b8}
 .heat-disc{font-size:11px;color:var(--txt-3);line-height:1.7;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:11px 12px}
 .heat-disc b{color:#d9a23c}
+
+
+/* ===== FINAL BRIGHT PREMIUM THEME + BOTTOM HOME/HISTORY/STATS NAV ===== */
+:root{
+  --gold:#b98518;--gold-l:#d8ad43;--gold-d:#805b12;
+  --navy:#08265f;--navy-2:#123a7c;--navy-soft:#eaf0fb;
+  --bg-0:#f7f8fb;--bg-1:#ffffff;--bg-2:#ffffff;--bg-3:#eef2f7;
+  --bdr-gold:rgba(185,133,24,0.24);--bdr-dim:#dfe5ee;
+  --txt-1:#0b1f48;--txt-2:#4c5f7a;--txt-3:#8b98aa;
+  --green:#169b62;--red:#d92d20;--purple:#7457d9;
+}
+html,body{background:linear-gradient(180deg,#fffaf0 0%,#f7f8fb 160px,#f7f8fb 100%)!important;color:var(--txt-1)}
+body.has-bottom-nav .body{padding-bottom:104px}
+.hdr{background:linear-gradient(135deg,#06245c 0%,#0b3272 100%)!important;border-bottom:none!important;box-shadow:0 8px 24px rgba(8,38,95,0.18);padding:10px 12px}
+.hdr::after{display:none}.hInner{max-width:600px}.logo{background:none!important;-webkit-text-fill-color:#fff!important;color:#fff!important;font-weight:900;letter-spacing:-0.2px}.logo svg path{fill:#d8ad43}.logo svg polyline{stroke:#08265f}.h-title{color:#fff!important;font-weight:900}.gov-text{color:rgba(255,255,255,0.72)!important}.back-btn,.step-pill,.lang-toggle-btn,.gear-btn-home{background:rgba(255,255,255,0.12)!important;border:1px solid rgba(255,255,255,0.22)!important;color:#fff!important;box-shadow:none}.gear-btn{color:#fff}.body{padding:18px 14px 26px}.home-wrap{background:linear-gradient(180deg,#ffffff 0%,#f8faff 100%)!important;border:1px solid #e6ebf3;border-radius:0 0 28px 28px;margin:-18px -14px 0;padding:18px 24px 24px;box-shadow:0 12px 34px rgba(16,24,40,0.08)}.home-hero-icon{width:118px;height:118px;border-radius:30px;background:linear-gradient(145deg,#ffffff 0%,#fff8e7 100%)!important;box-shadow:0 0 0 1px rgba(185,133,24,0.26),0 18px 42px rgba(8,38,95,0.18),inset 0 1px 0 rgba(255,255,255,0.85)!important;margin-top:8px;margin-bottom:8px}.home-hero-icon::before{background:radial-gradient(ellipse at 44% 18%,rgba(216,173,67,.28),transparent 58%)}.home-title{-webkit-text-fill-color:initial!important;background:none!important;color:var(--navy)!important;font-size:31px!important;letter-spacing:-1.1px}.home-title::first-letter{color:var(--navy)}.home-sub{color:var(--gold)!important;font-weight:900}.home-desc{color:#4c5f7a}.home-btn{background:linear-gradient(135deg,#08265f,#0d3c84)!important;color:#fff!important;border:1.5px solid rgba(216,173,67,.75);box-shadow:0 12px 28px rgba(8,38,95,.24),inset 0 1px 0 rgba(255,255,255,.16)!important}.home-btn-purple{background:linear-gradient(135deg,#8364e8 0%,#6a4fd6 55%,#5942c9 100%)!important;color:#fff!important;border:1.5px solid rgba(124,95,224,.45)!important;box-shadow:0 12px 28px rgba(112,73,216,.30),inset 0 1px 0 rgba(255,255,255,.18)!important}.home-btn-purple span{background:rgba(255,255,255,.2)!important;color:#fff}.home-btn-history{display:none!important}
+.i-grid{gap:10px}.i-btn{background:#fff!important;border:1px solid #dfe5ee!important;box-shadow:0 8px 22px rgba(16,24,40,.06);color:#0b1f48;min-height:112px}.i-btn.on{background:linear-gradient(180deg,#fff 0%,#fff8e7 100%)!important;border-color:#d8ad43!important;box-shadow:0 0 0 2px rgba(216,173,67,.18),0 10px 24px rgba(8,38,95,.08)}.i-btn.on::after{content:'✓';position:absolute;right:9px;top:9px;width:24px;height:24px;border-radius:50%;background:#b98518;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}.i-label{color:#0b1f48}.i-btn.on .i-label{color:#08265f!important}.tab-row{background:#fff;border:1px solid #dfe5ee;border-radius:14px;padding:4px;margin-bottom:14px}.tab-btn{border-radius:10px!important;margin:0;border:none!important;color:#61708a}.tab-btn.on{background:linear-gradient(135deg,#08265f,#0d3c84)!important;color:#fff!important}.det-btn,.info-box,.progress,.save-area,.ai-result-card,.ai-key-bar,.ai-chat-input-area,.ai-chat-ctx{background:#fff!important;border:1px solid #dfe5ee!important;box-shadow:0 8px 22px rgba(16,24,40,.05);color:#0b1f48}.det-btn.on{background:#fff8e7!important;border-color:#d8ad43!important;color:#08265f!important}.det-check{background:#fff;border-color:#cad3df;color:#169b62}.det-check.on{background:#0b3272;border-color:#0b3272;color:#fff}.nr-banner{background:#f5f2ff!important;border-color:#ddd3ff!important}.nr-banner-title{color:#6d5bd0}.nr-banner-text{color:#66558a}.inp,.ai-key-input{background:#f8fafc!important;border-color:#dfe5ee!important;color:#0b1f48!important}.big-btn{background:linear-gradient(135deg,#08265f,#0d3c84)!important;color:#fff!important;border:1px solid rgba(216,173,67,.5);box-shadow:0 10px 24px rgba(8,38,95,.20)!important}.progress{border-radius:18px;padding:16px}.pg-count{color:#0b1f48}.pg-bar{height:8px;background:#edf1f6}.pg-fill{background:linear-gradient(90deg,#b98518,#d8ad43)!important;box-shadow:none}.sec-label{color:#253b63;font-size:12px}.row{background:#fff!important;border:1px solid #dfe5ee!important;border-radius:14px;box-shadow:0 5px 16px rgba(16,24,40,.045);padding:13px 12px 13px 15px}.row::before{width:4px;background:#c7d1df}.row.warn{background:#fff8f6!important;border-color:#ffd6ce!important}.row.done{background:#f1fcf6!important;border-color:#c7f0da!important}.row.nr{background:#f6f3ff!important;border-color:#dfd8ff!important}.row.pledge{background:linear-gradient(180deg,#fffaf0,#fff)!important;border-color:#dfbd64!important}.row-text{color:#1a2b4f}.row-icon{font-size:19px}.cb{background:#fff;border-color:#c7d1df}.cb.on{background:#0b3272;border-color:#0b3272;color:#fff}.cb.warn-cb{border-color:#e6a09a}.cb.pledge-cb{border-color:#d8ad43}.warn-badge{background:#fff1ef;color:#d92d20;border-color:#ffd6ce}.pledge-badge{background:#fff6db;color:#9a6a05;border-color:#e8cc77}.loto-badge{background:#f1edff;color:#6d5bd0;border-color:#ddd3ff}.done-card{background:#effcf5!important;border-color:#bfead2!important}.save-btn,.dl-btn{background:linear-gradient(135deg,#08265f,#0d3c84)!important;color:#fff!important;border:1px solid rgba(216,173,67,.45);box-shadow:0 10px 24px rgba(8,38,95,.18)}.sm-btn{background:#fff!important;color:#0b1f48!important;border:1px solid #dfe5ee!important;box-shadow:0 5px 15px rgba(16,24,40,.06)}.feels-card{background:#fff!important;border-color:#e6ebf3!important;box-shadow:0 8px 22px rgba(16,24,40,.06)}.fc-now b,.fc-summary{color:#0b1f48}.fc-label,.fc-now,.fc-loc{color:#5a6a83}.seg{background:#fff;border-color:#dfe5ee}.seg button{color:#44546f}.seg button.on{background:linear-gradient(135deg,#08265f,#0d3c84);color:#fff}.sumbar .hs,.hcard{background:#fff!important;border-color:#dfe5ee!important;box-shadow:0 8px 22px rgba(16,24,40,.05)}.sumbar .hs .v{color:#b98518}.hcard .hdate{color:#738199}.hcard .hwork{color:#0b1f48}.histmonth{color:#0b1f48}.day{background:#fff;border-color:#dfe5ee;color:#0b1f48}.day.today{outline-color:#b98518}.hist-empty{color:#667085;background:#fff;border:1px solid #dfe5ee;border-radius:18px;box-shadow:0 8px 22px rgba(16,24,40,.05)}.hist-foot,.hist-hint{color:#7b8798}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;margin:0 auto;width:100%;max-width:600px;min-height:62px;background:#fff;border-top:1px solid #e6ebf3;box-shadow:0 -6px 20px rgba(8,38,95,.08);z-index:90;display:grid;grid-template-columns:repeat(3,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}.bottom-nav button{background:transparent;border:none;border-radius:17px;color:#7b8798;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:800;position:relative}.bottom-nav button .ico{font-size:20px;line-height:1}.bottom-nav button.on{background:linear-gradient(180deg,#fff8e7,#fff);color:#08265f;box-shadow:inset 0 0 0 1px rgba(216,173,67,.35)}.bottom-nav button.on .ico{color:#b98518}.bn-count{position:absolute;top:7px;right:23%;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:#b98518;color:#fff;font-size:10px;line-height:17px}.stats-card{background:#fff;border:1px solid #dfe5ee;border-radius:18px;padding:16px;margin-bottom:13px;box-shadow:0 8px 22px rgba(16,24,40,.05)}.stats-title{font-size:13px;font-weight:900;color:#0b1f48;margin-bottom:12px;display:flex;align-items:center;gap:7px}.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stats-mini{background:linear-gradient(180deg,#f8fafc,#fff);border:1px solid #e6ebf3;border-radius:16px;padding:14px}.stats-mini .v{font-size:25px;font-weight:950;color:#08265f;letter-spacing:-.6px}.stats-mini .l{font-size:11px;color:#7b8798;margin-top:3px;font-weight:800}.stat-line{display:grid;grid-template-columns:88px 1fr 44px;align-items:center;gap:10px;margin:10px 0;font-size:12px;color:#253b63;font-weight:800}.stat-bar{height:9px;background:#edf1f6;border-radius:8px;overflow:hidden}.stat-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#b98518,#d8ad43)}.stat-fill.green{background:linear-gradient(90deg,#169b62,#3cc281)}.stat-fill.red{background:linear-gradient(90deg,#d92d20,#f97066)}.stat-fill.navy{background:linear-gradient(90deg,#08265f,#0d3c84)}.stat-empty{background:#fff;border:1px solid #dfe5ee;border-radius:18px;padding:46px 20px;text-align:center;color:#667085;line-height:1.75;box-shadow:0 8px 22px rgba(16,24,40,.05)}
+@media(max-width:380px){.bottom-nav button{font-size:10px}.bottom-nav button .ico{font-size:18px}.stats-grid{grid-template-columns:1fr 1fr}.stat-line{grid-template-columns:78px 1fr 38px}}
+
+/* ===== 반응형 가변 비율 (기기 크기 대응) ===== */
+.home-title{font-size:clamp(23px,7.2vw,31px)!important}
+.home-hero-icon{width:clamp(88px,25vw,118px)!important;height:clamp(88px,25vw,118px)!important}
+.home-btn,.home-btn-purple{padding:clamp(12px,3.4vw,15px) clamp(20px,6vw,36px)!important}
+.home-btn-heat{padding:clamp(11px,3.2vw,15px) clamp(16px,5vw,30px)!important}
+.home-btn-history{padding:clamp(10px,2.8vw,12px) clamp(16px,5vw,30px)}
+.i-btn{min-height:clamp(86px,24vw,112px)!important}
+.body{padding-left:clamp(12px,4vw,16px);padding-right:clamp(12px,4vw,16px)}
+.home-wrap{padding-left:clamp(16px,6vw,24px)!important;padding-right:clamp(16px,6vw,24px)!important}
+@media(max-width:340px){.home-btn-history .cnt{display:none}.gov-text span{display:none}}
+
+/* ===== 체감온도 위젯 색 통일 (밝은 테마 · 홈은 차분, 위험만 강조) ===== */
+/* 온열: 양호=초록 → 위험=빨강 (계산기와 동일 계열) */
+.feels-card.lv-none .fc-temp{color:#3f8163}
+.feels-card.lv-none .fc-badge{background:rgba(63,129,99,.12);color:#3f8163}
+.feels-card.lv-none .dot{background:#4a8f6a}
+.feels-card.lv-attn .fc-temp{color:#a9781b}
+.feels-card.lv-attn .fc-badge{background:rgba(216,167,46,.14);color:#a9781b}
+.feels-card.lv-attn .dot{background:#d8a72e}
+.feels-card.lv-caution .fc-temp{color:#c2410c}
+.feels-card.lv-caution .fc-badge{background:rgba(232,130,30,.14);color:#c2410c}
+.feels-card.lv-caution .dot{background:#e8821e}
+.feels-card.lv-warn{background:linear-gradient(135deg,#fff3ec,#fff)!important;border-color:#f6c2a3!important}
+.feels-card.lv-warn .fc-temp{color:#d2491a}
+.feels-card.lv-warn .fc-badge{background:rgba(224,83,31,.14);color:#c2410c}
+.feels-card.lv-warn .dot{background:#e0531f}
+.feels-card.lv-danger{background:linear-gradient(135deg,#fdecec,#fff)!important;border-color:#e88a8a!important;box-shadow:0 6px 18px rgba(211,59,59,.14)!important;animation:none!important}
+.feels-card.lv-danger .fc-temp{color:#d33b3b}
+.feels-card.lv-danger .fc-badge{background:rgba(211,59,59,.14);color:#c62828}
+.feels-card.lv-danger .dot{background:#d33b3b}
+/* 한랭: 양호=회색 → 위험=파랑 */
+.feels-card.lv-cold-none .fc-temp{color:#64748b}
+.feels-card.lv-cold-none .fc-badge{background:rgba(100,116,139,.14);color:#475569}
+.feels-card.lv-cold-none .dot{background:#94a3b8}
+.feels-card.lv-cold-attn .fc-temp,.feels-card.lv-cold-caution .fc-temp{color:#2563eb}
+.feels-card.lv-cold-attn .fc-badge,.feels-card.lv-cold-caution .fc-badge{background:rgba(37,99,235,.12);color:#1d4ed8}
+.feels-card.lv-cold-attn .dot,.feels-card.lv-cold-caution .dot{background:#3b82f6}
+.feels-card.lv-cold-warn{background:linear-gradient(135deg,#eef4ff,#fff)!important;border-color:#aecbf5!important}
+.feels-card.lv-cold-warn .fc-temp{color:#1d4ed8}
+.feels-card.lv-cold-warn .fc-badge{background:rgba(29,78,216,.12);color:#1d4ed8}
+.feels-card.lv-cold-warn .dot{background:#2563eb}
+.feels-card.lv-cold-danger{background:linear-gradient(135deg,#e7eefc,#fff)!important;border-color:#7ba6ec!important;box-shadow:0 6px 18px rgba(26,95,180,.16)!important;animation:none!important}
+.feels-card.lv-cold-danger .fc-temp{color:#1a5fb4}
+.feels-card.lv-cold-danger .fc-badge{background:rgba(26,95,180,.14);color:#1a5fb4}
+.feels-card.lv-cold-danger .dot{background:#1a5fb4}
+.feels-card.lv-comfort .fc-temp{color:#64748b}
+.feels-card.lv-comfort .fc-badge{background:rgba(100,116,139,.14);color:#475569}.feels-card.lv-comfort .dot{background:#94a3b8}
+
 </style>
 </head>
 <body>
@@ -2157,9 +2226,10 @@ function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr,lan
     c.fillRect(PAD,y,W-PAD*2,ROW);
     c.strokeStyle="#e2e8f0";c.lineWidth=0.5;c.beginPath();c.moveTo(PAD,y+ROW);c.lineTo(W-PAD,y+ROW);c.stroke();
     c.fillStyle="#334155";c.font="12px -apple-system,sans-serif";c.fillText(""+(i+1),PAD+22,y+28);
-    if(isWarn&&!isDone){c.fillStyle="#fed7aa";roundRect(c,PAD+44,y+12,36,18,4);c.fill();c.fillStyle="#c2410c";c.font="bold 10px -apple-system,sans-serif";c.fillText("중요",PAD+50,y+25);}
-    if(isLoto&&!isDone){c.fillStyle="#ede9fe";roundRect(c,W-PAD-96,y+12,40,18,4);c.fill();c.fillStyle="#6d28d9";c.font="bold 10px -apple-system,sans-serif";c.fillText("LOTO",W-PAD-90,y+25);}
-    c.fillStyle=isDone?"#94a3b8":"#1e293b";c.font="13px -apple-system,sans-serif";
+    if(item.pledge){c.fillStyle="#fef3c7";roundRect(c,PAD+44,y+12,40,18,4);c.fill();c.fillStyle="#92600a";c.font="bold 8.5px -apple-system,sans-serif";c.fillText("가장중요",PAD+47,y+24.5);}
+    else if(isWarn){c.fillStyle="#fed7aa";roundRect(c,PAD+44,y+12,36,18,4);c.fill();c.fillStyle="#c2410c";c.font="bold 10px -apple-system,sans-serif";c.fillText("중요",PAD+50,y+25);}
+    if(isLoto){c.fillStyle="#ede9fe";roundRect(c,W-PAD-96,y+12,40,18,4);c.fill();c.fillStyle="#6d28d9";c.font="bold 10px -apple-system,sans-serif";c.fillText("LOTO",W-PAD-90,y+25);}
+    c.fillStyle=isDone?"#15803d":"#1e293b";c.font="13px -apple-system,sans-serif";
     // 긴 텍스트 줄바꿈
     const maxW=isLoto?W-PAD*2-180:W-PAD*2-120;
     const words=item.t;
@@ -2171,7 +2241,7 @@ function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr,lan
       c.fillText(words.slice(0,cut1),PAD+86,y+20);
       c.fillText(words.slice(cut2),PAD+86,y+36);
     }else{c.fillText(words,PAD+86,y+28);}
-    if(isDone){const tw=c.measureText(item.t.split(' ').slice(0,5).join(' ')).width;c.strokeStyle="#94a3b8";c.lineWidth=1;c.beginPath();c.moveTo(PAD+86,y+21);c.lineTo(PAD+86+tw,y+21);c.stroke();}
+    /* 완료 항목 취소선 제거 — 초록 체크로만 강조 */
     const bx=W-PAD-52,by=y+ROW/2-11;
     c.strokeStyle=isDone?"#22c55e":isWarn?"#f97316":"#cbd5e1";c.lineWidth=1.5;roundRect(c,bx,by,22,22,4);c.stroke();
     if(isDone){c.fillStyle="#dcfce7";c.fill();c.fillStyle="#16a34a";c.font="bold 14px sans-serif";c.fillText("✓",bx+5,by+16);}
@@ -2291,7 +2361,8 @@ function render(){
         <div class="row-content">
           <span class="row-icon">${item.i}</span>
           <span class="row-text${isDone?' done-text':''}">${item.t}</span>
-          ${isPledge&&!isDone?'<span class="pledge-badge">'+BADGE_CRITICAL+'</span>':(isWarn&&!isDone?'<span class="warn-badge">'+BADGE_IMPORTANT+'</span>':'')}\n          ${isLoto&&!isDone?'<span class="loto-badge">LOTO</span>':''}
+          ${isPledge?'<span class="pledge-badge'+(isDone?' badge-done':'')+'">'+BADGE_CRITICAL+'</span>':(isWarn?'<span class="warn-badge'+(isDone?' badge-done':'')+'">'+BADGE_IMPORTANT+'</span>':'')}\n          ${isLoto?'<span class="loto-badge'+(isDone?' badge-done':'')+'">LOTO</span>':''}
+          ${isDone?'<span class="done-chip">✓ '+(s.lang==='ko'?'확인완료':'Done')+'</span>':''}
         </div>
       </button>`;
     });
@@ -2306,7 +2377,7 @@ function render(){
       <div class="row-content">
         <span class="row-icon">🤝</span>
         <span class="row-text${isPledgeDone?' done-text':''}">${pledgeItem.t}</span>
-        ${!isPledgeDone?'<span class="pledge-badge">'+BADGE_CRITICAL+'</span>':''}
+        <span class="pledge-badge${isPledgeDone?' badge-done':''}">${BADGE_CRITICAL}</span>${isPledgeDone?'<span class="done-chip">✓ '+(s.lang==='ko'?'확인완료':'Done')+'</span>':''}
       </div>
     </button>`;
     const nrSec=s.isNR?`<div class="sec-label purple">🔒 ${s.lang==='ko'?'비정형작업 LOTO 필수 체크':'Non-Routine LOTO Check'}</div>${nrCommonRows}`:'';
@@ -2327,8 +2398,8 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       ${nrSec}
       <div class="sec-label">${s.lang==='ko'?'🎯 '+s.workType+' 수칙':'🎯 '+(WORK_KEY_MAP[s.workType]||s.workType)+' Rules'}</div>${specialRows}
       <div class="sec-label" style="margin-top:18px;color:#f59e0b;font-size:12px">${s.lang==='ko'?'🤝 안전 다짐':'🤝 Safety Pledge'}</div>${pledgeRow}${doneCard}
-      <div class="save-area"><div class="save-desc">${s.lang==='ko'?'📄 체크리스트를 관리감독자 제출용 이미지로 저장':'📄 Save checklist as image for supervisor'}</div>
-        <button class="save-btn" onclick="saveReport()">${s.lang==='ko'?'📷 보고서 이미지 저장':'📷 Save Report Image'}</button>
+      <div class="save-area"><div class="save-desc">${s.lang==='ko'?'✅ 점검을 마치면 결과가 이력에 저장되고 관리감독자 제출용 보고서가 만들어집니다':'✅ Finishing saves the result to history and creates a report for your supervisor'}</div>
+        <button class="save-btn" onclick="finishInspection()">${s.lang==='ko'?'✅ 점검 완료 & 보고서 저장':'✅ Finish & Save Report'}</button>
       </div>
       <div class="btn-row"><button class="sm-btn" onclick="go(0)">${s.lang==='ko'?'🏠 처음으로':'🏠 Home'}</button><button class="sm-btn" onclick="go(2)">${s.lang==='ko'?'↩ 작업 변경':'↩ Change Task'}</button></div>
       
@@ -2347,12 +2418,13 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
   setTimeout(()=>{updateAiReportBtn();},0);
   }
   else if(s.step===4){
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(3)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'보고서 미리보기':'Report Preview'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(3)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'점검 완료':'Inspection Complete'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body">
-      <div class="preview-info"><span>${s.lang==='ko'?'✅ 보고서 생성 완료':'✅ Report Ready'}</span><span style="color:#64748b;font-size:12px">${getDate()}</span></div>
+      <div class="done-card" style="margin-bottom:14px"><div class="done-emoji">✅</div><div class="done-text">${s.lang==='ko'?'점검이 완료되었습니다':'Inspection Complete'}</div><div class="done-sub">${s.lang==='ko'?'결과가 이력에 저장되었어요. 아래 보고서를 제출하세요.':'Saved to history. Submit the report below.'}</div></div>
+      <div class="preview-info"><span>${s.lang==='ko'?'📄 제출용 보고서':'📄 Report'}</span><span style="color:#64748b;font-size:12px">${getDate()}</span></div>
       ${s.previewUrl?'<img class="preview-img" src="'+s.previewUrl+'">':""}
       <button class="dl-btn" onclick="downloadImg()">${s.lang==='ko'?'⬇️ 이미지 다운로드 (관리감독자 제출용)':'⬇️ Download Image (For Supervisor)'}</button>
-      <div class="btn-row" style="margin-top:8px"><button class="sm-btn" onclick="go(3)">${s.lang==='ko'?'← 체크리스트로':'← Checklist'}</button><button class="sm-btn" onclick="go(0)">${s.lang==='ko'?'🏠 처음으로':'🏠 Home'}</button></div>
+      <div class="btn-row" style="margin-top:8px"><button class="sm-btn" onclick="go(3)">${s.lang==='ko'?'← 체크리스트로':'← Checklist'}</button><button class="save-btn" style="flex:1.6" onclick="go(0)">${s.lang==='ko'?'🏠 완료하고 홈으로':'🏠 Done — Home'}</button></div>
     </div>`;
   }
   else if(s.step===6){
@@ -2476,7 +2548,11 @@ function setFontSize(sz){
   });
 }
 // 폰트 크기 매핑을 단일 함수로 통합 관리 (render와 setFontSize 양쪽에서 호출)
-const FONT_SIZE_MAP={s:{body:'17px',ht:'21px',hs:'15px',hd:'13px',hb:'17px',il:'13px',ii:'20px'},m:{body:'21px',ht:'25px',hs:'18px',hd:'16px',hb:'21px',il:'16px',ii:'26px'},l:{body:'24px',ht:'28px',hs:'21px',hd:'19px',hb:'24px',il:'19px',ii:'30px'}};
+const FONT_SIZE_MAP={
+  s:{body:'clamp(14px,4.0vw,17px)',ht:'clamp(17px,4.9vw,21px)',hs:'clamp(12px,3.5vw,15px)',hd:'clamp(11px,3.0vw,13px)',hb:'clamp(14px,4.0vw,17px)',il:'clamp(11px,3.0vw,13px)',ii:'clamp(16px,4.7vw,20px)'},
+  m:{body:'clamp(16px,4.9vw,21px)',ht:'clamp(20px,5.8vw,25px)',hs:'clamp(14px,4.2vw,18px)',hd:'clamp(13px,3.7vw,16px)',hb:'clamp(16px,4.9vw,21px)',il:'clamp(13px,3.7vw,16px)',ii:'clamp(20px,6.0vw,26px)'},
+  l:{body:'clamp(18px,5.6vw,24px)',ht:'clamp(22px,6.5vw,28px)',hs:'clamp(16px,4.9vw,21px)',hd:'clamp(15px,4.4vw,19px)',hb:'clamp(18px,5.6vw,24px)',il:'clamp(15px,4.4vw,19px)',ii:'clamp(22px,7.0vw,30px)'}
+};
 function applyFontSize(sz){
   const f=FONT_SIZE_MAP[sz]||FONT_SIZE_MAP['m'];
   const root=document.body;
@@ -2522,21 +2598,21 @@ function _adminTap(){
 function _showAdminPin(){
   const overlay = document.createElement('div');
   overlay.id = 'admin-overlay';
-  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#0d1117;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#eef1f6;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit';
   overlay.innerHTML = `
     <div style="font-size:28px;margin-bottom:8px">🔐</div>
-    <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:6px">관리자 인증</div>
-    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:32px">PIN 번호를 입력하세요</div>
+    <div style="font-size:18px;font-weight:700;color:#0b1f48;margin-bottom:6px">관리자 인증</div>
+    <div style="font-size:13px;color:rgba(11,31,72,0.55);margin-bottom:32px">PIN 번호를 입력하세요</div>
     <div id="admin-pin-dots" style="display:flex;gap:14px;margin-bottom:40px">
-      ${[0,1,2,3,4,5].map(i=>`<div style="width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.2);transition:background 0.15s" id="pin-dot-${i}"></div>`).join('')}
+      ${[0,1,2,3,4,5].map(i=>`<div style="width:14px;height:14px;border-radius:50%;background:rgba(8,38,95,0.16);transition:background 0.15s" id="pin-dot-${i}"></div>`).join('')}
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:220px">
       ${['1','2','3','4','5','6','7','8','9','','0','del'].map(k=>`
-        <button onclick="_pinKey('${k}')" style="background:${k?'rgba(255,255,255,0.07)':'transparent'};border:none;border-radius:12px;height:56px;font-size:${k==='del'?'18':'21'}px;font-weight:600;color:#fff;cursor:${k?'pointer':'default'}">
+        <button onclick="_pinKey('${k}')" style="background:${k?'#ffffff':'transparent'};border:none;border-radius:12px;height:56px;font-size:${k==='del'?'18':'21'}px;font-weight:600;color:#0b1f48;cursor:${k?'pointer':'default'}">
           ${k==='del'?'⌫':k}
         </button>`).join('')}
     </div>
-    <button onclick="_adminClose()" style="margin-top:28px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer;font-family:inherit">취소</button>
+    <button onclick="_adminClose()" style="margin-top:28px;background:none;border:none;color:rgba(11,31,72,0.45);font-size:14px;cursor:pointer;font-family:inherit">취소</button>
   `;
   document.body.appendChild(overlay);
   window._adminPin = '';
@@ -2548,14 +2624,14 @@ function _pinKey(k){
   const pin = window._adminPin||'';
   for(let i=0;i<6;i++){
     const d=document.getElementById('pin-dot-'+i);
-    if(d) d.style.background = i<pin.length ? '#ffd700' : 'rgba(255,255,255,0.2)';
+    if(d) d.style.background = i<pin.length ? '#b98518' : 'rgba(8,38,95,0.16)';
   }
   if(pin.length===6){
     if(pin==='987502'){
       setTimeout(()=>{ _adminClose(); _showAdminDash(); }, 200);
     } else {
       const dots = document.getElementById('admin-pin-dots');
-      if(dots){ dots.style.animation='pinShake 0.4s ease'; setTimeout(()=>{ dots.style.animation=''; window._adminPin=''; for(let i=0;i<6;i++){ const d=document.getElementById('pin-dot-'+i); if(d) d.style.background='rgba(255,255,255,0.2)'; }},600); }
+      if(dots){ dots.style.animation='pinShake 0.4s ease'; setTimeout(()=>{ dots.style.animation=''; window._adminPin=''; for(let i=0;i<6;i++){ const d=document.getElementById('pin-dot-'+i); if(d) d.style.background='rgba(8,38,95,0.16)'; }},600); }
     }
   }
 }
@@ -2588,7 +2664,7 @@ async function _showAdminDash(){
   // 1) 대시보드를 즉시 띄움 (네트워크 대기 중 홈 화면 멈춤 방지)
   const dash = document.createElement('div');
   dash.id = 'admin-dash';
-  dash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#0d1117;z-index:9999;overflow-y:auto;font-family:inherit';
+  dash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#eef1f6;z-index:9999;overflow-y:auto;font-family:inherit';
   dash.innerHTML = _buildAdminDash(null);  // 로딩 상태로 먼저 표시
   window._lastAdminWs = null;
   document.body.appendChild(dash);
@@ -2631,9 +2707,9 @@ function _buildAdminDash(ws){
     const h = Math.round((d.visits/maxV)*60);
     const isToday = d.date === new Date().toISOString().slice(0,10);
     return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
-      <div style="font-size:9px;color:rgba(255,255,255,0.4)">${d.visits}</div>
-      <div style="width:100%;border-radius:3px 3px 0 0;height:${h}px;background:${isToday?'#ffd700':'rgba(255,215,0,0.3)'}"></div>
-      <div style="font-size:9px;color:${isToday?'#ffd700':'rgba(255,255,255,0.3)'}">${d.date.slice(5)}</div>
+      <div style="font-size:9px;color:rgba(11,31,72,0.55)">${d.visits}</div>
+      <div style="width:100%;border-radius:3px 3px 0 0;height:${h}px;background:${isToday?'#b98518':'rgba(185,133,24,0.32)'}"></div>
+      <div style="font-size:9px;color:${isToday?'#b98518':'rgba(11,31,72,0.45)'}">${d.date.slice(5)}</div>
     </div>`;
   }).join('');
 
@@ -2641,119 +2717,119 @@ function _buildAdminDash(ws){
     <div style="max-width:480px;margin:0 auto;padding:24px 20px 48px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
         <div>
-          <div style="font-size:11px;color:#ffd700;font-weight:700;letter-spacing:2px;margin-bottom:2px">ADMIN</div>
-          <div style="font-size:22px;font-weight:800;color:#fff">관리자 대시보드</div>
+          <div style="font-size:11px;color:#b98518;font-weight:700;letter-spacing:2px;margin-bottom:2px">ADMIN</div>
+          <div style="font-size:22px;font-weight:800;color:#0b1f48">관리자 대시보드</div>
         </div>
-        <button onclick="_adminClose()" style="background:rgba(255,255,255,0.07);border:none;border-radius:10px;padding:8px 14px;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;font-family:inherit">나가기</button>
+        <button onclick="_adminClose()" style="background:#ffffff;border:none;border-radius:10px;padding:8px 14px;color:rgba(11,31,72,0.72);font-size:13px;cursor:pointer;font-family:inherit">나가기</button>
       </div>
 
       <!-- 오늘 전체 통계 (Worker) -->
-      <div style="background:linear-gradient(135deg,rgba(184,134,11,0.2),rgba(255,215,0,0.05));border:1px solid rgba(255,215,0,0.2);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:12px;color:#ffd700;font-weight:700;margin-bottom:12px">📅 오늘 전체 사용자 현황</div>
+      <div style="background:linear-gradient(135deg,rgba(184,134,11,0.22),rgba(185,133,24,0.10));border:1px solid rgba(185,133,24,0.22);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:12px">📅 오늘 전체 사용자 현황</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center">
-          <div><div style="font-size:24px;font-weight:800;color:#ffd700">${todayV}</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">접속</div></div>
-          <div><div style="font-size:24px;font-weight:800;color:#7c6ee0">${todayC}</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">채팅</div></div>
-          <div><div style="font-size:24px;font-weight:800;color:#22c55e">${todayR}</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">리포트</div></div>
-          <div><div style="font-size:24px;font-weight:800;color:${todayE>0?'#ef4444':'#22c55e'}">${todayE}</div><div style="font-size:10px;color:rgba(255,255,255,0.5)">오류</div></div>
+          <div><div style="font-size:24px;font-weight:800;color:#b98518">${todayV}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">접속</div></div>
+          <div><div style="font-size:24px;font-weight:800;color:#6a4fd6">${todayC}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">채팅</div></div>
+          <div><div style="font-size:24px;font-weight:800;color:#22c55e">${todayR}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">리포트</div></div>
+          <div><div style="font-size:24px;font-weight:800;color:${todayE>0?'#ef4444':'#22c55e'}">${todayE}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">오류</div></div>
         </div>
       </div>
 
       <!-- 누적 통계 -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
-        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;text-align:center">
+        <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:14px;padding:14px;text-align:center">
           <div style="font-size:20px;margin-bottom:4px">👥</div>
-          <div style="font-size:22px;font-weight:800;color:#ffd700">${typeof totalV==='number'?totalV.toLocaleString():totalV}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">총 접속</div>
+          <div style="font-size:22px;font-weight:800;color:#b98518">${typeof totalV==='number'?totalV.toLocaleString():totalV}</div>
+          <div style="font-size:11px;color:rgba(11,31,72,0.55);margin-top:2px">총 접속</div>
         </div>
-        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;text-align:center">
+        <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:14px;padding:14px;text-align:center">
           <div style="font-size:20px;margin-bottom:4px">💬</div>
-          <div style="font-size:22px;font-weight:800;color:#7c6ee0">${typeof totalC==='number'?totalC.toLocaleString():totalC}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">총 채팅</div>
+          <div style="font-size:22px;font-weight:800;color:#6a4fd6">${typeof totalC==='number'?totalC.toLocaleString():totalC}</div>
+          <div style="font-size:11px;color:rgba(11,31,72,0.55);margin-top:2px">총 채팅</div>
         </div>
-        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;text-align:center">
+        <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:14px;padding:14px;text-align:center">
           <div style="font-size:20px;margin-bottom:4px">📋</div>
           <div style="font-size:22px;font-weight:800;color:#22c55e">${typeof totalR==='number'?totalR.toLocaleString():totalR}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">총 리포트</div>
+          <div style="font-size:11px;color:rgba(11,31,72,0.55);margin-top:2px">총 리포트</div>
         </div>
       </div>
 
       <!-- 주간 차트 -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">📊 최근 7일 접속 추이</div>
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📊 최근 7일 접속 추이</div>
         <div style="display:flex;align-items:flex-end;gap:4px;height:80px">${weekBars}</div>
       </div>
 
       <!-- 앱 정보 + API 사용량 (전체) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px">⚙️ 앱 정보 · API 사용량</div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
-          <span style="font-size:13px;color:rgba(255,255,255,0.6)">SW 버전</span>
-          <span style="font-size:13px;color:#ffd700;font-weight:700">${APP_VERSION}</span>
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:12px">⚙️ 앱 정보 · API 사용량</div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ffffff">
+          <span style="font-size:13px;color:rgba(11,31,72,0.72)">SW 버전</span>
+          <span style="font-size:13px;color:#b98518;font-weight:700">${APP_VERSION}</span>
         </div>
         <!-- ① 오늘 전체 API 호출 -->
-        <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <div style="padding:10px 0;border-bottom:1px solid #ffffff">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-            <span style="font-size:13px;color:rgba(255,255,255,0.6)">오늘 API 호출</span>
+            <span style="font-size:13px;color:rgba(11,31,72,0.72)">오늘 API 호출</span>
             <span style="font-size:13px;font-weight:700;color:${todayCalls!=null&&todayCalls>=GROQ_RPD*0.9?'#ef4444':todayCalls!=null&&todayCalls>=GROQ_RPD*0.7?'#f59e0b':'#22c55e'}">${todayCalls!=null?todayCalls.toLocaleString():ph} / ${GROQ_RPD.toLocaleString()}</span>
           </div>
-          <div style="background:rgba(255,255,255,0.08);border-radius:4px;height:6px;overflow:hidden">
+          <div style="background:rgba(8,38,95,0.08);border-radius:4px;height:6px;overflow:hidden">
             <div style="width:${todayCalls!=null?Math.min(100,Math.round(todayCalls/GROQ_RPD*100)):0}%;height:100%;border-radius:4px;background:${todayCalls!=null&&todayCalls>=GROQ_RPD*0.9?'#ef4444':todayCalls!=null&&todayCalls>=GROQ_RPD*0.7?'#f59e0b':'#22c55e'};transition:width .4s"></div>
           </div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:5px">채팅+리포트+오류 합계 · Groq 무료 한도 1,000회/일 (UTC 자정 리셋)</div>
+          <div style="font-size:10px;color:rgba(11,31,72,0.50);margin-top:5px">채팅+리포트+오류 합계 · Groq 무료 한도 1,000회/일 (UTC 자정 리셋)</div>
         </div>
         <!-- ③ Groq 실시간 잔여 -->
         ${(()=>{
-          if(loading) return '<div style="padding:10px 0;font-size:12px;color:rgba(255,255,255,0.3)">Groq 잔여량 불러오는 중…</div>';
-          if(!g) return '<div style="padding:10px 0;font-size:12px;color:rgba(255,255,255,0.3)">Groq 잔여량 없음 — AI 한 번 호출되면 표시됩니다</div>';
+          if(loading) return '<div style="padding:10px 0;font-size:12px;color:rgba(11,31,72,0.45)">Groq 잔여량 불러오는 중…</div>';
+          if(!g) return '<div style="padding:10px 0;font-size:12px;color:rgba(11,31,72,0.45)">Groq 잔여량 없음 — AI 한 번 호출되면 표시됩니다</div>';
           const remReq=g.remainingRequests??'?', limReq=g.limitRequests??'?';
           const remTok=g.remainingTokens, reset=g.resetRequests||'?';
           const at=g.at?new Date(g.at).toLocaleString('ko-KR',{hour12:false,month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
           return `
-          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.6)">Groq 잔여 호출</span>
-            <span style="font-size:13px;font-weight:700;color:#7c6ee0">${remReq} / ${limReq}</span>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ffffff">
+            <span style="font-size:13px;color:rgba(11,31,72,0.72)">Groq 잔여 호출</span>
+            <span style="font-size:13px;font-weight:700;color:#6a4fd6">${remReq} / ${limReq}</span>
           </div>
-          ${remTok!=null?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
-            <span style="font-size:13px;color:rgba(255,255,255,0.6)">Groq 잔여 토큰</span>
-            <span style="font-size:13px;font-weight:700;color:#7c6ee0">${Number(remTok).toLocaleString()}</span>
+          ${remTok!=null?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ffffff">
+            <span style="font-size:13px;color:rgba(11,31,72,0.72)">Groq 잔여 토큰</span>
+            <span style="font-size:13px;font-weight:700;color:#6a4fd6">${Number(remTok).toLocaleString()}</span>
           </div>`:''}
           <div style="display:flex;justify-content:space-between;padding:8px 0">
-            <span style="font-size:13px;color:rgba(255,255,255,0.6)">한도 리셋까지</span>
-            <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.75)">${reset}</span>
+            <span style="font-size:13px;color:rgba(11,31,72,0.72)">한도 리셋까지</span>
+            <span style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.85)">${reset}</span>
           </div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px">Groq 실시간 기준 · 마지막 호출 ${at}</div>`;
+          <div style="font-size:10px;color:rgba(11,31,72,0.50);margin-top:4px">Groq 실시간 기준 · 마지막 호출 ${at}</div>`;
         })()}
       </div>
       <!-- 계절 표시 강제전환 (관리자 전용) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:4px">🔄 홈 카드 계절 표시</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:10px">작업자 화면은 기온 자동 전환. 시연·점검용으로만 강제 전환하세요.</div>
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:14px 18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:4px">🔄 홈 카드 계절 표시</div>
+        <div style="font-size:10px;color:rgba(11,31,72,0.50);margin-bottom:10px">작업자 화면은 기온 자동 전환. 시연·점검용으로만 강제 전환하세요.</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
           ${['auto','hot','cold'].map(m=>{
             const labels={auto:'🌗 자동',hot:'🌡️ 온열',cold:'🥶 한랭'};
             const on=seasonMode===m;
-            const onColor=m==='cold'?'#63b3ed':(m==='hot'?'#e8821e':'#ffd700');
-            return `<button onclick="_setSeasonMode('${m}')" style="background:${on?onColor+'22':'rgba(255,255,255,0.04)'};border:1px solid ${on?onColor+'88':'rgba(255,255,255,0.1)'};color:${on?onColor:'rgba(255,255,255,0.6)'};font-size:12px;font-weight:700;padding:9px 6px;border-radius:10px;font-family:inherit;cursor:pointer">${labels[m]}</button>`;
+            const onColor=m==='cold'?'#1c71d8':(m==='hot'?'#e8821e':'#b98518');
+            return `<button onclick="_setSeasonMode('${m}')" style="background:${on?onColor+'22':'#ffffff'};border:1px solid ${on?onColor+'88':'rgba(8,38,95,0.10)'};color:${on?onColor:'rgba(11,31,72,0.72)'};font-size:12px;font-weight:700;padding:9px 6px;border-radius:10px;font-family:inherit;cursor:pointer">${labels[m]}</button>`;
           }).join('')}
         </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px">현재: ${seasonMode==='auto'?'자동 (기온 기준)':seasonMode==='hot'?'온열 고정':'한랭 고정'}</div>
+        <div style="font-size:10px;color:rgba(11,31,72,0.45);margin-top:8px">현재: ${seasonMode==='auto'?'자동 (기온 기준)':seasonMode==='hot'?'온열 고정':'한랭 고정'}</div>
       </div>
 
       <!-- 날짜별 사용 기록 (기본 7일 + 더보기 30일) -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:14px">📅 날짜별 사용 기록 (전체)</div>
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📅 날짜별 사용 기록 (전체)</div>
         ${(()=>{
-          if(loading) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">불러오는 중…</div>';
+          if(loading) return '<div style="font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>';
           const week = ws?.week || [];
-          if(!week.length) return '<div style="font-size:12px;color:rgba(255,255,255,0.3)">아직 데이터 없음</div>';
+          if(!week.length) return '<div style="font-size:12px;color:rgba(11,31,72,0.45)">아직 데이터 없음</div>';
           const todayStr = new Date().toISOString().slice(0,10);
           // 최신순으로 정렬 (Worker는 오래된→최신 순으로 줌)
           const recent = [...week].reverse();
           const rowHTML = (d)=>{
             const isToday = d.date === todayStr;
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-              <span style="font-size:12px;color:${isToday?'#ffd700':'rgba(255,255,255,0.5)'}">${d.date.slice(5)}${isToday?' (오늘)':''}</span>
-              <span style="font-size:11px;color:rgba(255,255,255,0.7)">접속 <b style="color:#ffd700">${d.visits}</b> · 채팅 <b style="color:#7c6ee0">${d.chat}</b> · 리포트 <b style="color:#22c55e">${d.report}</b></span>
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #ffffff">
+              <span style="font-size:12px;color:${isToday?'#b98518':'rgba(11,31,72,0.62)'}">${d.date.slice(5)}${isToday?' (오늘)':''}</span>
+              <span style="font-size:11px;color:rgba(11,31,72,0.80)">접속 <b style="color:#b98518">${d.visits}</b> · 채팅 <b style="color:#6a4fd6">${d.chat}</b> · 리포트 <b style="color:#22c55e">${d.report}</b></span>
             </div>`;
           };
           const rows7 = recent.slice(0,7).map(rowHTML).join('');
@@ -2762,19 +2838,19 @@ function _buildAdminDash(ws){
           if(recent.length<=7) return `<div id="adminDay7">${rows7}</div>`;
           return `<div id="adminDay7">${rows7}</div>`
             + `<div id="adminDayAll" style="display:none">${rowsAll}</div>`
-            + `<button id="adminDayToggle" onclick="_toggleAdminDays()" style="width:100%;margin-top:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;padding:9px;border-radius:8px;font-family:inherit;cursor:pointer">더보기 (최근 ${recent.length}일) ▾</button>`;
+            + `<button id="adminDayToggle" onclick="_toggleAdminDays()" style="width:100%;margin-top:10px;background:#ffffff;border:1px solid rgba(8,38,95,0.10);color:rgba(11,31,72,0.72);font-size:12px;font-weight:700;padding:9px;border-radius:8px;font-family:inherit;cursor:pointer">더보기 (최근 ${recent.length}일) ▾</button>`;
         })()}
       </div>
 
       <!-- 앱 설치 날짜 -->
-      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;margin-bottom:12px">
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:16px;margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:rgba(255,255,255,0.6)">📲 앱 최초 실행일</span>
-          <span style="font-size:13px;color:#ffd700;font-weight:700">${localStorage.getItem('_installDate')||'기록 없음'}</span>
+          <span style="font-size:13px;color:rgba(11,31,72,0.72)">📲 앱 최초 실행일</span>
+          <span style="font-size:13px;color:#b98518;font-weight:700">${localStorage.getItem('_installDate')||'기록 없음'}</span>
         </div>
       </div>
 
-      <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.2);margin-top:16px">실시간 · Cloudflare Worker 연동</div>
+      <div style="text-align:center;font-size:11px;color:rgba(8,38,95,0.16);margin-top:16px">실시간 · Cloudflare Worker 연동</div>
     </div>
   `;
 }
@@ -2823,6 +2899,19 @@ function setTab(t){state.tab=t;state.workType=null;state.isNR=false;render();}
 function selWork(d,nr){const koKey=WORK_KEY_MAP_REVERSE[d]||d;setState({workType:koKey,isNR:nr});}
 function startCheck(){setState({checked:{},step:3});window.scrollTo(0,0);}
 function toggle(i){const c={...state.checked};c[i]=!c[i];setState({checked:c});}
+function finishInspection(){
+  const items=getItems();
+  const total=items.length;
+  const done=items.filter((_,i)=>state.checked[i]).length;
+  if(done<total){
+    const left=total-done;
+    const msg=state.lang==='ko'
+      ? '아직 미확인 항목이 '+left+'개 있습니다.\n그래도 점검을 완료하고 보고서를 저장할까요?'
+      : left+' item(s) still unconfirmed.\nFinish the inspection and save the report anyway?';
+    if(!confirm(msg)) return;
+  }
+  saveReport();
+}
 function saveReport(){
   const items=getItems();
   const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===state.industry);
@@ -2882,7 +2971,7 @@ function coldStage(wc, ko){
     acts: ko?['한파안전 5대 기본수칙(따뜻한 옷·쉼터·물·시간조정·119)을 확인하세요.','보온이 잘 되는 작업복을 착용하세요.','기온이 더 떨어질 것에 대비해 휴식 계획을 점검하세요.']
             :['Check the 5 cold-safety basics (warm clothes, shelter, water, schedule, 119).','Wear well-insulated work clothing.','Review rest plans in case temperatures drop further.'],
     legal: ''};
-  return {key:'none', name:ko?'양호':'Normal', color:'#5bb98c',
+  return {key:'none', name:ko?'양호':'Normal', color:'#8b97a8',
     acts: ko?['현재 한랭 위험 단계 미만입니다.','안전수칙을 준수하여 안전하게 작업하세요.','기온이 떨어지면 다시 확인하세요.']
             :['Below the cold-risk threshold.','Follow safety rules and work safely.','Re-check as temperatures drop.'],
     legal: ''};
@@ -3329,7 +3418,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v64'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v65'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -3633,6 +3722,112 @@ function initAiUI(){
   }catch(e){}
   aiUpdateKeyUI();aiUpdateLimitUI();updateHomeAiCounter();
 }
+
+
+/* ===== FINAL PATCH: 하단 홈·이력·통계 내비게이션 / 통계 화면 ===== */
+function finalBottomNavHTML(active){
+  var ko=state.lang==='ko';
+  var n=0; try{ n=getHist().length; }catch(e){}
+  var badge='';  /* 이력 탭 숫자 배지 제거 */
+  return '<div class="bottom-nav" role="navigation" aria-label="'+(ko?'하단 메뉴':'Bottom navigation')+'">'
+    +'<button type="button" class="'+(active==='home'?'on':'')+'" onclick="go(0)"><span class="ico">⌂</span><span>'+(ko?'홈':'Home')+'</span></button>'
+    +'<button type="button" class="'+(active==='history'?'on':'')+'" onclick="go(6)"><span class="ico">◷</span><span>'+(ko?'이력':'History')+'</span>'+badge+'</button>'
+    +'<button type="button" class="'+(active==='stats'?'on':'')+'" onclick="go(9)"><span class="ico">▥</span><span>'+(ko?'통계':'Stats')+'</span></button>'
+    +'</div>';
+}
+function finalActiveNav(){
+  if(state.step===6) return 'history';
+  if(state.step===9) return 'stats';
+  return 'home';
+}
+function finalMountBottomNav(){
+  document.body.classList.remove('has-bottom-nav');
+  var old=document.getElementById('final-bottom-nav-mount');
+  if(old) old.remove();
+  if([0,6,9].indexOf(state.step)===-1) return;
+  document.body.classList.add('has-bottom-nav');
+  var mount=document.createElement('div');
+  mount.id='final-bottom-nav-mount';
+  mount.innerHTML=finalBottomNavHTML(finalActiveNav());
+  document.body.appendChild(mount);
+}
+function finalStatsHTML(s){
+  var ko=s.lang==='ko', arr=getHist();
+  var head='<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">'+(ko?'← 뒤로':'← Back')+'</button><div class="h-title">▥ '+(ko?'점검 통계':'Inspection Stats')+'</div><button onclick="toggleLang()" class="lang-toggle-btn">'+(ko?'🇺🇸 ENG':'🇰🇷 한국어')+'</button></div></div>';
+  if(!arr.length){
+    return head+'<div class="body"><div class="stat-empty">'+(ko?'아직 통계로 볼 점검 기록이 없습니다.<br>체크리스트를 저장하면 이곳에<br>이행률·위험도·작업별 통계가 자동으로 표시됩니다.':'No inspection records yet.<br>Save a checklist to see rates, risk levels, and work statistics here.')+'</div></div>';
+  }
+  var n=arr.length;
+  var avg=Math.round(arr.reduce(function(a,b){return a+(b.pct||0);},0)/n);
+  var good=arr.filter(function(h){return h.v==='g';}).length;
+  var caution=arr.filter(function(h){return h.v==='a';}).length;
+  var danger=arr.filter(function(h){return h.v==='r';}).length;
+  var best=Math.max.apply(null, arr.map(function(h){return h.pct||0;}));
+  var recent=arr[0];
+  var recentTxt=recent?fmtDate(recent,ko):'-';
+  var summary='<div class="stats-card"><div class="stats-title">'+(ko?'한눈에 보는 점검 현황':'Inspection Overview')+'</div><div class="stats-grid">'
+    +'<div class="stats-mini"><div class="v">'+n+'</div><div class="l">'+(ko?'총 점검':'Total checks')+'</div></div>'
+    +'<div class="stats-mini"><div class="v">'+avg+'%</div><div class="l">'+(ko?'평균 이행률':'Average rate')+'</div></div>'
+    +'<div class="stats-mini"><div class="v">'+best+'%</div><div class="l">'+(ko?'최고 이행률':'Best rate')+'</div></div>'
+    +'<div class="stats-mini"><div class="v">'+(recent?recent.m+'/'+recent.day:'-')+'</div><div class="l">'+(ko?'최근 점검':'Latest check')+'</div></div>'
+    +'</div></div>';
+  function pctPart(x){return n?Math.round(x/n*100):0;}
+  var risk='<div class="stats-card"><div class="stats-title">'+(ko?'위험도 분포':'Risk Distribution')+'</div>'
+    +'<div class="stat-line"><span>'+(ko?'양호':'Good')+'</span><div class="stat-bar"><div class="stat-fill green" style="width:'+pctPart(good)+'%"></div></div><b>'+pctPart(good)+'%</b></div>'
+    +'<div class="stat-line"><span>'+(ko?'주의':'Caution')+'</span><div class="stat-bar"><div class="stat-fill" style="width:'+pctPart(caution)+'%"></div></div><b>'+pctPart(caution)+'%</b></div>'
+    +'<div class="stat-line"><span>'+(ko?'위험':'Danger')+'</span><div class="stat-bar"><div class="stat-fill red" style="width:'+pctPart(danger)+'%"></div></div><b>'+pctPart(danger)+'%</b></div>'
+    +'</div>';
+  var trendArr=arr.slice(0,5).reverse();
+  var trend='<div class="stats-card"><div class="stats-title">'+(ko?'최근 이행률 추이':'Recent Rate Trend')+'</div>'
+    +trendArr.map(function(h){var label=(h.m||'')+'/'+(h.day||'');return '<div class="stat-line"><span>'+label+'</span><div class="stat-bar"><div class="stat-fill navy" style="width:'+(h.pct||0)+'%"></div></div><b>'+(h.pct||0)+'%</b></div>';}).join('')+'</div>';
+  var groups={};
+  arr.forEach(function(h){
+    var key=(h.indId||'')+'|'+(h.workKey||'');
+    if(!groups[key]) groups[key]={cnt:0,sum:0,ind:h.indId,work:h.workKey};
+    groups[key].cnt++; groups[key].sum+=(h.pct||0);
+  });
+  var top=Object.keys(groups).map(function(k){var g=groups[k]; return {label:histIndLabel(g.ind,ko)+(g.work?' · '+histWorkLabel(g.work,ko).replace(/<[^>]+>/g,'') : ''), cnt:g.cnt, avg:Math.round(g.sum/g.cnt)};}).sort(function(a,b){return b.cnt-a.cnt || b.avg-a.avg;}).slice(0,5);
+  var works='<div class="stats-card"><div class="stats-title">'+(ko?'작업별 점검 현황':'Work-type Summary')+'</div>'
+    +top.map(function(g){return '<div class="stat-line" style="grid-template-columns:1fr 70px 48px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+g.label+'</span><div class="stat-bar"><div class="stat-fill" style="width:'+g.avg+'%"></div></div><b>'+g.avg+'%</b></div>';}).join('')
+    +'<div style="font-size:11px;color:var(--txt-3);line-height:1.6;margin-top:10px">'+(ko?'※ 통계는 이 기기에 저장된 점검이력 기준입니다.':'※ Stats are based on records saved on this device.')+'</div></div>';
+  return head+'<div class="body">'+summary+risk+trend+works+'</div>';
+}
+/* 점검이력 화면을 하단 탭 구조에 맞게 재정의 */
+histScreenHTML=function(s){
+  var ko=s.lang==='ko', arr=getHist();
+  var clearBtn=arr.length?'<button class="hist-clear-btn" onclick="histClearAll()">🗑 '+(ko?'전체 비우기':'Clear All')+'</button>':'<div style="width:60px"></div>';
+  var head='<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">'+(ko?'← 뒤로':'← Back')+'</button><div class="h-title">◷ '+(ko?'내 점검이력':'My History')+'</div>'+clearBtn+'</div></div>';
+  if(arr.length===0){
+    return head+'<div class="body"><div class="hist-empty">'+(ko?'아직 점검 기록이 없습니다.<br>체크리스트를 완료하면<br>이곳에 자동으로 기록됩니다.':'No records yet.<br>Completed checklists are saved here automatically.')+'</div></div>';
+  }
+  var n=arr.length;
+  var avg=Math.round(arr.reduce(function(a,b){return a+b.pct;},0)/n);
+  var recent=arr[0].m+'/'+arr[0].day;
+  var sumbar='<div class="sumbar"><div class="hs"><div class="v">'+n+'</div><div class="l">'+(ko?'총 점검':'Total')+'</div></div><div class="hs"><div class="v">'+avg+'%</div><div class="l">'+(ko?'평균 이행률':'Avg Rate')+'</div></div><div class="hs"><div class="v">'+recent+'</div><div class="l">'+(ko?'최근 점검':'Recent')+'</div></div></div>';
+  var seg='<div class="seg"><button class="'+(histView==='list'?'on':'')+'" onclick="setHistView(\'list\')">📋 '+(ko?'리스트':'List')+'</button><button class="'+(histView==='cal'?'on':'')+'" onclick="setHistView(\'cal\')">📅 '+(ko?'달력':'Calendar')+'</button></div>';
+  var hint='<div class="hist-hint">'+(ko?'💡 카드를 길게 누르면 삭제할 수 있어요':'💡 Long-press a card to delete')+'</div>';
+  var content=histView==='list'?(histListHTML(arr,ko)):histCalHTML(arr,ko);
+  var foot='<div class="hist-foot">'+(ko?'※ 점검 기록은 이 기기에만 저장됩니다.':'※ Stored on this device only.')+'</div>';
+  return head+'<div class="body">'+sumbar+seg+(histView==='list'?hint:'')+content+foot+'</div>';
+};
+const __finalOriginalRender = render;
+let __finalLastStep = null;
+render = function(){
+  const __stepChanged = (state.step !== __finalLastStep);
+  __finalLastStep = state.step;
+  if(state.step===9){
+    const app=document.getElementById('app');
+    applyFontSize(state.fontSize||'m');
+    app.innerHTML=finalStatsHTML(state);
+    finalMountBottomNav();
+  } else {
+    __finalOriginalRender();
+    finalMountBottomNav();
+  }
+  if(__stepChanged && state.step!==5){
+    requestAnimationFrame(function(){ try{ window.scrollTo(0,0); }catch(e){} });
+  }
+};
 
 render();
 initAiUI();
