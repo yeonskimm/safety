@@ -261,19 +261,19 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .gear-popup-btn:nth-child(3) .gpc{font-size:19px}
 
 /* ── 홈 체감온도 상태창 ── */
-.feels-card{width:100%;max-width:360px;min-height:104px;margin:2px 0 12px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:13px;padding:9px 14px 8px;text-align:left;cursor:pointer;transition:.18s;display:block}
+.feels-card{width:100%;max-width:400px;min-height:120px;margin:2px 0 14px;background:var(--bg-1);border:1px solid var(--bdr-dim);border-radius:15px;padding:13px 16px 12px;text-align:left;cursor:pointer;transition:.18s;display:block}
 .feels-card:active{transform:scale(0.985)}
 .fc-head{display:flex;align-items:center;gap:10px}
 .fc-temp-col{min-width:0;flex-shrink:0}
-.fc-temp{font-size:28px;font-weight:800;line-height:1;letter-spacing:-1px}
-.fc-label{font-size:11px;color:var(--txt-2);margin-bottom:3px}
-.fc-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;border-radius:20px;padding:2px 12px 2px 9px;flex-shrink:0}
+.fc-temp{font-size:32px;font-weight:800;line-height:1;letter-spacing:-1px}
+.fc-label{font-size:12px;color:var(--txt-2);margin-bottom:3px}
+.fc-badge{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:800;border-radius:20px;padding:3px 13px 3px 10px;flex-shrink:0}
 .fc-badge .dot{width:9px;height:9px;border-radius:50%}
-.fc-now{margin-left:auto;text-align:right;font-size:11px;color:var(--txt-2);line-height:1.5;flex-shrink:0;white-space:nowrap}
+.fc-now{margin-left:auto;text-align:right;font-size:12px;color:var(--txt-2);line-height:1.5;flex-shrink:0;white-space:nowrap}
 .fc-now b{color:var(--txt-1);font-weight:700}
 .fc-chev{color:var(--txt-3);font-size:16px;align-self:center;flex-shrink:0}
-.fc-summary{font-size:12px;line-height:1.4;color:var(--txt-1);margin-top:7px;padding-top:7px;border-top:1px solid var(--bdr-dim)}
-.fc-loc{font-size:10px;color:var(--txt-3);margin-top:auto;padding-top:6px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fc-summary{font-size:13.5px;line-height:1.45;color:var(--txt-1);margin-top:9px;padding-top:9px;border-top:1px solid var(--bdr-dim)}
+.fc-loc{font-size:11px;color:var(--txt-3);margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
 .fc-loc>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .fc-calc-hint{color:var(--gold-d);font-weight:600;white-space:nowrap;flex-shrink:0}
 .fc-loading{font-size:13px;color:var(--txt-3);padding:4px 2px}
@@ -500,6 +500,13 @@ body.has-bottom-nav .body{padding-bottom:104px}
 .feels-card.lv-cold-danger .dot{background:#1a5fb4}
 .feels-card.lv-comfort .fc-temp{color:#64748b}
 .feels-card.lv-comfort .fc-badge{background:rgba(100,116,139,.14);color:#475569}.feels-card.lv-comfort .dot{background:#94a3b8}
+/* ===== 단계별 조치 리스트 가독성 (밝은 테마) ===== */
+.heat-actions-h{color:#0b1f48}
+.heat-act-list li{color:#26344f;font-size:14px;font-weight:600}
+.heat-act-list li b{color:#0b1f48;font-weight:800}
+.heat-act-list li.legal{color:#c0271f;font-weight:700}
+.heat-act-list li.legal b{color:#a31a13}
+.heat-act-list li.legal::before{background:#d33b3b}
 
 </style>
 </head>
@@ -2294,7 +2301,7 @@ function render(){
   if(s.step===0){
     app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="18" height="18" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" fill="#c9a84c" opacity="0.95"/><polyline points="32,52 45,65 68,38" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body"><div class="home-wrap">
-      <div id="feels-card-wrap" style="width:100%;max-width:360px"></div>
+      <div id="feels-card-wrap" style="width:100%;max-width:400px"></div>
       <div class="home-hero-icon" onclick="_adminTap()" id="home-hero-icon"><svg width="68" height="72" viewBox="0 0 100 108" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e3c86e"/><stop offset="100%" stop-color="#a87028"/></linearGradient></defs><path d="M50,4 L92,20 L92,58 C92,80 74,96 50,104 C26,96 8,80 8,58 L8,20 Z" fill="url(#sg)"/><polyline points="30,56 45,71 70,40" fill="none" stroke="#07090d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="home-title">${s.lang==='ko'?'나는 오늘 안전한가?'  :'Am I Safe Today?'}</div>
       <div class="home-sub">${s.lang==='ko'?'작업 전 안전 체크리스트':'Pre-Work Safety Checklist'}</div>
@@ -3418,7 +3425,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v65'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v66'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
