@@ -2497,7 +2497,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const ko=s.lang==='ko';
     app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🌡️ ${ko?'오늘의 체감온도':"Today's Heat Index"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
     <div class="heat-wrap">
-      <div class="heat-intro">${ko?'기온과 습도를 조절하면 <b>체감온도</b>와 <b>폭염 단계</b>, 단계별 조치사항을 즉시 보여드립니다. <b>체감온도 31℃ 이상</b>은 산업안전보건기준 규칙상 ‘폭염작업’에 해당합니다(2025.6 시행).':'Adjust temperature & humidity to see the <b>heat index</b>, <b>heat level</b>, and required actions. <b>31℃ or above</b> counts as "heat work" under Korean OSH rules (effective Jun 2025).'}<div style="margin-top:8px;font-size:0.85em;color:rgba(255,255,255,0.45)">✽ ${ko?'숫자 옆 <b style="color:rgba(255,255,255,0.7)">− +</b> 버튼으로 기온·습도를 <b style="color:rgba(255,255,255,0.7)">0.1 단위</b>로 정밀 조절할 수 있습니다.':' Use <b style="color:rgba(255,255,255,0.7)">− +</b> to fine-tune by <b style="color:rgba(255,255,255,0.7)">0.1 steps</b>.'}</div></div>
+      <div class="heat-intro">${ko?'기온과 습도를 조절하면 <b>체감온도</b>와 <b>폭염 단계</b>, 단계별 조치사항을 즉시 보여드립니다. <b>체감온도 31℃ 이상</b>은 산업안전보건기준 규칙상 ‘폭염작업’에 해당합니다(2025.7 시행).':'Adjust temperature & humidity to see the <b>heat index</b>, <b>heat level</b>, and required actions. <b>31℃ or above</b> counts as "heat work" under Korean OSH rules (effective Jul 2025).'}<div style="margin-top:8px;font-size:0.85em;color:rgba(255,255,255,0.45)">✽ ${ko?'숫자 옆 <b style="color:rgba(255,255,255,0.7)">− +</b> 버튼으로 기온·습도를 <b style="color:rgba(255,255,255,0.7)">0.1 단위</b>로 정밀 조절할 수 있습니다.':' Use <b style="color:rgba(255,255,255,0.7)">− +</b> to fine-tune by <b style="color:rgba(255,255,255,0.7)">0.1 steps</b>.'}</div></div>
 
       <div class="heat-input-card">
         <div class="heat-irow">
@@ -2527,7 +2527,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         <ul class="heat-act-list" id="heat-act-list"></ul>
       </div>
 
-      <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·습도 기반 기상청 여름철 체감온도 식으로 계산하며, 실제 현장값과 다를 수 있습니다. 법적 판단은 기상청 <b>폭염영향예보</b>와 현장 <b>온·습도(WBGT) 측정값</b>을 기준으로 하세요. 단계 기준: 관심 31℃ / 주의 33℃ / 경고 35℃ / 위험 38℃ 이상.':'※ <b>Estimate for reference only.</b> Computed from the KMA summer heat-index formula; on-site values may differ. Use the KMA heat advisory and measured WBGT for legal determinations. Levels: Attention 31 / Caution 33 / Warning 35 / Danger 38℃+.'}</div>
+      <div class="heat-disc">${ko?'※ <b>참고용 추정치</b>입니다. 기온·습도 기반 기상청 여름철 체감온도 식으로 계산하며, 실제 현장값과 다를 수 있습니다. 법적 판단은 기상청 <b>폭염영향예보</b>와 현장 <b>온·습도(WBGT) 측정값</b>을 기준으로 하세요. 단계 기준: 관심 31℃ / 주의 33℃(폭염주의보) / 경고 35℃(폭염경보) / 위험 38℃ 이상(폭염중대경보).':'※ <b>Estimate for reference only.</b> Computed from the KMA summer heat-index formula; on-site values may differ. Use the KMA heat advisory and measured WBGT for legal determinations. Levels: Attention 31 / Caution 33 (advisory) / Warning 35 (warning) / Danger 38℃+ (severe warning).'}</div>
     </div>`;
     setTimeout(updateHeatIndex,0);
   }
@@ -3325,23 +3325,23 @@ function retryFeelsLoc(ev){
 // 단계 기준(고용노동부 온열질환 예방지침): 관심31 / 주의33 / 경고35 / 위험38
 function heatStage(hi, ko){
   if(hi>=38) return {key:'danger', name:ko?'위험':'Danger', color:'#d33b3b',
-    acts: ko?['옥외작업 <b>중지를 강력 권고</b>합니다.','불가피한 작업은 무더위 시간대(14~17시)를 피하고 추가 보호조치를 적용하세요.','매시간 충분한 휴식·냉방·수분 보충을 보장하세요.','온열질환 응급대응체계(119 신고·냉각)를 즉시 가동할 수 있게 준비하세요.']
-            :['Outdoor work <b>strongly advised to stop.</b>','Avoid peak hours (14:00–17:00); apply extra protection if unavoidable.','Ensure ample rest, cooling and hydration every hour.','Keep the heat-illness emergency response (call 119, cooling) ready.'],
+    acts: ko?['옥외작업 <b>중지를 강력 권고</b>합니다.','불가피한 작업은 무더위 시간대(14~17시)를 피하고 추가 보호조치를 적용하세요.','<b>매시간 15분 이상</b> 휴식과 냉방·수분 보충을 보장하세요.','온열질환 응급대응체계(119 신고·냉각)를 즉시 가동할 수 있게 준비하세요.']
+            :['Outdoor work <b>strongly advised to stop.</b>','Avoid peak hours (14:00–17:00); apply extra protection if unavoidable.','Ensure <b>15+ min rest per hour</b> plus cooling and hydration.','Keep the heat-illness emergency response (call 119, cooling) ready.'],
     legal: ko?'체감온도 35℃ 이상에서 작업 강행 중 온열질환 사망 시 작업중지 명령·엄중 처벌 대상이 될 수 있습니다.'
               :'Forcing work at 35℃+ with a resulting heat-illness death may trigger a stop-work order and strict penalties.'};
   if(hi>=35) return {key:'warn', name:ko?'경고':'Warning', color:'#e0531f',
-    acts: ko?['무더위 시간대(14~17시) 옥외작업 <b>단축·중지를 적극 검토</b>하세요.','매시간 휴식을 부여하고, 위험 신호 시 즉시 작업 중단 경고체계(방송·호각 등)를 운영하세요.','그늘·냉방, 시원한 물, 보냉장구를 충분히 제공하세요.','온열질환 민감군(고령자·기저질환자·신규 배치자)은 별도 관리하세요.']
-            :['<b>Strongly consider shortening/stopping</b> outdoor work at peak hours (14–17).','Give hourly rest; run an alert system (broadcast/whistle) to halt work on warning signs.','Provide shade/cooling, cold water and cooling gear.','Manage vulnerable workers (elderly, chronic illness, newly assigned) separately.'],
+    acts: ko?['무더위 시간대(14~17시) 옥외작업 <b>단축·중지를 적극 검토</b>하세요.','<b>매시간 15분 이상 휴식</b>을 부여하고, 위험 신호 시 즉시 작업 중단 경고체계(방송·호각 등)를 운영하세요.','그늘·냉방, 시원한 물, 보냉장구를 충분히 제공하세요.','온열질환 민감군(고령자·기저질환자·신규 배치자)은 별도 관리하세요.']
+            :['<b>Strongly consider shortening/stopping</b> outdoor work at peak hours (14–17).','Give <b>15+ min rest each hour</b>; run an alert system (broadcast/whistle) to halt work on warning signs.','Provide shade/cooling, cold water and cooling gear.','Manage vulnerable workers (elderly, chronic illness, newly assigned) separately.'],
     legal: ko?'체감온도 35℃ 이상 작업 시 온열질환 사망사고는 무관용 처벌 방침의 대상입니다.'
               :'Heat-illness deaths during work at 35℃+ fall under a zero-tolerance enforcement policy.'};
   if(hi>=33) return {key:'caution', name:ko?'주의':'Caution', color:'#e8821e',
-    acts: ko?['<b>매 2시간 이내 20분 이상 휴식</b>을 부여하세요.','무더위 시간대 작업시간을 조정하고 옥외작업을 단축하세요.','시원하고 깨끗한 물을 자주 마시도록 하고, (이동식) 에어컨·선풍기 등 냉방을 가동하세요.','작업 중 온열질환 증상(어지럼·메스꺼움·두통 등)을 주기적으로 확인하세요.']
-            :['Give <b>at least 20 min rest within every 2 hours.</b>','Adjust work hours and shorten outdoor work at peak heat.','Provide frequent cool water; run AC/fans (incl. portable).','Check for heat-illness symptoms (dizziness, nausea, headache) regularly.'],
+    acts: ko?['<b>매 2시간 이내 20분 이상 휴식</b>을 부여해야 합니다(의무).','무더위 시간대 작업시간을 조정하고 옥외작업을 단축하세요.','시원하고 깨끗한 물을 자주 마시도록 하고, (이동식) 에어컨·선풍기 등 냉방을 가동하세요.','작업 중 온열질환 증상(어지럼·메스꺼움·두통 등)을 주기적으로 확인하세요.']
+            :['Give <b>20+ min rest within every 2 hours (mandatory).</b>','Adjust work hours and shorten outdoor work at peak heat.','Provide frequent cool water; run AC/fans (incl. portable).','Check for heat-illness symptoms (dizziness, nausea, headache) regularly.'],
     legal: ko?'기상청 폭염주의보(체감온도 33℃ 이상) 수준입니다.'
               :'Equivalent to a KMA heat advisory (heat index 33℃+).'};
   if(hi>=31) return {key:'attn', name:ko?'관심':'Attention', color:'#d8a72e',
-    acts: ko?['산업안전보건기준 규칙상 <b>‘폭염작업’(체감온도 31℃ 이상)</b>에 해당합니다.','사업주는 작업특성에 맞게 <b>주기적으로 휴식</b>을 부여해야 합니다(의무).','충분한 물과 그늘·휴게시설을 제공하세요.','체감온도 상승에 대비해 작업계획·휴식주기를 미리 점검하세요.']
-            :['Counts as <b>"heat work" (heat index 31℃+)</b> under OSH rules.','Employer <b>must give periodic rest</b> suited to the work (mandatory).','Provide ample water, shade and rest facilities.','Pre-check work plans and rest cycles for rising heat.'],
+    acts: ko?['산업안전보건기준 규칙상 <b>‘폭염작업’(체감온도 31℃ 이상)</b>에 해당합니다.','체감온도 31℃ 이상에서 <b>2시간 이상</b> 작업 시 ①냉방·통풍장치 ②작업시간대 조정 ③주기적 휴식 중 <b>하나 이상</b>을 조치해야 합니다(의무).','충분한 물과 그늘·휴게시설을 제공하세요.','체감온도 상승에 대비해 작업계획·휴식주기를 미리 점검하세요.']
+            :['Counts as <b>"heat work" (heat index 31℃+)</b> under OSH rules.','For 2h+ work at 31℃+, apply <b>at least one</b> of: cooling/ventilation, schedule change, or periodic rest (mandatory).','Provide ample water, shade and rest facilities.','Pre-check work plans and rest cycles for rising heat.'],
     legal: ''};
   return {key:'none', name:ko?'양호':'Normal', color:'#4a8f6a',
     acts: ko?['현재 폭염 단계 기준(체감온도 31℃) 미만입니다.','폭염 5대 기본수칙(물·그늘·휴식)을 평소대로 유지하세요.','기온·습도가 오르면 다시 확인하세요.']
@@ -3493,7 +3493,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v72'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v73'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
