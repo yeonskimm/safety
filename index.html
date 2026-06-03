@@ -510,11 +510,25 @@ body.has-bottom-nav .body{padding-bottom:104px}
 
 
 /* ===== v68: 홈 배지 이미지 교체 — 카드 제거·배경 투명·확대 ===== */
-.home-hero-icon{width:clamp(150px,46vw,200px)!important;height:clamp(150px,46vw,200px)!important;background:none!important;box-shadow:none!important;border:none!important;border-radius:0!important;margin-top:6px!important;margin-bottom:2px!important;padding:0!important}
+.home-hero-icon{width:clamp(120px,38vw,160px)!important;height:clamp(120px,38vw,160px)!important;background:none!important;box-shadow:none!important;border:none!important;border-radius:0!important;margin-top:2px!important;margin-bottom:0!important;padding:0!important}
 .home-hero-icon::before{display:none!important;background:none!important;content:none!important}
 .home-hero-icon img.hero-img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
 /* v68: 쾌적 구간(기온 10~25℃) 체감온도 숫자 진회색 */
 .feels-card.fc-mild .fc-temp{color:#475569!important}
+/* ===== v69: 홈 배지 축소 + 버튼 상향 (배지 중앙 점유 완화) ===== */
+.home-title{margin-top:8px!important}
+.home-sub{margin-top:5px!important}
+.home-desc{margin-top:7px!important}
+.home-btn{margin-top:12px!important}
+.home-btn-purple{margin-top:8px!important}
+/* v69: 세로 짧은 폰 추가 축소 — 어느 기기든 한 화면 수납 개선 (가로 디자인 영향 최소) */
+@media(max-height:740px) and (max-width:480px){
+  .home-hero-icon{width:clamp(104px,32vw,130px)!important;height:clamp(104px,32vw,130px)!important;margin-top:0!important}
+  .home-wrap{padding-top:10px!important}
+  .home-title{margin-top:6px!important}
+  .home-desc{margin-top:5px!important}
+  .home-btn{margin-top:9px!important}
+}
 </style>
 </head>
 <body>
@@ -3435,7 +3449,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v68'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v69'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
