@@ -140,6 +140,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .row-text{font-size:var(--fs-body,17px);color:#b0b8cc;line-height:1.55;flex:1;min-width:0}
 .row-text.done-text{text-decoration:none;opacity:1;font-weight:700}
 .done-chip{font-size:11px;font-weight:800;color:#fff;background:var(--green);border-radius:20px;padding:2px 9px;flex-shrink:0;align-self:flex-start;margin-top:2px;display:inline-flex;align-items:center;gap:3px;box-shadow:0 1px 4px rgba(22,155,98,0.35)}
+.warn-badge.badge-done,.pledge-badge.badge-done,.loto-badge.badge-done{opacity:.5;filter:saturate(.65)}
 .warn-badge{font-size:9.5px;font-weight:700;color:var(--red);background:rgba(217,80,80,0.1);border:1px solid rgba(217,80,80,0.25);padding:2px 7px;border-radius:20px;flex-shrink:0;align-self:flex-start;margin-top:2px}
 .loto-badge{font-size:9.5px;font-weight:700;color:var(--purple);background:rgba(139,110,224,0.1);border:1px solid rgba(139,110,224,0.28);padding:2px 7px;border-radius:20px;flex-shrink:0;align-self:flex-start;margin-top:2px}
 .pledge-badge{font-size:9.5px;font-weight:800;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.28);padding:2px 7px;border-radius:20px;flex-shrink:0;align-self:flex-start;margin-top:2px}
@@ -2225,8 +2226,9 @@ function buildReport(items,checked,ind,workType,isNR,workerName,team,dateStr,lan
     c.fillRect(PAD,y,W-PAD*2,ROW);
     c.strokeStyle="#e2e8f0";c.lineWidth=0.5;c.beginPath();c.moveTo(PAD,y+ROW);c.lineTo(W-PAD,y+ROW);c.stroke();
     c.fillStyle="#334155";c.font="12px -apple-system,sans-serif";c.fillText(""+(i+1),PAD+22,y+28);
-    if(isWarn&&!isDone){c.fillStyle="#fed7aa";roundRect(c,PAD+44,y+12,36,18,4);c.fill();c.fillStyle="#c2410c";c.font="bold 10px -apple-system,sans-serif";c.fillText("중요",PAD+50,y+25);}
-    if(isLoto&&!isDone){c.fillStyle="#ede9fe";roundRect(c,W-PAD-96,y+12,40,18,4);c.fill();c.fillStyle="#6d28d9";c.font="bold 10px -apple-system,sans-serif";c.fillText("LOTO",W-PAD-90,y+25);}
+    if(item.pledge){c.fillStyle="#fef3c7";roundRect(c,PAD+44,y+12,40,18,4);c.fill();c.fillStyle="#92600a";c.font="bold 8.5px -apple-system,sans-serif";c.fillText("가장중요",PAD+47,y+24.5);}
+    else if(isWarn){c.fillStyle="#fed7aa";roundRect(c,PAD+44,y+12,36,18,4);c.fill();c.fillStyle="#c2410c";c.font="bold 10px -apple-system,sans-serif";c.fillText("중요",PAD+50,y+25);}
+    if(isLoto){c.fillStyle="#ede9fe";roundRect(c,W-PAD-96,y+12,40,18,4);c.fill();c.fillStyle="#6d28d9";c.font="bold 10px -apple-system,sans-serif";c.fillText("LOTO",W-PAD-90,y+25);}
     c.fillStyle=isDone?"#15803d":"#1e293b";c.font="13px -apple-system,sans-serif";
     // 긴 텍스트 줄바꿈
     const maxW=isLoto?W-PAD*2-180:W-PAD*2-120;
@@ -2359,7 +2361,7 @@ function render(){
         <div class="row-content">
           <span class="row-icon">${item.i}</span>
           <span class="row-text${isDone?' done-text':''}">${item.t}</span>
-          ${isPledge&&!isDone?'<span class="pledge-badge">'+BADGE_CRITICAL+'</span>':(isWarn&&!isDone?'<span class="warn-badge">'+BADGE_IMPORTANT+'</span>':'')}\n          ${isLoto&&!isDone?'<span class="loto-badge">LOTO</span>':''}
+          ${isPledge?'<span class="pledge-badge'+(isDone?' badge-done':'')+'">'+BADGE_CRITICAL+'</span>':(isWarn?'<span class="warn-badge'+(isDone?' badge-done':'')+'">'+BADGE_IMPORTANT+'</span>':'')}\n          ${isLoto?'<span class="loto-badge'+(isDone?' badge-done':'')+'">LOTO</span>':''}
           ${isDone?'<span class="done-chip">✓ '+(s.lang==='ko'?'확인완료':'Done')+'</span>':''}
         </div>
       </button>`;
@@ -2375,7 +2377,7 @@ function render(){
       <div class="row-content">
         <span class="row-icon">🤝</span>
         <span class="row-text${isPledgeDone?' done-text':''}">${pledgeItem.t}</span>
-        ${!isPledgeDone?'<span class="pledge-badge">'+BADGE_CRITICAL+'</span>':'<span class="done-chip">✓ '+(s.lang==='ko'?'확인완료':'Done')+'</span>'}
+        <span class="pledge-badge${isPledgeDone?' badge-done':''}">${BADGE_CRITICAL}</span>${isPledgeDone?'<span class="done-chip">✓ '+(s.lang==='ko'?'확인완료':'Done')+'</span>':''}
       </div>
     </button>`;
     const nrSec=s.isNR?`<div class="sec-label purple">🔒 ${s.lang==='ko'?'비정형작업 LOTO 필수 체크':'Non-Routine LOTO Check'}</div>${nrCommonRows}`:'';
