@@ -2340,6 +2340,7 @@ function render(){
         <div style="font-size:11px;color:var(--txt-2);line-height:1.6">${s.lang==='ko'?'산업안전보건법 기반의 현장 전문 AI가<br>안전수칙·위험 요인·사고 예방을 안내해드립니다':'Field safety AI based on industrial safety regulations.<br>Guidance on safety rules, hazards & accident prevention.'}</div>
       </div>
       <button class="home-btn-history" onclick="go(6)">📅 ${s.lang==='ko'?'내 점검이력':'My History'} <span class="cnt">${getHist().length}${s.lang==='ko'?'회':''}</span></button>
+      <div style="margin-top:18px;text-align:center"><span onclick="openFeedback()" style="font-size:13px;color:#8893a6;font-weight:600;border-bottom:1px dashed #c4cdda;padding-bottom:1px;cursor:pointer">💬 ${s.lang==='ko'?'의견 보내기':'Send Feedback'}</span></div>
     </div></div>`;
     mountFeels();
     updateHomeAiCounter(); // 언어변경 등 모든 렌더 경로에서 한도 소진 dim 유지
@@ -2681,6 +2682,7 @@ function _setSeasonMode(m){
   // 대시보드 갱신 (버튼 활성 상태 반영)
   const cur=document.getElementById('admin-dash');
   if(cur && window._lastAdminWs!==undefined) cur.innerHTML=_buildAdminDash(window._lastAdminWs);
+  if(cur && typeof _loadAdminFeedback==='function') _loadAdminFeedback();
 }
 function _toggleAdminDays(){
   const d7=document.getElementById('adminDay7');
@@ -2702,6 +2704,8 @@ async function _showAdminDash(){
   dash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#eef1f6;z-index:9999;overflow-y:auto;font-family:inherit';
   dash.innerHTML = _buildAdminDash(null);  // 로딩 상태로 먼저 표시
   window._lastAdminWs = null;
+  window._adminFb = null;          // 의견은 열 때마다 새로 불러옴
+  window._adminFbFilterVal = 'all';
   document.body.appendChild(dash);
   // 2) 전체 통계 비동기 로드
   let ws = null;
@@ -2713,6 +2717,7 @@ async function _showAdminDash(){
   // 3) 대시보드가 아직 열려 있으면 실제 수치로 갱신
   const cur = document.getElementById('admin-dash');
   if(cur) cur.innerHTML = _buildAdminDash(ws);
+  _loadAdminFeedback();
 }
 
 function _buildAdminDash(ws){
@@ -2877,6 +2882,22 @@ function _buildAdminDash(ws){
         })()}
       </div>
 
+      <!-- 사용자 의견 -->
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80)">💬 사용자 의견</div>
+          <div id="admin-fb-cnt" style="font-size:11px;font-weight:700;background:#fff6db;color:#9a6a05;border-radius:10px;padding:3px 9px">총 0건</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:14px">
+          <button type="button" id="admin-fb-f-all" onclick="_adminFbFilter('all')" style="flex:1;background:#08265f;border:1px solid #08265f;color:#fff;border-radius:9px;padding:7px 4px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">전체</button>
+          <button type="button" id="admin-fb-f-sug" onclick="_adminFbFilter('sug')" style="flex:1;background:#f4f6fa;border:1px solid #e3e9f1;color:rgba(11,31,72,0.6);border-radius:9px;padding:7px 4px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">개선 제안</button>
+          <button type="button" id="admin-fb-f-err" onclick="_adminFbFilter('err')" style="flex:1;background:#f4f6fa;border:1px solid #e3e9f1;color:rgba(11,31,72,0.6);border-radius:9px;padding:7px 4px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">오류 신고</button>
+          <button type="button" id="admin-fb-f-etc" onclick="_adminFbFilter('etc')" style="flex:1;background:#f4f6fa;border:1px solid #e3e9f1;color:rgba(11,31,72,0.6);border-radius:9px;padding:7px 4px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">기타</button>
+        </div>
+        <div id="admin-fb-list"><div style="font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div></div>
+        <button type="button" id="admin-fb-more" onclick="_adminFbMore()" style="display:none;width:100%;background:#f4f6fa;border:1px solid #e3e9f1;color:rgba(11,31,72,0.7);border-radius:12px;padding:11px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:4px">더보기</button>
+      </div>
+
       <!-- 앱 설치 날짜 -->
       <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:16px;margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -2889,6 +2910,152 @@ function _buildAdminDash(ws){
     </div>
   `;
 }
+
+/* ── 사용자 의견: 입력 모달 ── */
+function openFeedback(){
+  if(document.getElementById('fb-overlay')) return;
+  const en = (typeof state!=='undefined' && state.lang==='en');
+  const T = en
+    ? {title:'Send Feedback', sub:'Share a quick thought to make the app better.', cats:['Suggestion','Bug report','Other'], ph:'e.g. The temperature widget text is too small / Please add OO to the checklist', contact:'Contact for reply (optional)', optnote:'* Optional. Your feedback is sent even without it.', send:'Send', close:'Close', empty:'Please enter your feedback.', okT:'Feedback sent!', okS:'Thank you for helping us improve.', fail:'Failed to send. Please try again shortly.', rate:'Too many submissions. Please try again later.', ok:'OK'}
+    : {title:'의견 보내기', sub:'앱을 더 좋게 만들 한마디, 편하게 남겨주세요.', cats:['개선 제안','오류 신고','기타'], ph:'예) 체감온도 위젯 글씨가 작아요 / 점검 항목에 OO 추가 부탁드려요', contact:'답장 받을 연락처 (선택)', optnote:'* 연락처는 선택입니다. 안 적어도 의견은 전달됩니다.', send:'보내기', close:'닫기', empty:'내용을 입력해 주세요.', okT:'의견이 전달됐어요!', okS:'소중한 의견 감사합니다.', fail:'전송에 실패했어요. 잠시 후 다시 시도해 주세요.', rate:'잠시 후 다시 시도해 주세요. (요청이 너무 많아요)', ok:'확인'};
+  window._fbCat='sug'; window._fbT=T;
+  const ov=document.createElement('div');
+  ov.id='fb-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(8,20,45,0.55);z-index:10000;display:flex;align-items:flex-end;justify-content:center;font-family:inherit';
+  ov.onclick=function(e){ if(e.target===ov) closeFeedback(); };
+  ov.innerHTML='<div style="background:#fff;width:100%;max-width:600px;border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(8,20,45,0.25)">'
+    +'<div id="fb-form">'
+    +'<div style="width:38px;height:4px;background:#d5dbe6;border-radius:3px;margin:0 auto 14px"></div>'
+    +'<div style="font-size:17px;font-weight:900;color:#08265f;text-align:center">💬 '+T.title+'</div>'
+    +'<div style="font-size:12px;color:#44546f;text-align:center;margin-top:5px;line-height:1.5">'+T.sub+'</div>'
+    +'<div style="display:flex;gap:7px;margin:15px 0 12px">'
+    +'<button type="button" id="fb-cat-sug" onclick="_fbSetCat(\'sug\')" style="flex:1;background:#08265f;border:1.5px solid #08265f;color:#fff;border-radius:11px;padding:9px 4px;font-size:12.5px;font-weight:800;font-family:inherit;cursor:pointer">'+T.cats[0]+'</button>'
+    +'<button type="button" id="fb-cat-err" onclick="_fbSetCat(\'err\')" style="flex:1;background:#f4f6fa;border:1.5px solid #e3e9f1;color:#44546f;border-radius:11px;padding:9px 4px;font-size:12.5px;font-weight:800;font-family:inherit;cursor:pointer">'+T.cats[1]+'</button>'
+    +'<button type="button" id="fb-cat-etc" onclick="_fbSetCat(\'etc\')" style="flex:1;background:#f4f6fa;border:1.5px solid #e3e9f1;color:#44546f;border-radius:11px;padding:9px 4px;font-size:12.5px;font-weight:800;font-family:inherit;cursor:pointer">'+T.cats[2]+'</button>'
+    +'</div>'
+    +'<textarea id="fb-text" maxlength="500" placeholder="'+T.ph+'" style="width:100%;border:1.5px solid #e3e9f1;border-radius:13px;padding:12px;font-size:14px;font-family:inherit;color:#1c2738;min-height:96px;resize:none"></textarea>'
+    +'<div style="text-align:right;font-size:11px;color:#8893a6;margin-top:5px"><span id="fb-count">0</span> / 500</div>'
+    +'<input id="fb-contact" type="text" maxlength="100" placeholder="'+T.contact+'" style="width:100%;border:1.5px solid #e3e9f1;border-radius:13px;padding:11px 12px;font-size:13px;font-family:inherit;margin-top:9px;color:#1c2738">'
+    +'<input id="fb-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">'
+    +'<div style="font-size:11px;color:#8893a6;margin-top:5px;padding-left:3px">'+T.optnote+'</div>'
+    +'<div id="fb-err" style="display:none;font-size:12px;color:#c0392b;margin-top:10px;text-align:center"></div>'
+    +'<button type="button" id="fb-send" onclick="_fbSend()" style="margin-top:16px;width:100%;background:linear-gradient(135deg,#08265f,#0d3c84);color:#fff;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:900;font-family:inherit;cursor:pointer">'+T.send+'</button>'
+    +'<button type="button" onclick="closeFeedback()" style="margin-top:8px;width:100%;background:none;border:none;color:#8893a6;font-size:13px;font-weight:700;padding:8px;font-family:inherit;cursor:pointer">'+T.close+'</button>'
+    +'</div>'
+    +'<div id="fb-done" style="display:none;text-align:center;padding:18px 0 6px">'
+    +'<div style="width:58px;height:58px;border-radius:50%;background:#eafaf1;color:#2f9e6a;font-size:30px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">✓</div>'
+    +'<div style="font-size:17px;font-weight:900;color:#2f9e6a">'+T.okT+'</div>'
+    +'<div style="font-size:12px;color:#44546f;margin-top:6px">'+T.okS+'</div>'
+    +'<button type="button" onclick="closeFeedback()" style="margin-top:18px;width:100%;background:linear-gradient(135deg,#08265f,#0d3c84);color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer">'+T.ok+'</button>'
+    +'</div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  const ta=document.getElementById('fb-text');
+  ta.addEventListener('input',function(){ document.getElementById('fb-count').textContent=this.value.length; });
+  setTimeout(function(){ try{ta.focus();}catch(e){} }, 120);
+}
+function _fbSetCat(c){
+  window._fbCat=c;
+  [['sug','fb-cat-sug'],['err','fb-cat-err'],['etc','fb-cat-etc']].forEach(function(p){
+    const b=document.getElementById(p[1]); if(!b) return;
+    const on=(p[0]===c);
+    b.style.background=on?'#08265f':'#f4f6fa'; b.style.borderColor=on?'#08265f':'#e3e9f1'; b.style.color=on?'#fff':'#44546f';
+  });
+}
+function closeFeedback(){ const o=document.getElementById('fb-overlay'); if(o) o.remove(); }
+async function _fbSend(){
+  const T=window._fbT||{};
+  const text=(document.getElementById('fb-text').value||'').trim();
+  const contact=(document.getElementById('fb-contact').value||'').trim();
+  const hp=(document.getElementById('fb-hp').value||'');
+  const errEl=document.getElementById('fb-err');
+  if(!text){ errEl.textContent=T.empty; errEl.style.display='block'; return; }
+  if(hp){ _fbShowDone(); return; } // 봇 허니팟
+  const btn=document.getElementById('fb-send');
+  btn.disabled=true; btn.style.opacity='0.6'; errEl.style.display='none';
+  const lang=(typeof state!=='undefined' && state.lang==='en')?'en':'ko';
+  try{
+    const r=await fetch(GEMINI_URL+'/feedback',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({cat:window._fbCat||'etc', text:text, contact:contact, hp:hp, lang:lang}) });
+    if(r.status===429){ errEl.textContent=T.rate; errEl.style.display='block'; btn.disabled=false; btn.style.opacity='1'; return; }
+    if(!r.ok) throw new Error('bad');
+    _fbShowDone();
+  }catch(e){
+    errEl.textContent=T.fail; errEl.style.display='block'; btn.disabled=false; btn.style.opacity='1';
+  }
+}
+function _fbShowDone(){ const f=document.getElementById('fb-form'),d=document.getElementById('fb-done'); if(f)f.style.display='none'; if(d)d.style.display='block'; }
+
+/* ── 사용자 의견: 관리자 목록 ── */
+window._adminFb = (typeof window._adminFb!=='undefined') ? window._adminFb : null;
+window._adminFbFilterVal = window._adminFbFilterVal || 'all';
+window._adminFbShown = window._adminFbShown || 0;
+const _ADMIN_FB_PAGE = 5;
+function _fbEsc(str){ return (str==null?'':String(str)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _fbRel(ts){
+  const m=Math.floor((Date.now()-ts)/60000);
+  if(m<1) return '방금 전';
+  if(m<60) return m+'분 전';
+  const h=Math.floor(m/60); if(h<24) return h+'시간 전';
+  const d=Math.floor(h/24); return d+'일 전';
+}
+async function _loadAdminFeedback(){
+  const list=document.getElementById('admin-fb-list');
+  if(!list) return;
+  if(window._adminFb===null){
+    list.innerHTML='<div style="font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>';
+    try{
+      const r=await fetch(GEMINI_URL+'/admin-feedback',{ headers:{'X-Admin-Token':'safety-admin-2024'} });
+      if(!r.ok) throw new Error('bad');
+      const j=await r.json();
+      window._adminFb = Array.isArray(j.items)? j.items : [];
+    }catch(e){
+      list.innerHTML='<div style="font-size:12px;color:rgba(11,31,72,0.45);text-align:center;padding:16px 0">의견을 불러오지 못했습니다.</div>';
+      const mb=document.getElementById('admin-fb-more'); if(mb) mb.style.display='none';
+      return; // _adminFb는 null 유지 → 다시 열면 재시도
+    }
+  }
+  _renderAdminFb(true);
+}
+function _renderAdminFb(reset){
+  const list=document.getElementById('admin-fb-list');
+  const moreBtn=document.getElementById('admin-fb-more');
+  const cntEl=document.getElementById('admin-fb-cnt');
+  if(!list || window._adminFb===null) return;
+  const f=window._adminFbFilterVal;
+  ['all','sug','err','etc'].forEach(function(k){
+    const b=document.getElementById('admin-fb-f-'+k); if(!b) return;
+    const on=(k===f);
+    b.style.background=on?'#08265f':'#f4f6fa'; b.style.borderColor=on?'#08265f':'#e3e9f1'; b.style.color=on?'#fff':'rgba(11,31,72,0.6)';
+  });
+  const arr = (f==='all') ? window._adminFb : window._adminFb.filter(function(x){return x.cat===f;});
+  if(cntEl) cntEl.textContent='총 '+arr.length+'건';
+  if(reset) window._adminFbShown=_ADMIN_FB_PAGE;
+  const show=Math.min(window._adminFbShown, arr.length);
+  if(arr.length===0){
+    list.innerHTML='<div style="font-size:12px;color:rgba(11,31,72,0.45);text-align:center;padding:18px 0">아직 등록된 의견이 없습니다.</div>';
+    if(moreBtn) moreBtn.style.display='none';
+    return;
+  }
+  const BADGE={sug:['개선 제안','#e8f0ff','#2b54b8'], err:['오류 신고','#fdeaea','#c0392b'], etc:['기타','#eef0f4','#5a6478']};
+  list.innerHTML = arr.slice(0,show).map(function(it){
+    const b=BADGE[it.cat]||BADGE.etc;
+    const contact = it.contact ? '<b style="color:#0b1f48;font-weight:700">'+_fbEsc(it.contact)+'</b>' : '<span style="color:rgba(11,31,72,0.35)">연락처 미입력</span>';
+    return '<div style="border:1px solid #eef1f6;border-radius:13px;padding:13px;margin-bottom:9px;background:#fcfdff">'
+      +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'
+      +'<span style="font-size:10px;font-weight:800;border-radius:8px;padding:3px 9px;background:'+b[1]+';color:'+b[2]+'">'+b[0]+'</span>'
+      +'<span style="font-size:10px;color:rgba(11,31,72,0.42);margin-left:auto">'+_fbRel(it.ts)+'</span>'
+      +'</div>'
+      +'<div style="font-size:13.5px;line-height:1.55;color:#243149;word-break:break-word;white-space:pre-wrap">'+_fbEsc(it.text)+'</div>'
+      +'<div style="margin-top:9px;padding-top:9px;border-top:1px dashed #e3e9f1;font-size:11.5px;color:rgba(11,31,72,0.6)">📨 '+contact+'</div>'
+      +'</div>';
+  }).join('');
+  if(moreBtn){
+    if(show>=arr.length){ moreBtn.disabled=true; moreBtn.style.display='block'; moreBtn.textContent='모두 표시됨'; }
+    else { moreBtn.disabled=false; moreBtn.style.display='block'; moreBtn.textContent='더보기 ('+(arr.length-show)+'건 더)'; }
+  }
+}
+function _adminFbFilter(f){ window._adminFbFilterVal=f; _renderAdminFb(true); }
+function _adminFbMore(){ window._adminFbShown+=_ADMIN_FB_PAGE; _renderAdminFb(false); }
 
 function go(step){
   // 채팅 모드 진입/이탈 시 body 고정 (타이핑 중 레이아웃 깨짐 방지)
@@ -3493,7 +3660,7 @@ const GEMINI_URL='https://safety-ai-proxy.darksky166.workers.dev';
 function stripHanja(text){return text.replace(/[一-鿿㐀-䶿豈-﫿]/g,'');}
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v73'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v74'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
