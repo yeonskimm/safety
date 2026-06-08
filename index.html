@@ -2326,7 +2326,7 @@ function render(){
   const commonLen=s.isNR?DB._common.length+DB._nonroutine_common.length:DB._common.length;
 
   if(s.step===0){
-    app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="19" height="20" viewBox="0 0 100 104" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" style="fill:#ffffff;stroke:#E9A50E;stroke-width:7" stroke-linejoin="round"/><polyline points="32,52 45,65 68,38" style="fill:none;stroke:#243b66;stroke-width:11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="19" height="20" viewBox="0 0 100 104" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" style="fill:#ffffff;stroke:#E9A50E;stroke-width:7" stroke-linejoin="round"/><polyline points="32,52 45,65 68,38" style="fill:none;stroke:#243b66;stroke-width:11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body"><div class="home-wrap">
       <div id="feels-card-wrap" style="width:100%;max-width:400px"></div>
       <div class="home-hero-icon" onclick="_adminTap()" id="home-hero-icon"><img class="hero-img" src="${HAT_BADGE}" alt="오늘의안전"></div>
@@ -2348,7 +2348,7 @@ function render(){
   else if(s.step===1){
     const indList=s.lang==='en'?INDUSTRIES_EN:INDUSTRIES;
     const btns=indList.map(i=>`<button class="i-btn${s.industry===i.id?' on':''}" onclick="selInd('${i.id}')"><span class="i-icon">${i.icon}</span><span class="i-label">${i.label}</span></button>`).join("");
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'내 업종은?':'Select Your Industry'}</div><div class="step-pill">1/3</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'내 업종은?':'Select Your Industry'}</div><div class="step-pill">1/3</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><button class="gear-btn" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body"><div class="i-grid">${btns}</div></div>`;
   }
   else if(s.step===2){
@@ -2369,7 +2369,7 @@ function render(){
         ${d.nr?'<span class="nr-badge">'+nrLabel+'</span>':''}
       </button>`;}).join("");
     const nrBanner=showTab===1?`<div class="nr-banner"><div class="nr-banner-title">${s.lang==='ko'?'🔧 비정형작업이란?':'🔧 What is Non-Routine Work?'}</div><div class="nr-banner-text">${s.lang==='ko'?'설비 수리·청소·교체·이상복구 등 일상적이지 않은 작업입니다.<br>반드시 <b>LOTO(잠금·표지) 절차</b>를 준수하고<br>관리감독자 승인 후 작업을 시작하세요.':'Repair, cleaning, replacement, or abnormal recovery work.<br>Always follow the <b>LOTO (Lock-Out/Tag-Out)</b> procedure<br>and obtain supervisor approval before starting.'}</div></div>`:'';
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(1)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${ind?ind.icon:''} ${s.lang==='ko'?'오늘 어떤 작업?':'What task today?'}</div><div class="step-pill">2/3</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(1)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${ind?ind.icon:''} ${s.lang==='ko'?'오늘 어떤 작업?':'What task today?'}</div><div class="step-pill">2/3</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><button class="gear-btn" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body">
       <div class="tab-row">
         <button class="tab-btn${showTab===0?' on':''}" onclick="setTab(0)">${s.lang==='ko'?'📋 정형작업':'📋 Routine'}</button>
@@ -2419,7 +2419,7 @@ function render(){
     const nrSec=s.isNR?`<div class="sec-label purple">🔒 ${s.lang==='ko'?'비정형작업 LOTO 필수 체크':'Non-Routine LOTO Check'}</div>${nrCommonRows}`:'';
     const doneCard=pct===100?`<div class="done-card"><div class="done-emoji">✅</div><div class="done-text">${s.lang==='ko'?'오늘 안전 체크 완료!':'Safety Check Complete!'}</div><div class="done-sub">${s.lang==='ko'?'안전하게 작업하세요 💪':'Stay safe today 💪'}</div></div>`:'';
         const nrBannerHtml='<div class="nr-banner" style="margin-bottom:12px"><div class="nr-banner-title">'+(s.lang==='ko'?'🔧 비정형작업 — LOTO 절차 필수':'🔧 Non-Routine Work — LOTO Required')+'</div><div class="nr-banner-text">'+(s.lang==='ko'?'보라색 <b>LOTO</b> 항목을 반드시 먼저 확인하세요':'Complete the purple <b>LOTO</b> items first')+'</div></div>';
-app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(2)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title" style="${s.isNR?'color:#c4b5fd':''}">${ind?ind.icon:''} ${s.lang==='en'?(WORK_KEY_MAP[s.workType]||s.workType):s.workType}</div><div class="step-pill">3/3</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><button class="gear-btn" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(2)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title" style="${s.isNR?'color:#c4b5fd':''}">${ind?ind.icon:''} ${s.lang==='en'?(WORK_KEY_MAP[s.workType]||s.workType):s.workType}</div><div class="step-pill">3/3</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><button class="gear-btn" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body">
       ${s.isNR?nrBannerHtml:''}
       <div class="progress">
@@ -2451,10 +2451,18 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         <div class="ai-result-body" id="ai-result-body"></div>
       </div>
     </div>`;
-  setTimeout(()=>{updateAiReportBtn();},0);
+  setTimeout(()=>{
+    updateAiReportBtn();
+    // 언어 토글 등으로 화면이 다시 그려졌을 때, 저장된 리포트가 있으면 복원
+    if(state.aiReport&&state.aiReport.text){
+      var _rb=document.getElementById('ai-result-body');
+      var _rc=document.getElementById('ai-result-card');
+      if(_rb&&_rc){_rb.textContent=state.aiReport.text;_rb.className='ai-result-body';_rc.className='ai-result-card show';}
+    }
+  },0);
   }
   else if(s.step===4){
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(3)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'점검 완료':'Inspection Complete'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(3)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'점검 완료':'Inspection Complete'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body">
       <div class="done-card" style="margin-bottom:14px"><div class="done-emoji">✅</div><div class="done-text">${s.lang==='ko'?'점검이 완료되었습니다':'Inspection Complete'}</div><div class="done-sub">${s.lang==='ko'?'결과가 이력에 저장되었어요. 아래 보고서를 제출하세요.':'Saved to history. Submit the report below.'}</div></div>
       <div class="preview-info"><span>${s.lang==='ko'?'📄 제출용 보고서':'📄 Report'}</span><span style="color:#64748b;font-size:12px">${getDate()}</span></div>
@@ -2470,7 +2478,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===s.industry);
     const indLabel=ind?ind.label:(s.lang==='ko'?'현장':'Site');
     const workLabel=s.workType||(s.lang==='ko'?'일반 작업':'General');
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:9px;background:rgba(124,95,224,0.25);color:#b39af0;border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700">Beta</span></div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇺🇸 ENG':'🇰🇷 한국어'}</button></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:9px;background:rgba(124,95,224,0.25);color:#b39af0;border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700">Beta</span></div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button></div></div>
     <div class="ai-chat-wrap">
       <div class="ai-chat-msgs" id="ai-chat-msgs">
         <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">
@@ -2491,12 +2499,16 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     </div>`;
     setTimeout(()=>{
       aiUpdateLimitUI();
+      // 언어 토글 등으로 화면이 다시 그려졌을 때, 기존 대화기록이 있으면 복원
+      if(aiChatHistory&&aiChatHistory.length){
+        aiChatHistory.forEach(function(h){ aiAppendMsg(h.role==='user'?'user':'ai', h.text); });
+      }
       updateChatPos();
     }, 0);
   }
   else if(s.step===7){
     const ko=s.lang==='ko';
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🌡️ ${ko?'오늘의 체감온도':"Today's Heat Index"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🌡️ ${ko?'오늘의 체감온도':"Today's Heat Index"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
     <div class="heat-wrap">
       <div class="heat-intro">${ko?'기온과 습도를 조절하면 <b>체감온도</b>와 <b>폭염 단계</b>, 단계별 조치사항을 즉시 보여드립니다. <b>체감온도 31℃ 이상에서 2시간 이상</b> 작업하면 산업안전보건기준 규칙상 ‘폭염작업’에 해당합니다(2025.7.17 시행).':'Adjust temperature & humidity to see the <b>heat index</b>, <b>heat level</b>, and required actions. Working <b>2+ hours at a heat index of 31℃ or above</b> counts as "heat work" under Korean OSH rules (effective Jul 17, 2025).'}<div style="margin-top:8px;font-size:0.85em;color:rgba(255,255,255,0.45)">✽ ${ko?'숫자 옆 <b style="color:rgba(255,255,255,0.7)">− +</b> 버튼으로 기온·습도를 <b style="color:rgba(255,255,255,0.7)">0.1 단위</b>로 정밀 조절할 수 있습니다.':' Use <b style="color:rgba(255,255,255,0.7)">− +</b> to fine-tune by <b style="color:rgba(255,255,255,0.7)">0.1 steps</b>.'}</div></div>
 
@@ -2534,7 +2546,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
   }
   else if(s.step===8){
     const ko=s.lang==='ko';
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🥶 ${ko?'오늘의 한랭 체감온도':"Today's Wind Chill"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇺🇸 ENG':'🇰🇷 한국어'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${ko?'← 뒤로':'← Back'}</button><div class="h-title">🥶 ${ko?'오늘의 한랭 체감온도':"Today's Wind Chill"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${ko?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div></div></div>
     <div class="heat-wrap heat-cold">
       <div class="heat-intro cold">${ko?'기온과 풍속을 조절하면 <b>체감온도</b>와 <b>한랭 위험 단계</b>, 단계별 조치사항을 즉시 보여드립니다. 겨울철 옥외작업 시 <b>한파안전 5대 기본수칙</b>(따뜻한 옷·쉼터·물·작업시간 조정·119)을 준수하세요.':'Adjust temperature & wind to see the <b>wind chill</b>, <b>cold-risk level</b>, and required actions. Follow the 5 cold-safety basics for winter outdoor work.'}<div style="margin-top:8px;font-size:0.85em;color:rgba(255,255,255,0.45)">✽ ${ko?'숫자 옆 <b style="color:rgba(255,255,255,0.7)">− +</b> 버튼으로 기온·풍속을 <b style="color:rgba(255,255,255,0.7)">0.1 단위</b>로 정밀 조절할 수 있습니다.':' Use <b style="color:rgba(255,255,255,0.7)">− +</b> to fine-tune by <b style="color:rgba(255,255,255,0.7)">0.1 steps</b>.'}</div></div>
 
@@ -3086,6 +3098,7 @@ function go(step){
   }
 }
 function selInd(id){
+  state.aiReport=null; // 업종 변경 시 이전 AI 리포트 무효화
   setState({industry:id,workType:null,isNR:false,checked:{},tab:0});
   // 업종별 사용 통계 로컬 + Worker 기록
   try {
@@ -3098,7 +3111,7 @@ function selInd(id){
   gtag('event','industry_selected',{industry_name:id});
 }
 function setTab(t){state.tab=t;state.workType=null;state.isNR=false;render();}
-function selWork(d,nr){const koKey=WORK_KEY_MAP_REVERSE[d]||d;setState({workType:koKey,isNR:nr});}
+function selWork(d,nr){const koKey=WORK_KEY_MAP_REVERSE[d]||d;state.aiReport=null;setState({workType:koKey,isNR:nr});}
 function startCheck(){setState({checked:{},step:3});window.scrollTo(0,0);}
 function toggle(i){const c={...state.checked};c[i]=!c[i];setState({checked:c});}
 function finishInspection(){
@@ -3662,11 +3675,17 @@ function stripHanja(text,isEn){
   // 일본어 '없음' 표현은 그냥 지우면 빈칸이 되므로 먼저 치환
   text=text.replace(/(特に)?(無し|なし|ナシ)/g,isEn?'None':'없음');
   // 한자(CJK) + 일본어 가나(히라가나・가타카나) 제거
-  return text.replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\u30a0-\u30ff]/g,'');
+  text=text.replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\u30a0-\u30ff]/g,'');
+  // (한국어) 일본어 치환 잔재로 생긴 어색한 '없음+조사' 정리 (안전망)
+  if(!isEn){
+    text=text.replace(/없음\s*가(?=\s|,|\.|$)/g,'없음');     // '없음가'(비문) → '없음'
+    text=text.replace(/없음\s*이지만,?\s*/g,'없음. 다만 ');   // '없음이지만,' → '없음. 다만 '
+  }
+  return text;
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v76'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v77'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -3765,8 +3784,8 @@ async function generateAiReport(){
   const indLabel=ind?(state.lang==='en'?ind.label:ind.label):'현장';
   const isEn=state.lang==='en';
   const prompt=isEn?
-    `You are an industrial safety expert. Based on the checklist results below, write a concise safety diagnosis report in English.\n\nIndustry: ${indLabel}\nTask: ${WORK_KEY_MAP[state.workType]||state.workType}\nWork type: ${isNR?'Non-routine (maintenance/repair, HIGH RISK, LOTO required)':'Routine'}\nCompletion: ${doneCnt}/${totalCnt} (${donePct}%)\nCompleted items: ${yesItems.join(', ')||'None'}\nIncomplete items: ${noItems.join(', ')||'None'}\nCritical unchecked items: ${warnItems.join(', ')||'None'}\n\n[Verdict rule] If ANY critical item is unchecked, verdict MUST be DANGER. If there are incomplete items but all critical items are done, CAUTION. If all done, SAFE.\n[Principle] If any item is incomplete, do NOT praise. Warn specifically about the risk. For non-routine work, emphasize LOTO/power isolation first.\n\nFormat (under 200 words):\n[Verdict] DANGER / CAUTION / SAFE\n\n[Overall Assessment]\n(2-3 sentences)\n\n[Key Hazards]\n(2-3 points)\n\n[Immediate Action Required]\n(3 specific actions)`:
-    `당신은 산업안전 전문가입니다. 아래 체크리스트 결과를 바탕으로 현장 안전 진단 리포트를 한국어로 작성하세요.\n\n업종: ${indLabel}\n작업: ${state.workType}\n작업 유형: ${isNR?'비정형 작업(정비·수리 등 고위험, 전원격리(LOTO)가 핵심)':'정형(일상) 작업'}\n이행률: ${doneCnt}/${totalCnt}개 (${donePct}%)\n이행 항목: ${yesItems.join(', ')||'없음'}\n미이행 항목: ${noItems.join(', ')||'없음'}\n중요 위험 항목(미이행): ${warnItems.join(', ')||'없음'}\n\n[판정 기준] 중요 위험 항목이 1개라도 미이행이면 반드시 '위험'. 미이행이 있으나 중요항목은 모두 이행이면 '주의'. 모든 항목 이행이면 '안전'.\n[작성 원칙] 미이행 항목이 있으면 절대 칭찬하지 말고 그 위험을 구체적으로 경고하세요. 비정형 작업이면 전원격리(LOTO)를 우선 강조하세요. 법 조항 번호나 정확한 조문은 확실하지 않으면 지어내지 말고 언급하지 마세요.\n\n반드시 순수 한국어(한글)로만 작성하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나)는 단 한 글자도 쓰지 마세요. '없음'을 일본어 'なし'로 절대 쓰지 마세요.\n\n다음 형식으로 300자 이내로 간결하게 작성하세요:\n【판정】 위험 / 주의 / 안전 중 하나\n\n【오늘의 현장 종합 평가】\n(2~3문장)\n\n【주요 위험 요인】\n(핵심 2~3개)\n\n【즉시 개선 조치 권고】\n(구체적 3개)`;
+    `You are an industrial safety expert. Based on the checklist results below, write a concise safety diagnosis report in English.\n\nIndustry: ${indLabel}\nTask: ${WORK_KEY_MAP[state.workType]||state.workType}\nWork type: ${isNR?'Non-routine (maintenance/repair, HIGH RISK, LOTO required)':'Routine'}\nCompletion: ${doneCnt}/${totalCnt} (${donePct}%)\nCompleted items: ${yesItems.join(', ')||'None'}\nIncomplete items: ${noItems.join(', ')||'None'}\nCritical unchecked items: ${warnItems.join(', ')||'None'}\n\n[Verdict rule] If ANY critical item is unchecked, verdict MUST be DANGER. If there are incomplete items but all critical items are done, CAUTION. If all done, SAFE.\n[Principle] If any item is incomplete, do NOT praise. Warn specifically about the risk. For non-routine work, emphasize LOTO/power isolation first. If there are no hazards or no actions needed, write only a short phrase such as 'None' or 'No further action needed' — never append particles or extra sentences.\n\nFormat (under 200 words):\n[Verdict] DANGER / CAUTION / SAFE\n\n[Overall Assessment]\n(2-3 sentences)\n\n[Key Hazards]\n(2-3 points)\n\n[Immediate Action Required]\n(3 specific actions)`:
+    `당신은 산업안전 전문가입니다. 아래 체크리스트 결과를 바탕으로 현장 안전 진단 리포트를 한국어로 작성하세요.\n\n업종: ${indLabel}\n작업: ${state.workType}\n작업 유형: ${isNR?'비정형 작업(정비·수리 등 고위험, 전원격리(LOTO)가 핵심)':'정형(일상) 작업'}\n이행률: ${doneCnt}/${totalCnt}개 (${donePct}%)\n이행 항목: ${yesItems.join(', ')||'없음'}\n미이행 항목: ${noItems.join(', ')||'없음'}\n중요 위험 항목(미이행): ${warnItems.join(', ')||'없음'}\n\n[판정 기준] 중요 위험 항목이 1개라도 미이행이면 반드시 '위험'. 미이행이 있으나 중요항목은 모두 이행이면 '주의'. 모든 항목 이행이면 '안전'.\n[작성 원칙] 미이행 항목이 있으면 절대 칭찬하지 말고 그 위험을 구체적으로 경고하세요. 비정형 작업이면 전원격리(LOTO)를 우선 강조하세요. 법 조항 번호나 정확한 조문은 확실하지 않으면 지어내지 말고 언급하지 마세요. 위험 요인이나 개선 조치가 없으면 '특이사항 없음' 또는 '추가 조치 불필요'처럼 짧은 명사형으로만 쓰고, 그 뒤에 '가/이/은' 같은 조사나 다른 문장을 이어 붙이지 마세요.\n\n반드시 순수 한국어(한글)로만 작성하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나)는 단 한 글자도 쓰지 마세요. '없음'을 일본어 'なし'로 절대 쓰지 마세요.\n\n다음 형식으로 300자 이내로 간결하게 작성하세요:\n【판정】 위험 / 주의 / 안전 중 하나\n\n【오늘의 현장 종합 평가】\n(2~3문장)\n\n【주요 위험 요인】\n(핵심 2~3개)\n\n【즉시 개선 조치 권고】\n(구체적 3개)`;
   const btn=document.getElementById('ai-report-btn');
   const btnTxt=document.getElementById('ai-report-btn-txt');
   btn.disabled=true;btnTxt.innerHTML='<div class="ai-spinner"></div> AI 분석 중...';
@@ -3781,7 +3800,7 @@ async function generateAiReport(){
           ?'You are an industrial safety expert. Write ONLY in English. Never use Chinese characters, Japanese kana, or any non-English scripts. Use the English word None, never Japanese kana.'
           :'당신은 산업안전 전문가입니다. 반드시 순수 한글로만 작성하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나) 문자는 단 한 글자도 쓰면 안 됩니다. 없음을 일본어 가나로 쓰지 마세요. 이것은 절대 규칙입니다.'}]},
         contents:[{parts:[{text:prompt}]}],
-        generationConfig:{maxOutputTokens:600,temperature:0.3}})});
+        generationConfig:{maxOutputTokens:600,temperature:0.2}})});
     const data=await res.json();
     if(data.error){
       body.className='ai-result-body';
@@ -3790,6 +3809,7 @@ async function generateAiReport(){
     }
     let text=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'No response received.':'응답을 받지 못했습니다.'),isEn);
     text+=(state.lang==='en'?'\n\n※ This AI report is for reference only; verify legal points with official sources.':'\n\n※ AI 안내는 참고용이며, 법적 사항은 공식 출처에서 확인하세요.');
+    try{state.aiReport={text:text,lang:state.lang};}catch(_){}  // 언어 토글 후에도 복원하기 위해 저장
     aiIncUsage('ai_report');aiUpdateLimitUI();
     let i=0;body.textContent='';body.className='ai-result-body typing';
     clearInterval(__reportTypeTimer);          // 이전 타이핑이 끝나기 전 재요청 시 중복 인터벌 제거(멈춤 방지)
@@ -4036,7 +4056,7 @@ function statsCardsHTML(s){
 }
 function finalStatsHTML(s){
   var ko=s.lang==='ko';
-  var head='<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">'+(ko?'← 뒤로':'← Back')+'</button><div class="h-title">▥ '+(ko?'점검 통계':'Inspection Stats')+'</div><button onclick="toggleLang()" class="lang-toggle-btn">'+(ko?'🇺🇸 ENG':'🇰🇷 한국어')+'</button></div></div>';
+  var head='<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">'+(ko?'← 뒤로':'← Back')+'</button><div class="h-title">▥ '+(ko?'점검 통계':'Inspection Stats')+'</div><button onclick="toggleLang()" class="lang-toggle-btn">'+(ko?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO')+'</button></div></div>';
   return head+'<div class="body">'+statsCardsHTML(s)+'</div>';
 }
 /* 점검이력 화면을 하단 탭 구조에 맞게 재정의 */
