@@ -40,7 +40,8 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 .hdr{background:var(--bg-1);border-bottom:1px solid var(--bdr-gold);padding:10px 10px;position:sticky;top:0;z-index:10;overflow:visible}
 .hdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.35),transparent)}
 .hInner{position:relative;max-width:600px;margin:0 auto;display:flex;align-items:center;gap:4px;justify-content:space-between}
-.logo{font-weight:900;font-size:17px;background:linear-gradient(135deg,#e3c86e,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo{font-weight:900;font-size:17px;white-space:nowrap;flex-shrink:0;background:linear-gradient(135deg,#e3c86e,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-en{font-size:15px}
 .gov-badge{display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:auto}
 .gov-mark{width:22px;height:22px;flex-shrink:0;object-fit:contain;border-radius:3px}
 .gov-text{font-size:11px;font-weight:700;color:var(--txt-3);line-height:1.3;text-align:right;white-space:nowrap}
@@ -314,7 +315,7 @@ input{font-family:inherit;outline:none;color:var(--txt-1)}
 
 /* ── RESPONSIVE ── */
 @media(max-width:380px){.gov-text span{display:none}.step-pill{display:none}.hdr{padding:8px 8px}.hInner{gap:4px}.back-btn{font-size:12px}.gear-popup{right:4px;min-width:150px}}
-@media(max-width:360px){.lang-toggle-btn{padding:2px 6px;font-size:9px}.h-title{font-size:10px}.i-grid{grid-template-columns:repeat(3,1fr);gap:5px}.i-btn{padding:6px 2px;border-radius:8px}.info-row{flex-direction:column;gap:6px}}
+@media(max-width:360px){.lang-toggle-btn{padding:2px 6px;font-size:9px}.logo-en{font-size:14px}.h-title{font-size:10px}.i-grid{grid-template-columns:repeat(3,1fr);gap:5px}.i-btn{padding:6px 2px;border-radius:8px}.info-row{flex-direction:column;gap:6px}}
 @media(min-width:414px){.i-grid{grid-template-columns:repeat(3,1fr)}}
 
 .home-hero-icon{
@@ -2326,7 +2327,7 @@ function render(){
   const commonLen=s.isNR?DB._common.length+DB._nonroutine_common.length:DB._common.length;
 
   if(s.step===0){
-    app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo"><svg width="19" height="20" viewBox="0 0 100 104" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" style="fill:#ffffff;stroke:#E9A50E;stroke-width:7" stroke-linejoin="round"/><polyline points="32,52 45,65 68,38" style="fill:none;stroke:#243b66;stroke-width:11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><div class="logo ${s.lang==='ko'?'':'logo-en'}"><svg width="19" height="20" viewBox="0 0 100 104" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px"><path d="M50,5 L88,20 L88,54 C88,74 72,90 50,97 C28,90 12,74 12,54 L12,20 Z" style="fill:#ffffff;stroke:#E9A50E;stroke-width:7" stroke-linejoin="round"/><polyline points="32,52 45,65 68,38" style="fill:none;stroke:#243b66;stroke-width:11" stroke-linecap="round" stroke-linejoin="round"/></svg>${s.lang==='ko'?'오늘의안전':"Today's Safety"}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button><button class="gear-btn gear-btn-home" onclick="toggleGearPopup()" title="${s.lang==='ko'?'글자 크기':'Font Size'}">⚙️<span class="gear-btn-label">${s.lang==='ko'?'글자크기':'Font'}</span></button><div class="gov-badge"><img class="gov-mark" src="${GOV_BADGE}"><div class="gov-text"><span>대구지방고용노동청</span></div></div><div id="gear-popup" class="gear-popup"><div class="gear-popup-title">🔤 ${s.lang==='ko'?'글자 크기':'Font Size'}</div><div class="gear-popup-btns"><button class="gear-popup-btn${s.fontSize==='s'?' active':''}" id="gear-s" onclick="setFontSize('s');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'작게':'Sm'}</span></button><button class="gear-popup-btn${s.fontSize==='m'?' active':''}" id="gear-m" onclick="setFontSize('m');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'보통':'Md'}</span></button><button class="gear-popup-btn${s.fontSize==='l'?' active':''}" id="gear-l" onclick="setFontSize('l');closeGearPopup()"><span class="gpc">가</span><span class="gpl">${s.lang==='ko'?'크게':'Lg'}</span></button></div></div></div></div>
     <div class="body"><div class="home-wrap">
       <div id="feels-card-wrap" style="width:100%;max-width:400px"></div>
       <div class="home-hero-icon" onclick="_adminTap()" id="home-hero-icon"><img class="hero-img" src="${HAT_BADGE}" alt="오늘의안전"></div>
@@ -3685,7 +3686,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v77'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v78'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
