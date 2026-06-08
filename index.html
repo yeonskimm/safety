@@ -569,9 +569,9 @@ const DETAIL_MAP={
   ],
   auto:[
     {d:"프레스 정형작업"},{d:"로봇 라인 정형작업"},{d:"용접·도장"},{d:"조립·검사"},{d:"지게차 운행"},
-    {d:"크레인·호이스트 작업"},{d:"컨베이어 라인 작업"},
+    {d:"크레인·호이스트 작업"},{d:"컨베이어 라인 작업"},{d:"혼합·분쇄·파쇄기 작업"},
     {d:"프레스 이상복구·비정형",nr:true},{d:"로봇 이상복구·비정형",nr:true},
-    {d:"금형·지그 교체",nr:true},{d:"설비 수리·청소",nr:true},{d:"크레인 수리·점검",nr:true},{d:"컨베이어 수리·청소(제조)",nr:true},
+    {d:"금형·지그 교체",nr:true},{d:"설비 수리·청소",nr:true},{d:"크레인 수리·점검",nr:true},{d:"컨베이어 수리·청소(제조)",nr:true},{d:"혼합·분쇄기 수리·청소",nr:true},
   ],
   construction:[
     {d:"비계·거푸집"},{d:"철근·콘크리트"},{d:"굴착·토공"},{d:"전기·배관"},{d:"고소 마감"},{d:"지붕공사"},
@@ -582,8 +582,8 @@ const DETAIL_MAP={
     {d:"설비 수리·청소",nr:true},{d:"탱크·반응기 내부 작업",nr:true},
   ],
   food:[
-    {d:"절단·슬라이서"},{d:"가열·조리"},{d:"냉동·냉장"},{d:"세척·소독"},
-    {d:"식품기계 수리·점검",nr:true},{d:"CIP 세척라인 점검",nr:true},
+    {d:"절단·슬라이서"},{d:"가열·조리"},{d:"냉동·냉장"},{d:"세척·소독"},{d:"혼합기 작업"},
+    {d:"식품기계 수리·점검",nr:true},{d:"CIP 세척라인 점검",nr:true},{d:"혼합기 수리·청소",nr:true},
   ],
   metal:[
     {d:"선반·밀링"},{d:"그라인더·연삭"},{d:"용접·절단(금속)"},{d:"도금·표면처리"},
@@ -782,6 +782,21 @@ const DB={
     {t:"벨트 하부 작업 시 벨트 낙하 방지 지지대를 설치했나요?",i:"🏗️",w:true},
     {t:"청소 완료 후 공구·걸레 등이 내부에 남지 않았는지 확인이 필수임을 알고 있나요?",i:"🔍",w:true},
   ],
+  "혼합·분쇄·파쇄기 작업":[
+    {t:"방호덮개·감응형 방호장치(인터록)가 정상 작동함을 확인했나요?",i:"🔒",w:true},
+    {t:"가동 중 투입구에 손·도구를 넣어서는 안 된다는 것을 알고 있나요?",i:"✋",w:true},
+    {t:"방호장치를 임의로 해체·정지하지 않겠다고 확인했나요?",i:"🚫",w:true},
+    {t:"안전검사 합격증명서(유효기간)를 확인했나요?",i:"📋",w:true},
+    {t:"보안경·방진마스크를 착용했나요?",i:"🥽"},
+    {t:"비상정지 버튼 위치와 작동 여부를 확인했나요?",i:"🛑"},
+  ],
+  "혼합·분쇄기 수리·청소":[
+    {t:"기계 전원을 차단하고 잠금·표지를 직접 부착했나요?",i:"🔒",w:true,loto:true},
+    {t:"날·임펠러·롤러가 완전히 정지했음을 눈으로 확인했나요?",i:"⏹️",w:true,loto:true},
+    {t:"내부 잔류물을 제거한 후 작업을 시작했나요?",i:"🧹"},
+    {t:"끼임 방지 보호장갑을 착용했나요?",i:"🧤",w:true},
+    {t:"수리 완료 후 공구·걸레 등이 내부에 남지 않았는지 확인이 필수임을 알고 있나요?",i:"🔍",w:true},
+  ],
   "지게차 운행":[
     {t:"지게차 운전 자격(지게차운전기능사 또는 소형건설기계 면허)이 있나요?",i:"🪪",w:true},
     {t:"브레이크·경광등·경적·포크 상태를 작업 전 점검했나요?",i:"🔧"},
@@ -934,6 +949,20 @@ const DB={
     {t:"강산·강알칼리 세척액 잔류 여부를 확인했나요?",i:"⚠️",w:true},
     {t:"내화학성 장갑·보안경을 착용했나요?",i:"🥽",w:true},
     {t:"비상 세안장치 위치를 확인했나요?",i:"🚿"},
+  ],
+  "혼합기 작업":[
+    {t:"덮개·인터록이 정상 작동함을 확인했나요?",i:"🔒",w:true},
+    {t:"가동 중 투입구에 손·도구를 넣어서는 안 된다는 것을 알고 있나요?",i:"✋",w:true},
+    {t:"안전검사 합격증명서(유효기간)를 확인했나요?",i:"📋",w:true},
+    {t:"원료 투입 전 이물(금속·돌 등)을 확인했나요?",i:"🔍"},
+    {t:"세척은 전원 차단 후 하겠다고 확인했나요?",i:"⚡",w:true},
+  ],
+  "혼합기 수리·청소":[
+    {t:"기계 전원을 차단하고 잠금·표지를 직접 부착했나요?",i:"🔒",w:true,loto:true},
+    {t:"교반날·임펠러가 완전히 정지했음을 눈으로 확인했나요?",i:"⏹️",w:true,loto:true},
+    {t:"잔류 식품·이물질을 제거한 후 작업을 시작했나요?",i:"🧹"},
+    {t:"수리 후 이물 혼입이 없는지 점검이 필수임을 알고 있나요?",i:"🔍",w:true},
+    {t:"내수성 장갑·앞치마를 착용했나요?",i:"🧤"},
   ],
 
   // ══ 금속가공 ══
@@ -1278,8 +1307,8 @@ const DETAIL_MAP_EN={
     {d:"Press Operation"},{d:"Robot Line Operation"},{d:"Welding & Painting"},{d:"Assembly & Inspection"},{d:"Forklift Operation"},
     {d:"Press Abnormal Recovery",nr:true},{d:"Robot Abnormal Recovery",nr:true},
     {d:"Die & Jig Replacement",nr:true},{d:"Equipment Repair & Cleaning",nr:true},
-    {d:"Crane & Hoist Operation"},{d:"Conveyor Line Operation"},
-    {d:"Crane Repair & Inspection",nr:true},{d:"Conveyor Repair & Cleaning",nr:true},
+    {d:"Crane & Hoist Operation"},{d:"Conveyor Line Operation"},{d:"Mixer/Crusher/Shredder Operation"},
+    {d:"Crane Repair & Inspection",nr:true},{d:"Conveyor Repair & Cleaning",nr:true},{d:"Mixer & Crusher Repair",nr:true},
   ],
   construction:[
     {d:"Scaffolding & Formwork"},{d:"Rebar & Concrete"},{d:"Excavation & Earthwork"},{d:"Electrical & Plumbing"},{d:"High-Rise Finishing"},{d:"Roofing"},
@@ -1290,8 +1319,8 @@ const DETAIL_MAP_EN={
     {d:"Equipment Repair & Cleaning",nr:true},{d:"Tank & Reactor Interior Work",nr:true},
   ],
   food:[
-    {d:"Cutting & Slicer"},{d:"Heating & Cooking"},{d:"Freezing & Refrigeration"},{d:"Washing & Sanitizing"},
-    {d:"Food Machine Repair",nr:true},{d:"CIP Cleaning Line",nr:true},
+    {d:"Cutting & Slicer"},{d:"Heating & Cooking"},{d:"Freezing & Refrigeration"},{d:"Washing & Sanitizing"},{d:"Mixer Operation"},
+    {d:"Food Machine Repair",nr:true},{d:"CIP Cleaning Line",nr:true},{d:"Mixer Repair & Cleaning",nr:true},
   ],
   metal:[
     {d:"Lathe & Milling"},{d:"Grinder & Grinding"},{d:"Welding & Cutting (Metal)"},{d:"Plating & Surface Treatment"},
@@ -1590,6 +1619,20 @@ const DB_EN={
     {t:"Are you wearing chemical-resistant gloves and safety goggles?",i:"🥽",w:true},
     {t:"Do you know the location of the emergency eyewash station?",i:"🚿"},
   ],
+  "Mixer Operation":[
+    {t:"Have you confirmed the cover and interlock device work properly?",i:"🔒",w:true},
+    {t:"Do you know never to put hands or tools into the inlet while running?",i:"✋",w:true},
+    {t:"Have you checked the safety inspection certificate (validity period)?",i:"📋",w:true},
+    {t:"Have you checked for foreign objects (metal, stones) before adding ingredients?",i:"🔍"},
+    {t:"Have you confirmed cleaning will only be done after isolating power?",i:"⚡",w:true},
+  ],
+  "Mixer Repair & Cleaning":[
+    {t:"Have you isolated power, applied your lock, and attached a Danger Tag?",i:"🔒",w:true,loto:true},
+    {t:"Have you visually confirmed the agitator blade and impeller have fully stopped?",i:"⏹️",w:true,loto:true},
+    {t:"Have you removed residual food and debris before starting work?",i:"🧹"},
+    {t:"Is it mandatory to check for foreign object contamination after repair?",i:"🔍",w:true},
+    {t:"Are you wearing waterproof gloves and an apron?",i:"🧤"},
+  ],
 
   "Lathe & Milling":[
     {t:"Have you removed the chuck key before starting the spindle?",i:"🔑",w:true},
@@ -1718,6 +1761,21 @@ const DB_EN={
     {t:"Have you confirmed adjacent conveyor lines are also stopped?",i:"⏹️",w:true},
     {t:"Have you installed belt support props for work underneath the belt?",i:"🏗️",w:true},
     {t:"Is it mandatory to check no tools or rags are left inside before restarting?",i:"🔍",w:true},
+  ],
+  "Mixer/Crusher/Shredder Operation":[
+    {t:"Have you confirmed the guard cover and interlock device work properly?",i:"🔒",w:true},
+    {t:"Do you know never to put hands or tools into the inlet while running?",i:"✋",w:true},
+    {t:"Have you confirmed you will not remove or disable the safety guard?",i:"🚫",w:true},
+    {t:"Have you checked the safety inspection certificate (validity period)?",i:"📋",w:true},
+    {t:"Are you wearing safety goggles and a dust mask?",i:"🥽"},
+    {t:"Have you confirmed the location and function of the emergency stop button?",i:"🛑"},
+  ],
+  "Mixer & Crusher Repair":[
+    {t:"Have you isolated power, applied your lock, and attached a Danger Tag?",i:"🔒",w:true,loto:true},
+    {t:"Have you visually confirmed blades, impellers, and rollers have fully stopped?",i:"⏹️",w:true,loto:true},
+    {t:"Have you removed internal residue before starting work?",i:"🧹"},
+    {t:"Are you wearing anti-entanglement protective gloves?",i:"🧤",w:true},
+    {t:"Is it mandatory to check no tools or rags are left inside after repair?",i:"🔍",w:true},
   ],
   "Sorter & Automation":[
     {t:"Have you isolated the PLC/controller power and applied your lock?",i:"🔒",w:true,loto:true},
@@ -1978,6 +2036,8 @@ const WORK_KEY_MAP = {
   "컨베이어 라인 작업":"Conveyor Line Operation",
   "크레인 수리·점검":"Crane Repair & Inspection",
   "컨베이어 수리·청소(제조)":"Conveyor Repair & Cleaning (Manufacturing)",
+  "혼합·분쇄·파쇄기 작업":"Mixer/Crusher/Shredder Operation",
+  "혼합·분쇄기 수리·청소":"Mixer & Crusher Repair",
   "비계·거푸집":"Scaffolding & Formwork",
   "철근·콘크리트":"Rebar & Concrete",
   "굴착·토공":"Excavation & Earthwork",
@@ -1998,6 +2058,8 @@ const WORK_KEY_MAP = {
   "세척·소독":"Washing & Sanitizing",
   "식품기계 수리·점검":"Food Machine Repair",
   "CIP 세척라인 점검":"CIP Cleaning Line",
+  "혼합기 작업":"Mixer Operation",
+  "혼합기 수리·청소":"Mixer Repair & Cleaning",
   "선반·밀링":"Lathe & Milling",
   "그라인더·연삭":"Grinder & Grinding",
   "용접·절단":"Welding & Cutting",
@@ -3686,7 +3748,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v78'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v79'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
