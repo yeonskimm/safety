@@ -3744,7 +3744,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v81'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v82'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -3892,19 +3892,21 @@ function hideUpdateBadge(){}
 // 에러 메시지 포맷팅 (상태 코드별 안내)
 function aiFormatErrorMsg(status,err,isEn){
   const msg=err?.message||'';
+  // 끝의 (E___) 식별코드: 화면만 보고 원인을 구분하기 위함(관리자용). 사용자에겐 '무엇을 하면 되는지' 행동 안내 위주.
   if(status===429||msg.includes('quota')||msg.includes('RATE_LIMIT')){
-        return isEn?'⚠️ Daily free quota exceeded. Please try again tomorrow.':'⚠️ 무료 한도를 초과했습니다. 내일 다시 시도해주세요.';
+        return isEn?'⚠️ Daily free quota exceeded. Please try again tomorrow. (E429)':'⚠️ 무료 한도를 초과했습니다. 내일 다시 시도해주세요. (E429)';
   }
   if(status===400&&msg.includes('API_KEY')){
-    return isEn?'⚠️ API key error. Please contact administrator.':'⚠️ API 키 오류. 관리자에게 문의해주세요.';
+    return isEn?'⚠️ API key error. Please contact administrator. (E-KEY)':'⚠️ API 키 오류. 관리자에게 문의해주세요. (E-KEY)';
   }
   if(status===403){
-    return isEn?'⚠️ API access denied. Please contact administrator.':'⚠️ API 접근이 거부되었습니다. 관리자에게 문의해주세요.';
+    // Groq 앞단(Cloudflare) 봇 차단으로 인한 일시 거부. Worker의 자동 재시도 후에도 실패한 경우에만 표시됨.
+    return isEn?'⚠️ AI server is temporarily busy. Please try again in a moment. (E403)':'⚠️ AI 서버가 일시적으로 혼잡합니다. 잠시 후 다시 시도해주세요. (E403)';
   }
   if(status>=500){
-    return isEn?'⚠️ AI server error. Please try again in a moment.':'⚠️ AI 서버 오류. 잠시 후 다시 시도해주세요.';
+    return isEn?'⚠️ AI server error. Please try again in a moment. (E5xx)':'⚠️ AI 서버 오류. 잠시 후 다시 시도해주세요. (E5xx)';
   }
-  return isEn?('⚠️ Error: '+msg):('⚠️ 오류: '+msg);
+  return isEn?('⚠️ Error ('+status+'): '+msg):('⚠️ 오류 ('+status+'): '+msg);
 }
 function aiFormatNetworkErrorMsg(isEn){
   return isEn?'⚠️ Network error. Please check your internet connection.':'⚠️ 네트워크 오류. 인터넷 연결을 확인해주세요.';
