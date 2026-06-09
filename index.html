@@ -785,8 +785,7 @@ const DB={
   "혼합·분쇄·파쇄기 작업":[
     {t:"방호덮개·감응형 방호장치(인터록)가 정상 작동함을 확인했나요?",i:"🔒",w:true},
     {t:"가동 중 투입구에 손·도구를 넣어서는 안 된다는 것을 알고 있나요?",i:"✋",w:true},
-    {t:"방호장치를 임의로 해체·정지하지 않겠다고 확인했나요?",i:"🚫",w:true},
-    {t:"안전검사 합격증명서(유효기간)를 확인했나요?",i:"📋",w:true},
+    {t:"방호장치를 임의로 해제·정지하고 작업하면 안 된다는 것을 알고 있나요?",i:"🚫",w:true},
     {t:"보안경·방진마스크를 착용했나요?",i:"🥽"},
     {t:"비상정지 버튼 위치와 작동 여부를 확인했나요?",i:"🛑"},
   ],
@@ -953,7 +952,6 @@ const DB={
   "혼합기 작업":[
     {t:"덮개·인터록이 정상 작동함을 확인했나요?",i:"🔒",w:true},
     {t:"가동 중 투입구에 손·도구를 넣어서는 안 된다는 것을 알고 있나요?",i:"✋",w:true},
-    {t:"안전검사 합격증명서(유효기간)를 확인했나요?",i:"📋",w:true},
     {t:"원료 투입 전 이물(금속·돌 등)을 확인했나요?",i:"🔍"},
     {t:"세척은 전원 차단 후 하겠다고 확인했나요?",i:"⚡",w:true},
   ],
@@ -1622,7 +1620,6 @@ const DB_EN={
   "Mixer Operation":[
     {t:"Have you confirmed the cover and interlock device work properly?",i:"🔒",w:true},
     {t:"Do you know never to put hands or tools into the inlet while running?",i:"✋",w:true},
-    {t:"Have you checked the safety inspection certificate (validity period)?",i:"📋",w:true},
     {t:"Have you checked for foreign objects (metal, stones) before adding ingredients?",i:"🔍"},
     {t:"Have you confirmed cleaning will only be done after isolating power?",i:"⚡",w:true},
   ],
@@ -1766,7 +1763,6 @@ const DB_EN={
     {t:"Have you confirmed the guard cover and interlock device work properly?",i:"🔒",w:true},
     {t:"Do you know never to put hands or tools into the inlet while running?",i:"✋",w:true},
     {t:"Have you confirmed you will not remove or disable the safety guard?",i:"🚫",w:true},
-    {t:"Have you checked the safety inspection certificate (validity period)?",i:"📋",w:true},
     {t:"Are you wearing safety goggles and a dust mask?",i:"🥽"},
     {t:"Have you confirmed the location and function of the emergency stop button?",i:"🛑"},
   ],
@@ -3748,7 +3744,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v79'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v81'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
