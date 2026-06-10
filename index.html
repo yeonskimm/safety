@@ -628,7 +628,7 @@ const DB={
   // ── 전 업종 공통 ──
   _common:[
     {t:"안전모·안전화를 착용했나요?",i:"⛑️"},
-    {t:"오늘 몸 상태(음주·피로·질환)를 확인해 이상 없음을 확인했나요?",i:"🙋"},
+    {t:"오늘 몸 상태(음주·피로·질환)에 이상이 없는지 확인했나요?",i:"🙋"},
     {t:"비상구·비상연락처 위치를 오늘 작업 전 확인했나요?",i:"🚪"},
   ],
 
@@ -707,7 +707,7 @@ const DB={
     {t:"이물질 제거 시 전용 공구만 사용하고 손을 직접 넣지 않기로 했나요?",i:"🪛",w:true},
     {t:"이상 발생을 관리감독자에게 보고하고 작업 승인을 받았나요?",i:"📋",w:true},
     {t:"복구 완료 후 공구·걸레 등이 내부에 남지 않았는지 확인이 필수임을 알고 있나요?",i:"🔍",w:true},
-    {t:"안전블록을 제거한 후에만 전원을 투입해야 한다는 순서를 알고 있나요?",i:"🔓",w:true},
+    {t:"안전블록을 제거한 뒤에 전원을 투입해야 함을 알고 있나요?",i:"🔓",w:true},
   ],
   "로봇 이상복구·비정형":[
     {t:"로봇 컨트롤러 전원을 차단하고 내가 직접 잠금했나요?",i:"🔒",w:true,loto:true},
@@ -802,7 +802,7 @@ const DB={
     {t:"유압오일 누유 여부를 확인했나요?",i:"🛢️"},
     {t:"보행자 통로(황색선) 위치를 확인했나요?",i:"🚶",w:true},
     {t:"구내 제한속도(10km/h)와 서행 구간을 확인했나요?",i:"🚦"},
-    {t:"이석 시 포크 완전히 내리기, 주차브레이크 잠금, 시동키 분리까지 해야 한다는 것을 알고 있나요?",i:"🅿️"},
+    {t:"자리를 비울 때는 포크를 끝까지 내리고 주차브레이크를 잠근 뒤 시동키를 뽑아야 함을 알고 있나요?",i:"🅿️"},
     {t:"시야가 가려지지 않는 높이와 방법으로 화물을 적재했나요? (시야가 가려지면 적재 방법을 먼저 바꿔야 합니다)",i:"🔁",w:true},
   ],
 
@@ -1272,6 +1272,14 @@ const DB={
     {t:"신호수와 운전자 간 신호 방법을 사전에 확인했나요?",i:"📢"},
     {t:"과부하 방지장치·권과 방지장치 정상 작동 여부를 확인했나요?",i:"⚙️"},
     {t:"와이어로프 꼬임·마모·단선 여부를 점검했나요?",i:"🔍"},
+  ],
+  "철강 설비 수리·점검":[
+    {t:"고온 설비·잔류 용융물·슬래그가 충분히 식었는지 확인했나요?",i:"🌡️",w:true},
+    {t:"설비 내부를 환기하고 산소·일산화탄소 등 유해가스 농도를 측정했나요?",i:"💨",w:true},
+    {t:"냉각수·물기가 고온부에 닿지 않도록 차단·제거했나요?",i:"💧",w:true},
+    {t:"롤러·실린더 등 중량부의 회전·낙하를 막는 안전블록을 설치했나요?",i:"🧱",w:true},
+    {t:"방열복·내열장갑·보안면 등 고온작업 보호구를 착용했나요?",i:"🧤",w:true},
+    {t:"재가동 전 주변 작업자를 안전거리 밖으로 대피시키고 신호를 확인했나요?",i:"📢",w:true},
   ],
 };
 
@@ -1997,12 +2005,12 @@ const DB_EN={
     {t:"Have you put on dedicated gloves when replacing blades?",i:"🧤"},
   ],
   "Steel Equipment Repair":[
-    {t:"Have you obtained work approval / permit-to-work (PTW) from your supervisor?",i:"📋",w:true,loto:true},
-    {t:"Have you locked out and tagged all electrical, hydraulic, and pneumatic energy sources?",i:"🔒",w:true,loto:true},
-    {t:"Have you confirmed zero-energy state (voltage, pressure, stored energy)?",i:"⚡",w:true,loto:true},
-    {t:"Have you placed safety blocks / props to prevent unexpected movement?",i:"🪛",w:true},
-    {t:"Have you reported the abnormality to your supervisor and obtained work approval?",i:"📋",w:true},
-    {t:"Is it mandatory to check no tools or rags remain inside before restarting?",i:"🔍",w:true},
+    {t:"Have you confirmed hot equipment, residual molten metal, and slag have cooled sufficiently?",i:"🌡️",w:true},
+    {t:"Have you ventilated the interior and measured oxygen and toxic gas (e.g., CO) levels?",i:"💨",w:true},
+    {t:"Have you blocked or removed any coolant/water so it cannot contact hot surfaces?",i:"💧",w:true},
+    {t:"Have you installed safety blocks to stop rollers, cylinders, and heavy parts from rotating or falling?",i:"🧱",w:true},
+    {t:"Are you wearing heat-protective gear (heat-resistant suit, gloves, face shield)?",i:"🧤",w:true},
+    {t:"Before restart, have you moved coworkers to a safe distance and confirmed signals?",i:"📢",w:true},
   ],
 };
 
@@ -3225,25 +3233,26 @@ function computeWindChill(ta, ws){
   if(ta>10 || ws<4.8) return ta;
   return 13.12 + 0.6215*ta - 11.37*Math.pow(ws,0.16) + 0.3965*ta*Math.pow(ws,0.16);
 }
-// ── 한랭 단계 (기상청 한파특보 기준 - 기온 기반) ──
+// ── 한랭 단계 (기상청 체감온도 지수범위 기준 - 체감온도 기반) ──
 // 한랭 위험도 단계 — 체감온도(Wind Chill) 기준, 온열 계산기와 대칭(정상/관심/주의/경고/위험)
+// 경계값(-3.2/-10.5/-15.4℃)은 기상청 '체감온도 지수범위별 단계'(관심/주의/경고/위험)에 정렬
 // 한파특보(주의보/경보)는 기상청 예보 기준이라 앱이 판정하지 않음 → 자체 위험도로 안내
 function coldStage(wc, ko){
-  if(wc<=-18) return {key:'danger', name:ko?'위험':'Danger', color:'#1a5fb4',
-    acts: ko?['추운 시간대(새벽) 옥외작업을 <b>중지하거나 최소화</b>하세요.','한랭질환 민감군(고령자·신규배치자·기저질환자)은 추운 작업에서 제외하세요.','30분~1시간마다 따뜻한 쉼터에서 휴식을 부여하세요.','동료가 떨거나 정신이 흐려지면 즉시 119에 신고하고 따뜻한 곳으로 옮기세요.']
-            :['<b>Stop or minimize</b> outdoor work during cold hours (dawn).','Exclude vulnerable workers (elderly, newly assigned, chronic illness).','Provide rest in a warm shelter every 30–60 minutes.','If a coworker shivers or seems confused, call 119 and move them to warmth.'],
-    legal: ko?'체감온도 -18℃ 이하는 동상·저체온증 위험이 큽니다. 정확한 한파특보는 기상청 발표를 확인하세요.':'Wind chill ≤ -18℃ poses high frostbite/hypothermia risk. Check KMA for official cold-wave alerts.'};
-  if(wc<=-10) return {key:'warn', name:ko?'경고':'Warning', color:'#1c71d8',
-    acts: ko?['작업시간대를 조정하거나 <b>작업시간을 단축</b>하세요.','따뜻한 옷·방한모·장갑을 착용하고 보온·방수 신발을 신으세요.','작업장 가까운 곳에 따뜻한 쉼터를 설치하고 휴식을 부여하세요.','깨끗하고 따뜻한 물을 충분히 제공하세요.']
-            :['Adjust or <b>shorten work hours</b>.','Wear warm clothing, hat, gloves and insulated waterproof boots.','Set up a warm shelter near the worksite and provide rest.','Provide ample clean, warm water.'],
-    legal: ''};
-  if(wc<=0) return {key:'caution', name:ko?'주의':'Caution', color:'#3584e4',
-    acts: ko?['방한복·방한모·장갑을 착용하세요.','젖은 옷·장갑은 즉시 갈아입고, 여분의 양말을 준비하세요.','따뜻한 쉼터와 온수를 제공하세요.','빙판길 미끄러짐 사고에 주의하고 미끄럼 방지 안전화를 착용하세요.']
-            :['Wear cold-weather clothing, hat and gloves.','Change wet clothes/gloves immediately; keep spare socks.','Provide a warm shelter and hot water.','Beware of slips on ice; wear anti-slip safety shoes.'],
-    legal: ''};
-  if(wc<=4) return {key:'attn', name:ko?'관심':'Attention', color:'#62a0ea',
-    acts: ko?['한파안전 5대 기본수칙(따뜻한 옷·쉼터·물·시간조정·119)을 확인하세요.','보온이 잘 되는 작업복을 착용하세요.','기온이 더 떨어질 것에 대비해 휴식 계획을 점검하세요.']
-            :['Check the 5 cold-safety basics (warm clothes, shelter, water, schedule, 119).','Wear well-insulated work clothing.','Review rest plans in case temperatures drop further.'],
+  if(wc<-15.4) return {key:'danger', name:ko?'위험':'Danger', color:'#1a5fb4',
+    acts: ko?['가장 추운 새벽 시간대 작업은 피하고, 가능하면 실내에서 대기하세요.','고령·기저질환 등 추위에 약하다면 무리하지 말고 관리감독자에게 알리세요.','30분~1시간마다 따뜻한 곳에서 쉬세요.','동료가 떨거나 정신이 흐려지면 즉시 119에 신고하고 따뜻한 곳으로 옮기세요.']
+            :['Avoid work during the coldest hours (dawn); stay indoors if you can.','If you are vulnerable to cold (elderly, chronic illness), do not push yourself — tell your supervisor.','Warm up in a heated space every 30–60 minutes.','If a coworker shivers or seems confused, call 119 and move them to warmth.'],
+    legal: ko?'체감온도 -15.4℃ 미만은 기상청 한랭 ‘위험’ 단계로, 동상·저체온증 위험이 큽니다. 정확한 한파특보는 기상청 발표를 확인하세요.':'Wind chill below -15.4℃ is the KMA “Danger” cold level — high frostbite/hypothermia risk. Check KMA for official cold-wave alerts.'};
+  if(wc<-10.5) return {key:'warn', name:ko?'경고':'Warning', color:'#1c71d8',
+    acts: ko?['추운 시간대를 피해 작업하고, 길게 이어서 하지 마세요.','따뜻한 옷·방한모·장갑을 착용하고 보온·방수 신발을 신으세요.','따뜻한 곳에서 자주 쉬세요.','따뜻한 물을 자주 마시세요.']
+            :['Avoid the coldest hours and do not work long stretches.','Wear warm clothing, hat, gloves and insulated waterproof boots.','Take frequent breaks in a warm place.','Drink warm water often.'],
+    legal: ko?'체감온도 -10.5℃ 미만은 기상청 한랭 ‘경고’ 단계입니다.':'Wind chill below -10.5℃ is the KMA “Warning” cold level.'};
+  if(wc<-3.2) return {key:'caution', name:ko?'주의':'Caution', color:'#3584e4',
+    acts: ko?['방한복·방한모·장갑을 착용하세요.','젖은 옷·장갑은 즉시 갈아입고, 여분의 양말을 준비하세요.','따뜻한 곳에서 쉬고 온수를 마시세요.','빙판길 미끄러짐 사고에 주의하고 미끄럼 방지 안전화를 착용하세요.']
+            :['Wear cold-weather clothing, hat and gloves.','Change wet clothes/gloves immediately; keep spare socks.','Rest in a warm place and drink hot water.','Beware of slips on ice; wear anti-slip safety shoes.'],
+    legal: ko?'체감온도 -3.2℃ 미만은 기상청 한랭 ‘주의’ 단계입니다.':'Wind chill below -3.2℃ is the KMA “Caution” cold level.'};
+  if(wc<5) return {key:'attn', name:ko?'관심':'Attention', color:'#62a0ea',
+    acts: ko?['한파안전 5대 기본수칙(따뜻한 옷·쉼터·물·시간조정·119)을 확인하세요.','보온이 잘 되는 작업복을 착용하세요.','기온이 더 떨어질 수 있으니 쉬는 시간을 미리 챙기세요.']
+            :['Check the 5 cold-safety basics (warm clothes, shelter, water, schedule, 119).','Wear well-insulated work clothing.','Plan your breaks in case it gets colder.'],
     legal: ''};
   return {key:'none', name:ko?'양호':'Normal', color:'#8b97a8',
     acts: ko?['현재 한랭 위험 단계 미만입니다.','안전수칙을 준수하여 안전하게 작업하세요.','기온이 떨어지면 다시 확인하세요.']
@@ -3564,26 +3573,26 @@ function retryFeelsLoc(ev){
 // 단계 기준(고용노동부 온열질환 예방지침): 관심31 / 주의33 / 경고35 / 위험38
 function heatStage(hi, ko){
   if(hi>=38) return {key:'danger', name:ko?'위험':'Danger', color:'#d33b3b',
-    acts: ko?['옥외작업 <b>중지를 강력 권고</b>합니다.','불가피한 작업은 무더위 시간대(14~17시)를 피하고 추가 보호조치를 적용하세요.','<b>매시간 15분 이상</b> 휴식과 냉방·수분 보충을 보장하세요.','온열질환 응급대응체계(119 신고·냉각)를 즉시 가동할 수 있게 준비하세요.']
-            :['Outdoor work <b>strongly advised to stop.</b>','Avoid peak hours (14:00–17:00); apply extra protection if unavoidable.','Ensure <b>15+ min rest per hour</b> plus cooling and hydration.','Keep the heat-illness emergency response (call 119, cooling) ready.'],
+    acts: ko?['가장 더운 시간엔 옥외작업을 멈추세요. <b>작업 중지가 강력 권고</b>되는 단계입니다.','꼭 해야 한다면 무더위 시간대(14~17시)를 피하고, 보호조치를 갖춘 뒤 하세요.','<b>매시간 15분 이상</b> 그늘·냉방에서 쉬고 물을 충분히 마시세요.','쓰러진 동료가 있으면 즉시 119에 신고하고 시원한 곳으로 옮겨 몸을 식히세요.']
+            :['Stop outdoor work during the hottest hours — <b>stopping is strongly advised</b> at this level.','If you must work, avoid peak hours (14:00–17:00) and use extra protection.','Rest <b>15+ min each hour</b> in shade/cooling and drink plenty of water.','If a coworker collapses, call 119 immediately and move them to a cool place to cool down.'],
     legal: ko?'38℃ 이상은 옥외작업 중지가 강력 권고되는 단계입니다. 폭염작업 보건조치(31·33℃ 의무)를 위반해 온열질환 사망 시 작업중지 명령·엄중 처벌 대상이 될 수 있습니다.'
               :'At 38℃+, stopping outdoor work is strongly recommended. Violating the mandatory heat-work measures (31/33℃) with a resulting heat-illness death may trigger a stop-work order and strict penalties.'};
   if(hi>=35) return {key:'warn', name:ko?'경고':'Warning', color:'#e0531f',
-    acts: ko?['무더위 시간대(14~17시) 옥외작업 <b>단축·중지를 적극 검토</b>하세요.','<b>매시간 15분 이상 휴식</b>을 부여하고, 위험 신호 시 즉시 작업 중단 경고체계(방송·호각 등)를 운영하세요.','그늘·냉방, 시원한 물, 보냉장구를 충분히 제공하세요.','온열질환 민감군(고령자·기저질환자·신규 배치자)은 별도 관리하세요.']
-            :['<b>Strongly consider shortening/stopping</b> outdoor work at peak hours (14–17).','Give <b>15+ min rest each hour</b>; run an alert system (broadcast/whistle) to halt work on warning signs.','Provide shade/cooling, cold water and cooling gear.','Manage vulnerable workers (elderly, chronic illness, newly assigned) separately.'],
+    acts: ko?['가장 더운 시간(14~17시)엔 작업을 피하고, 힘들면 멈추세요.','<b>매시간 15분 이상</b> 쉬고, 어지럼·메스꺼움 등 위험 신호가 오면 즉시 작업을 멈추고 알리세요.','그늘·냉방이 되는 곳에서 쉬고, 시원한 물과 보냉장구를 챙기세요.','고령·기저질환 등 더위에 약하다면 무리하지 말고 관리감독자에게 알리세요.']
+            :['Avoid work at peak hours (14–17); stop if you feel unwell.','Rest <b>15+ min each hour</b>; if you notice warning signs (dizziness, nausea), stop work and tell someone.','Rest in shade/cooling; keep cold water and cooling gear with you.','If you are vulnerable to heat (elderly, chronic illness), do not push yourself — tell your supervisor.'],
     legal: ko?'35℃ 이상의 추가 조치(매시간 15분 휴식 등)는 권고사항입니다. 다만 폭염작업 보건조치(31·33℃ 의무) 위반으로 온열질환 사망사고가 나면 정부의 무관용 처벌 방침 대상이 됩니다.'
               :'Extra measures at 35℃+ (e.g., 15-min hourly rest) are advisory. Still, a heat-illness death from violating the mandatory heat-work measures (31/33℃) falls under the government\'s zero-tolerance enforcement policy.'};
   if(hi>=33) return {key:'caution', name:ko?'주의':'Caution', color:'#e8821e',
-    acts: ko?['<b>매 2시간 이내 20분 이상 휴식</b>을 부여해야 합니다(의무).','무더위 시간대 작업시간을 조정하고 옥외작업을 단축하세요.','시원하고 깨끗한 물을 자주 마시도록 하고, (이동식) 에어컨·선풍기 등 냉방을 가동하세요.','작업 중 온열질환 증상(어지럼·메스꺼움·두통 등)을 주기적으로 확인하세요.']
-            :['Give <b>20+ min rest within every 2 hours (mandatory).</b>','Adjust work hours and shorten outdoor work at peak heat.','Provide frequent cool water; run AC/fans (incl. portable).','Check for heat-illness symptoms (dizziness, nausea, headache) regularly.'],
+    acts: ko?['<b>2시간마다 20분 이상</b> 쉬세요. 사업장이 보장해야 하는 <b>법정 의무</b>입니다.','가장 더운 시간엔 작업을 피하고 길게 이어서 하지 마세요.','시원한 물을 자주 마시고, 에어컨·선풍기 등 냉방이 되는 곳에서 쉬세요.','작업 중 온열질환 증상(어지럼·메스꺼움·두통)을 수시로 살피세요.']
+            :['Rest <b>20+ min every 2 hours</b> — your employer is legally required to ensure this.','Avoid the hottest hours and do not work long stretches.','Drink cool water often; rest where AC/fans are running.','Watch for heat-illness symptoms (dizziness, nausea, headache) throughout work.'],
     legal: ko?'기상청 폭염주의보(체감온도 33℃ 이상) 수준입니다.'
               :'Equivalent to a KMA heat advisory (heat index 33℃+).'};
   if(hi>=31) return {key:'attn', name:ko?'관심':'Attention', color:'#d8a72e',
-    acts: ko?['체감온도 31℃ 이상에서 <b>2시간 이상</b> 작업하면 산업안전보건기준 규칙상 <b>‘폭염작업’</b>에 해당합니다.','폭염작업 시 ①냉방·통풍장치 ②작업시간대 조정 ③주기적 휴식 중 <b>하나 이상</b>을 조치해야 합니다(의무).','충분한 물과 그늘·휴게시설을 제공하세요.','체감온도 상승에 대비해 작업계획·휴식주기를 미리 점검하세요.']
-            :['Working <b>2+ hours</b> at 31℃+ counts as <b>"heat work"</b> under OSH rules.','For heat work, apply <b>at least one</b> of: cooling/ventilation, schedule change, or periodic rest (mandatory).','Provide ample water, shade and rest facilities.','Pre-check work plans and rest cycles for rising heat.'],
+    acts: ko?['체감온도 31℃ 이상에서 <b>2시간 이상</b> 작업하면 산업안전보건기준 규칙상 <b>‘폭염작업’</b>에 해당합니다.','폭염작업 시 사업장은 ①냉방·통풍 ②작업시간 조정 ③주기적 휴식 중 <b>하나 이상</b>을 반드시 시행해야 합니다(법정 의무).','시원한 물을 자주 마시고 그늘·휴게시설에서 쉬세요.','기온이 더 오를 수 있으니 쉬는 시간을 미리 챙기세요.']
+            :['Working <b>2+ hours</b> at 31℃+ counts as <b>"heat work"</b> under OSH rules.','For heat work, your employer must apply <b>at least one</b> of: cooling/ventilation, schedule change, or periodic rest (legally required).','Drink plenty of water and rest in shade or a rest area.','Plan your breaks in case the heat rises.'],
     legal: ''};
   return {key:'none', name:ko?'양호':'Normal', color:'#4a8f6a',
-    acts: ko?['현재 폭염 단계 기준(체감온도 31℃) 미만입니다.','폭염 5대 기본수칙(물·그늘·휴식)을 평소대로 유지하세요.','기온·습도가 오르면 다시 확인하세요.']
+    acts: ko?['현재 폭염 단계 기준(체감온도 31℃) 미만입니다.','폭염 5대 기본수칙(물·그늘·휴식)을 평소대로 지키세요.','기온·습도가 오르면 다시 확인하세요.']
             :['Below the heat-level threshold (31℃ heat index).','Keep the basic heat rules (water, shade, rest) as usual.','Re-check as temperature/humidity rise.'],
     legal: ''};
 }
@@ -3744,7 +3753,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v83'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v84'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
