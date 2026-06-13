@@ -2892,7 +2892,8 @@ function _uqSection(ws){
   else if(!u){ bodyInner='<div style="padding:16px 0;font-size:12px;color:rgba(11,31,72,0.5)">집계 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>'; trendInner=''; }
   else { bodyInner=_uqRenderTab('cum',u); trendInner=_uqTrendBars(u.daily||[]); }
   return '<div style="background:linear-gradient(135deg,rgba(184,134,11,0.22),rgba(185,133,24,0.10));border:1px solid rgba(185,133,24,0.22);border-radius:16px;padding:18px;margin-bottom:12px">'
-    + '<div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:14px">🧭 고유 사용자 분석</div>'
+    + '<div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:2px">🧭 고유 사용자 분석</div>'
+    + '<div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:500;margin-bottom:14px">기준: 매일 오전 9시(KST) 리셋 · AI 사용량·접속 통계와 동일</div>'
     + headline
     + '<div style="display:flex;gap:6px;margin-bottom:14px">'+_uqTabBtns('cum')+'</div>'
     + '<div id="uq-body" style="background:#ffffff;border-radius:14px;padding:16px">'+bodyInner+'</div>'
@@ -3867,7 +3868,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v87'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v88'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
