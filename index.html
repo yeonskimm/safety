@@ -2799,6 +2799,111 @@ async function _showAdminDash(){
   _loadAdminFeedback();
 }
 
+// ═══════════════════ 고유 사용자 분석 섹션 (v87 추가) ═══════════════════
+// worker의 ws.unique 데이터를 관리자 대시보드에 그린다. 순수 문자열 반환 함수라
+// _buildAdminDash 빌드 시점과 탭 전환(_uqSetTab) 양쪽에서 동일하게 사용한다.
+function _uqFmt(n){ return (typeof n==='number')?n.toLocaleString():(n==null?'?':String(n)); }
+function _uqBtnCss(on){ return 'flex:1;padding:7px 0;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;'+(on?'background:#b98518;color:#fff':'background:rgba(8,38,95,0.06);color:rgba(11,31,72,0.6)'); }
+function _uqSecTitle(t){ return '<div style="font-size:11px;font-weight:700;color:rgba(11,31,72,0.55);letter-spacing:0.5px;margin:14px 0 8px">'+t+'</div>'; }
+function _uqBigNum(label,val){ return '<div style="text-align:center;padding:4px 0 10px"><div style="font-size:30px;font-weight:800;color:#b98518">'+_uqFmt(val)+'</div><div style="font-size:11px;color:rgba(11,31,72,0.6)">'+label+'</div></div>'; }
+function _uqNote(t){ return '<div style="background:rgba(8,38,95,0.04);border-radius:10px;padding:10px 12px;font-size:11px;color:rgba(11,31,72,0.55);line-height:1.6">💡 '+t+'</div>'; }
+function _uqEmpty(){ return '<div style="font-size:12px;color:rgba(11,31,72,0.45);padding:4px 0">아직 데이터가 없습니다.</div>'; }
+function _uqRegionBars(obj){
+  const ent = Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  if(!ent.length) return _uqEmpty();
+  const max = Math.max.apply(null, ent.map(e=>e[1]).concat([1]));
+  return ent.map(function(e){
+    const name=e[0], val=e[1];
+    const isEtc = String(name).indexOf('기타')>-1 || String(name).indexOf('(IP)')>-1;
+    const w = Math.round(val/max*100);
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      + '<span style="width:88px;font-size:12px;color:rgba(11,31,72,0.72);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+name+'</span>'
+      + '<div style="flex:1;height:9px;background:rgba(8,38,95,0.06);border-radius:5px"><div style="width:'+w+'%;height:9px;border-radius:5px;background:'+(isEtc?'rgba(11,31,72,0.25)':'#b98518')+'"></div></div>'
+      + '<span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#0b1f48">'+_uqFmt(val)+'</span>'
+      + '</div>';
+  }).join('');
+}
+function _uqDeviceBar(obj){
+  const e = Object.entries(obj||{});
+  const total = e.reduce(function(a,p){return a+p[1];},0);
+  if(!total) return _uqEmpty();
+  const colors={'Android':'#6a4fd6','iOS':'#22c55e','PC':'rgba(11,31,72,0.3)'};
+  const seg = e.map(function(p){ return '<div style="width:'+Math.round(p[1]/total*100)+'%;background:'+(colors[p[0]]||'#b98518')+'"></div>'; }).join('');
+  const leg = e.map(function(p){ return '<span style="font-size:11px;color:rgba(11,31,72,0.6);margin-right:12px"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+(colors[p[0]]||'#b98518')+';margin-right:4px"></span>'+p[0]+' '+Math.round(p[1]/total*100)+'%</span>'; }).join('');
+  return '<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin-bottom:8px">'+seg+'</div><div>'+leg+'</div>';
+}
+function _uqFreqRows(f){
+  f=f||{};
+  const rows=[['월 10일 이상',f.heavy||0,'#b98518'],['월 3~9일',f.mid||0,'#6a4fd6'],['월 1~2일',f.light||0,'rgba(11,31,72,0.45)']];
+  return rows.map(function(r){ return '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:rgba(11,31,72,0.72)">'+r[0]+'</span><span style="font-weight:700;color:'+r[2]+'">'+r[1]+'명</span></div>'; }).join('');
+}
+function _uqTrendBars(daily){
+  daily=daily||[];
+  if(!daily.length) return '';
+  const max = Math.max.apply(null, daily.map(function(d){return d.users||0;}).concat([1]));
+  return daily.map(function(d,i){
+    const h=Math.round((d.users||0)/max*60);
+    const isLast=(i===daily.length-1);
+    return '<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%"><div title="'+(d.date||'')+': '+(d.users||0)+'" style="width:100%;border-radius:2px 2px 0 0;height:'+h+'px;background:'+(isLast?'#b98518':'rgba(185,133,24,0.32)')+'"></div></div>';
+  }).join('');
+}
+function _uqTabBtns(active){
+  const defs=[['cum','누적'],['today','오늘'],['d7','7일'],['d30','30일']];
+  return defs.map(function(d){ return '<button id="uq-tab-'+d[0]+'" onclick="_uqSetTab(\''+d[0]+'\')" style="'+_uqBtnCss(d[0]===active)+'">'+d[1]+'</button>'; }).join('');
+}
+function _uqRenderTab(t,u){
+  if(t==='today'){
+    return _uqBigNum('오늘 고유 사용자', u.users.today)
+      + _uqSecTitle('지역별 (오늘)') + _uqRegionBars(u.today&&u.today.byRegion)
+      + _uqSecTitle('기기별 (오늘)') + _uqDeviceBar(u.today&&u.today.byDevice);
+  }
+  if(t==='d7'){
+    return _uqBigNum('최근 7일 고유 사용자', u.users.last7)
+      + _uqNote('지역·기기 분포는 데이터 부담을 줄이기 위해 <b>누적</b>·<b>오늘</b> 탭에서만 제공합니다. 7일은 위 사용자 수와 아래 추이 그래프로 확인하세요.');
+  }
+  if(t==='d30'){
+    return _uqBigNum('최근 30일 고유 사용자', u.users.last30)
+      + _uqNote('지역·기기 분포는 데이터 부담을 줄이기 위해 <b>누적</b>·<b>오늘</b> 탭에서만 제공합니다. 30일은 위 사용자 수와 아래 추이 그래프로 확인하세요.');
+  }
+  // 기본: 누적
+  return _uqBigNum('누적 고유 사용자', u.users.total)
+    + _uqSecTitle('지역별 (누적)') + _uqRegionBars(u.cumulative&&u.cumulative.byRegion)
+    + _uqSecTitle('기기별 (누적)') + _uqDeviceBar(u.cumulative&&u.cumulative.byDevice)
+    + _uqSecTitle('사용 빈도 (이번 달)') + _uqFreqRows(u.frequency);
+}
+// 탭 전환 — 이미 받아둔 window._lastAdminWs.unique를 재사용(네트워크 재호출 없음)
+function _uqSetTab(t){
+  const ws=window._lastAdminWs;
+  const u=(ws&&ws.unique&&!ws.unique.error)?ws.unique:null;
+  if(u){ const body=document.getElementById('uq-body'); if(body) body.innerHTML=_uqRenderTab(t,u); }
+  ['cum','today','d7','d30'].forEach(function(k){ const b=document.getElementById('uq-tab-'+k); if(b) b.style.cssText=_uqBtnCss(k===t); });
+}
+// 섹션 전체 HTML (로딩/오류/정상 상태 처리). _buildAdminDash에서 ${_uqSection(ws)}로 삽입.
+function _uqSection(ws){
+  const loading=(ws===null);
+  const u=(ws&&ws.unique&&!ws.unique.error)?ws.unique:null;
+  const tv=(ws&&ws.today&&typeof ws.today.visits==='number')?ws.today.visits:null;
+  const headline = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'
+    + '<div style="background:rgba(255,255,255,0.7);border-radius:12px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#0b1f48">'+(loading?'…':(tv!=null?_uqFmt(tv):'?'))+'</div><div style="font-size:10px;color:rgba(11,31,72,0.6);margin-top:2px">오늘 총 접속<br><span style="font-size:9px">(중복 포함)</span></div></div>'
+    + '<div style="background:rgba(255,255,255,0.7);border-radius:12px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#b98518">'+(loading?'…':(u?_uqFmt(u.users.today):'?'))+'</div><div style="font-size:10px;color:rgba(11,31,72,0.6);margin-top:2px">오늘 고유 사용자<br><span style="font-size:9px">(1인 1회)</span></div></div>'
+    + '</div>';
+  let bodyInner, trendInner;
+  if(loading){ bodyInner='<div style="padding:20px 0;text-align:center;font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>'; trendInner=''; }
+  else if(!u){ bodyInner='<div style="padding:16px 0;font-size:12px;color:rgba(11,31,72,0.5)">집계 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>'; trendInner=''; }
+  else { bodyInner=_uqRenderTab('cum',u); trendInner=_uqTrendBars(u.daily||[]); }
+  return '<div style="background:linear-gradient(135deg,rgba(184,134,11,0.22),rgba(185,133,24,0.10));border:1px solid rgba(185,133,24,0.22);border-radius:16px;padding:18px;margin-bottom:12px">'
+    + '<div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:14px">🧭 고유 사용자 분석</div>'
+    + headline
+    + '<div style="display:flex;gap:6px;margin-bottom:14px">'+_uqTabBtns('cum')+'</div>'
+    + '<div id="uq-body" style="background:#ffffff;border-radius:14px;padding:16px">'+bodyInner+'</div>'
+    + '</div>'
+    + '<div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">'
+    + '<div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📈 최근 30일 고유 사용자 추이</div>'
+    + '<div id="uq-trend" style="display:flex;align-items:flex-end;gap:2px;height:70px">'+trendInner+'</div>'
+    + '</div>';
+}
+// ════════════════════════════════════════════════════════════════════════════
+
 function _buildAdminDash(ws){
   const loading = (ws===null);
   const ph = loading ? '…' : '?';
@@ -2877,6 +2982,8 @@ function _buildAdminDash(ws){
         <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📊 최근 7일 접속 추이</div>
         <div style="display:flex;align-items:flex-end;gap:4px;height:80px">${weekBars}</div>
       </div>
+
+      ${_uqSection(ws)}
 
       <!-- 앱 정보 + API 사용량 (전체) -->
       <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
@@ -3760,7 +3867,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v86'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v87'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
