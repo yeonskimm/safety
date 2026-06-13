@@ -2879,24 +2879,29 @@ function _uqSetTab(t){
   ['cum','today','d7','d30'].forEach(function(k){ const b=document.getElementById('uq-tab-'+k); if(b) b.style.cssText=_uqBtnCss(k===t); });
 }
 // 섹션 전체 HTML (로딩/오류/정상 상태 처리). _buildAdminDash에서 ${_uqSection(ws)}로 삽입.
+// v88: 탭(누적/오늘/7일/30일) 제거 → '누계 요약' 단일 카드 + 30일 추이 그래프.
 function _uqSection(ws){
   const loading=(ws===null);
   const u=(ws&&ws.unique&&!ws.unique.error)?ws.unique:null;
-  const tv=(ws&&ws.today&&typeof ws.today.visits==='number')?ws.today.visits:null;
-  const headline = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'
-    + '<div style="background:rgba(255,255,255,0.7);border-radius:12px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#0b1f48">'+(loading?'…':(tv!=null?_uqFmt(tv):'?'))+'</div><div style="font-size:10px;color:rgba(11,31,72,0.6);margin-top:2px">오늘 총 접속<br><span style="font-size:9px">(중복 포함)</span></div></div>'
-    + '<div style="background:rgba(255,255,255,0.7);border-radius:12px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#b98518">'+(loading?'…':(u?_uqFmt(u.users.today):'?'))+'</div><div style="font-size:10px;color:rgba(11,31,72,0.6);margin-top:2px">오늘 고유 사용자<br><span style="font-size:9px">(1인 1회)</span></div></div>'
-    + '</div>';
-  let bodyInner, trendInner;
-  if(loading){ bodyInner='<div style="padding:20px 0;text-align:center;font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>'; trendInner=''; }
-  else if(!u){ bodyInner='<div style="padding:16px 0;font-size:12px;color:rgba(11,31,72,0.5)">집계 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>'; trendInner=''; }
-  else { bodyInner=_uqRenderTab('cum',u); trendInner=_uqTrendBars(u.daily||[]); }
+  const week=(ws&&ws.week)||[];
+  const sum30=week.reduce(function(a,d){return a+(d.visits||0);},0);
+  let body, trendInner;
+  if(loading){ body='<div style="padding:20px 0;text-align:center;font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>'; trendInner=''; }
+  else if(!u){ body='<div style="padding:16px 0;font-size:12px;color:rgba(11,31,72,0.5)">집계 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>'; trendInner=''; }
+  else {
+    body = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      + '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:800;color:#b98518">'+_uqFmt(u.users.total)+'</div><div style="font-size:11px;color:rgba(11,31,72,0.6);margin-top:2px">누적 사용자</div></div>'
+      + '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:800;color:#0b1f48">'+_uqFmt(sum30)+'</div><div style="font-size:11px;color:rgba(11,31,72,0.6);margin-top:2px">30일 총 접속</div></div>'
+      + '</div>'
+      + '<div style="background:#ffffff;border-radius:14px;padding:16px;margin-top:10px">'
+      + _uqSecTitle('지역별 (누적)') + _uqRegionBars(u.cumulative&&u.cumulative.byRegion)
+      + _uqSecTitle('기기별 (누적)') + _uqDeviceBar(u.cumulative&&u.cumulative.byDevice)
+      + '</div>';
+    trendInner=_uqTrendBars(u.daily||[]);
+  }
   return '<div style="background:linear-gradient(135deg,rgba(184,134,11,0.22),rgba(185,133,24,0.10));border:1px solid rgba(185,133,24,0.22);border-radius:16px;padding:18px;margin-bottom:12px">'
-    + '<div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:2px">🧭 고유 사용자 분석</div>'
-    + '<div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:500;margin-bottom:14px">기준: 매일 오전 9시(KST) 리셋 · AI 사용량·접속 통계와 동일</div>'
-    + headline
-    + '<div style="display:flex;gap:6px;margin-bottom:14px">'+_uqTabBtns('cum')+'</div>'
-    + '<div id="uq-body" style="background:#ffffff;border-radius:14px;padding:16px">'+bodyInner+'</div>'
+    + '<div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:14px">🧭 누계 요약</div>'
+    + body
     + '</div>'
     + '<div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">'
     + '<div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📈 최근 30일 고유 사용자 추이</div>'
@@ -2915,6 +2920,7 @@ function _buildAdminDash(ws){
   const todayC  = ws?.today?.chat    ?? ph;
   const todayR  = ws?.today?.report  ?? ph;
   const todayE  = ws?.today?.errors  ?? ph;
+  const todayU  = (ws?.unique && !ws.unique.error) ? (ws.unique.users?.today ?? ph) : ph;
   const totalV  = ws?.total?.visits  ?? ph;
   const totalC  = ws?.total?.chat    ?? ph;
   const totalR  = ws?.total?.report  ?? ph;
@@ -2950,38 +2956,51 @@ function _buildAdminDash(ws){
 
       <!-- 오늘 전체 통계 (Worker) -->
       <div style="background:linear-gradient(135deg,rgba(184,134,11,0.22),rgba(185,133,24,0.10));border:1px solid rgba(185,133,24,0.22);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:12px">📅 오늘 전체 사용자 현황</div>
+        <div style="font-size:12px;color:#b98518;font-weight:700;margin-bottom:12px">📅 오늘 현황</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center">
           <div><div style="font-size:24px;font-weight:800;color:#b98518">${todayV}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">접속</div></div>
+          <div><div style="font-size:24px;font-weight:800;color:#0b1f48">${todayU}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">사용자</div></div>
           <div><div style="font-size:24px;font-weight:800;color:#6a4fd6">${todayC}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">채팅</div></div>
           <div><div style="font-size:24px;font-weight:800;color:#22c55e">${todayR}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">리포트</div></div>
-          <div><div style="font-size:24px;font-weight:800;color:${todayE>0?'#ef4444':'#22c55e'}">${todayE}</div><div style="font-size:10px;color:rgba(11,31,72,0.62)">오류</div></div>
         </div>
-      </div>
-
-      <!-- 누적 통계 -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
-        <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:14px;padding:14px;text-align:center">
-          <div style="font-size:20px;margin-bottom:4px">👥</div>
-          <div style="font-size:22px;font-weight:800;color:#b98518">${typeof totalV==='number'?totalV.toLocaleString():totalV}</div>
-          <div style="font-size:11px;color:rgba(11,31,72,0.55);margin-top:2px">총 접속</div>
-        </div>
-        <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:14px;padding:14px;text-align:center">
-          <div style="font-size:20px;margin-bottom:4px">💬</div>
-          <div style="font-size:22px;font-weight:800;color:#6a4fd6">${typeof totalC==='number'?totalC.toLocaleString():totalC}</div>
-          <div style="font-size:11px;color:rgba(11,31,72,0.55);margin-top:2px">총 채팅</div>
-        </div>
-        <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:14px;padding:14px;text-align:center">
-          <div style="font-size:20px;margin-bottom:4px">📋</div>
-          <div style="font-size:22px;font-weight:800;color:#22c55e">${typeof totalR==='number'?totalR.toLocaleString():totalR}</div>
-          <div style="font-size:11px;color:rgba(11,31,72,0.55);margin-top:2px">총 리포트</div>
-        </div>
+        <div style="font-size:10px;color:rgba(11,31,72,0.5);margin-top:10px;line-height:1.5">접속 = 실행 횟수(1인 하루 최대 30회까지 집계) · 사용자 = 오늘 접속한 서로 다른 사람</div>
       </div>
 
       <!-- 주간 차트 -->
       <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
         <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📊 최근 7일 접속 추이</div>
         <div style="display:flex;align-items:flex-end;gap:4px;height:80px">${weekBars}</div>
+      </div>
+
+      <!-- ③ 날짜별 세부 기록 (기본 7일 + 더보기 30일) -->
+      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📅 날짜별 세부 기록 (전체)</div>
+        ${(()=>{
+          if(loading) return '<div style="font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>';
+          const week = ws?.week || [];
+          if(!week.length) return '<div style="font-size:12px;color:rgba(11,31,72,0.45)">아직 데이터 없음</div>';
+          const todayStr = new Date().toISOString().slice(0,10);
+          // 날짜별 고유 사용자 수 매핑 (unique.daily). 없으면 '·'.
+          const uMap = {};
+          const ud = (ws?.unique && !ws.unique.error && ws.unique.daily) ? ws.unique.daily : [];
+          ud.forEach(function(x){ if(x&&x.date) uMap[x.date]=x.users||0; });
+          // 최신순으로 정렬 (Worker는 오래된→최신 순으로 줌)
+          const recent = [...week].reverse();
+          const rowHTML = (d)=>{
+            const isToday = d.date === todayStr;
+            const uTxt = (uMap[d.date]!=null) ? (uMap[d.date]+'명') : '·';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #ffffff">
+              <span style="font-size:12px;color:${isToday?'#b98518':'rgba(11,31,72,0.62)'}">${d.date.slice(5)}${isToday?' (오늘)':''}</span>
+              <span style="font-size:11px;color:rgba(11,31,72,0.80)">사용자 <b style="color:#0b1f48">${uTxt}</b> · 접속 <b style="color:#b98518">${d.visits}</b> · 채팅 <b style="color:#6a4fd6">${d.chat}</b> · 리포트 <b style="color:#22c55e">${d.report}</b></span>
+            </div>`;
+          };
+          const rows7 = recent.slice(0,7).map(rowHTML).join('');
+          const rowsAll = recent.map(rowHTML).join('');
+          if(recent.length<=7) return `<div id="adminDay7">${rows7}</div>`;
+          return `<div id="adminDay7">${rows7}</div>`
+            + `<div id="adminDayAll" style="display:none">${rowsAll}</div>`
+            + `<button id="adminDayToggle" onclick="_toggleAdminDays()" style="width:100%;margin-top:10px;background:#ffffff;border:1px solid rgba(8,38,95,0.10);color:rgba(11,31,72,0.72);font-size:12px;font-weight:700;padding:9px;border-radius:8px;font-family:inherit;cursor:pointer">더보기 (최근 ${recent.length}일) ▾</button>`;
+        })()}
       </div>
 
       ${_uqSection(ws)}
@@ -3040,33 +3059,6 @@ function _buildAdminDash(ws){
           }).join('')}
         </div>
         <div style="font-size:10px;color:rgba(11,31,72,0.45);margin-top:8px">현재: ${seasonMode==='auto'?'자동 (기온 기준)':seasonMode==='hot'?'온열 고정':'한랭 고정'}</div>
-      </div>
-
-      <!-- 날짜별 사용 기록 (기본 7일 + 더보기 30일) -->
-      <div style="background:#ffffff;border:1px solid rgba(8,38,95,0.08);border-radius:16px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;color:rgba(11,31,72,0.80);margin-bottom:14px">📅 날짜별 사용 기록 (전체)</div>
-        ${(()=>{
-          if(loading) return '<div style="font-size:12px;color:rgba(11,31,72,0.45)">불러오는 중…</div>';
-          const week = ws?.week || [];
-          if(!week.length) return '<div style="font-size:12px;color:rgba(11,31,72,0.45)">아직 데이터 없음</div>';
-          const todayStr = new Date().toISOString().slice(0,10);
-          // 최신순으로 정렬 (Worker는 오래된→최신 순으로 줌)
-          const recent = [...week].reverse();
-          const rowHTML = (d)=>{
-            const isToday = d.date === todayStr;
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #ffffff">
-              <span style="font-size:12px;color:${isToday?'#b98518':'rgba(11,31,72,0.62)'}">${d.date.slice(5)}${isToday?' (오늘)':''}</span>
-              <span style="font-size:11px;color:rgba(11,31,72,0.80)">접속 <b style="color:#b98518">${d.visits}</b> · 채팅 <b style="color:#6a4fd6">${d.chat}</b> · 리포트 <b style="color:#22c55e">${d.report}</b></span>
-            </div>`;
-          };
-          const rows7 = recent.slice(0,7).map(rowHTML).join('');
-          const rowsAll = recent.map(rowHTML).join('');
-          // 7일 이하면 더보기 버튼 불필요
-          if(recent.length<=7) return `<div id="adminDay7">${rows7}</div>`;
-          return `<div id="adminDay7">${rows7}</div>`
-            + `<div id="adminDayAll" style="display:none">${rowsAll}</div>`
-            + `<button id="adminDayToggle" onclick="_toggleAdminDays()" style="width:100%;margin-top:10px;background:#ffffff;border:1px solid rgba(8,38,95,0.10);color:rgba(11,31,72,0.72);font-size:12px;font-weight:700;padding:9px;border-radius:8px;font-family:inherit;cursor:pointer">더보기 (최근 ${recent.length}일) ▾</button>`;
-        })()}
       </div>
 
       <!-- 사용자 의견 -->
@@ -3868,7 +3860,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v88'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v89'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -4159,21 +4151,17 @@ function _getUid(){
   }catch(e){ return ''; }
 }
 function initAiUI(){
-  // Worker에 접속 핑 전송 — 하루 1회만(같은 날 재방문은 요청 절약, Worker 한도 보호)
+  // Worker에 접속 핑 전송 — v88: 앱 실행마다 전송(실행 횟수 집계). 과도한 반복은 Worker가 30회/일/인 상한으로 보호.
   // v86: uid(고유 사용자) + 통계용 지역(체감온도 카드가 이미 만든 위치명 재사용)을 함께 전송.
   //      지역 캐시(_regionCache)가 아직 없으면(최초·위치미허용) uid만 보냄 → Worker가 IP 단위로 폴백.
   try{
-    const today=new Date().toISOString().slice(0,10);
-    if(localStorage.getItem('_pingDate')!==today){
-      localStorage.setItem('_pingDate', today);
-      const uid=_getUid();
-      let region=''; try{ region=localStorage.getItem('_regionCache')||''; }catch(e){}
-      fetch(GEMINI_URL + '/ping', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(region?{uid:uid,region:region}:{uid:uid})
-      }).catch(()=>{});
-    }
+    const uid=_getUid();
+    let region=''; try{ region=localStorage.getItem('_regionCache')||''; }catch(e){}
+    fetch(GEMINI_URL + '/ping', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(region?{uid:uid,region:region}:{uid:uid})
+    }).catch(()=>{});
   }catch(e){
     // localStorage 예외(예: Safari 시크릿) — 방문 집계라도 누락되지 않도록 uid만이라도 전송 시도
     try{ fetch(GEMINI_URL + '/ping', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({uid:_getUid()}) }).catch(()=>{}); }catch(_){}
