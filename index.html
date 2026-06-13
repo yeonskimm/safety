@@ -3554,6 +3554,12 @@ function _doGeolocate(manual){
       feelsData.loc = name;
       feelsGeo='located';
       renderFeelsCard();
+      // v86: 통계용 지역 캐시 — 실제 지역명만 저장(폴백 문구 제외). 다음 접속 핑에 실어 보냄.
+      try{
+        if(name && name!=='현재 위치' && name!=='Current location'){
+          localStorage.setItem('_regionCache', name);
+        }
+      }catch(e){}
     });
   }, ()=>{
     // 자동 실패 → 서울 기본값 유지(📍 탭하여 재시도 가능)
@@ -3754,7 +3760,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v85'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v86'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
@@ -4032,15 +4038,38 @@ function updateHomeAiCounter(){
     rt.style.color=(rLeft===0&&cLeft===0)?'#ef4444':'var(--txt-3)';
   }
 }
+// 익명 사용자 식별자(uid) — 최초 1회 무작위 생성해 localStorage 보관. 이름·전화·IP 아님(무작위값).
+function _getUid(){
+  try{
+    let u=localStorage.getItem('_uid');
+    if(!u || !/^[0-9a-fA-F-]{32,40}$/.test(u)){
+      u=(window.crypto&&crypto.randomUUID)?crypto.randomUUID()
+        :'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return (c==='x'?r:(r&0x3|0x8)).toString(16);});
+      localStorage.setItem('_uid', u);
+    }
+    return u;
+  }catch(e){ return ''; }
+}
 function initAiUI(){
   // Worker에 접속 핑 전송 — 하루 1회만(같은 날 재방문은 요청 절약, Worker 한도 보호)
+  // v86: uid(고유 사용자) + 통계용 지역(체감온도 카드가 이미 만든 위치명 재사용)을 함께 전송.
+  //      지역 캐시(_regionCache)가 아직 없으면(최초·위치미허용) uid만 보냄 → Worker가 IP 단위로 폴백.
   try{
     const today=new Date().toISOString().slice(0,10);
     if(localStorage.getItem('_pingDate')!==today){
       localStorage.setItem('_pingDate', today);
-      fetch(GEMINI_URL + '/ping', { method: 'GET' }).catch(()=>{});
+      const uid=_getUid();
+      let region=''; try{ region=localStorage.getItem('_regionCache')||''; }catch(e){}
+      fetch(GEMINI_URL + '/ping', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(region?{uid:uid,region:region}:{uid:uid})
+      }).catch(()=>{});
     }
-  }catch(e){ fetch(GEMINI_URL + '/ping', { method: 'GET' }).catch(()=>{}); }
+  }catch(e){
+    // localStorage 예외(예: Safari 시크릿) — 방문 집계라도 누락되지 않도록 uid만이라도 전송 시도
+    try{ fetch(GEMINI_URL + '/ping', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({uid:_getUid()}) }).catch(()=>{}); }catch(_){}
+  }
   // 로컬 실행 카운터 + 설치 날짜 기록
   // (Safari 시크릿 모드 등에서 localStorage 쓰기가 예외를 던져 초기화가 중단되던 문제 방지)
   try{
