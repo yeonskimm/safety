@@ -2894,7 +2894,7 @@ function _uqSection(ws){
       + '<div style="background:#ffffff;border-radius:12px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:800;color:#0b1f48">'+_uqFmt(sum30)+'</div><div style="font-size:11px;color:rgba(11,31,72,0.6);margin-top:2px">30일 총 접속</div></div>'
       + '</div>'
       + '<div style="background:#ffffff;border-radius:14px;padding:16px;margin-top:10px">'
-      + _uqSecTitle('지역별 (누적)') + _uqRegionBars(u.cumulative&&u.cumulative.byRegion)
+      + _uqSecTitle('지역별 접속 (최근 30일)') + _uqRegionBars((u.visits30&&u.visits30.byRegion) || (u.cumulative&&u.cumulative.byRegion))
       + _uqSecTitle('기기별 (누적)') + _uqDeviceBar(u.cumulative&&u.cumulative.byDevice)
       + '</div>';
     trendInner=_uqTrendBars(u.daily||[]);
@@ -3860,7 +3860,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v89'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v90'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
