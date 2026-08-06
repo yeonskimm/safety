@@ -2534,7 +2534,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       <div class="done-card" style="margin-bottom:14px"><div class="done-emoji">✅</div><div class="done-text">${s.lang==='ko'?'점검이 완료되었습니다':'Inspection Complete'}</div><div class="done-sub">${s.lang==='ko'?'결과가 이력에 저장되었어요. 아래 보고서를 제출하세요.':'Saved to history. Submit the report below.'}</div></div>
       <div class="preview-info"><span>${s.lang==='ko'?'📄 제출용 보고서':'📄 Report'}</span><span style="color:#64748b;font-size:12px">${getDate()}</span></div>
       ${s.previewUrl?'<img class="preview-img" src="'+s.previewUrl+'">':""}
-      <button class="dl-btn" onclick="downloadImg()">${s.lang==='ko'?'⬇️ 이미지 다운로드 (관리감독자 제출용)':'⬇️ Download Image (For Supervisor)'}</button>
+      <button class="dl-btn" onclick="downloadImg()">${dlBtnLabel(s.lang==='ko')}</button>
       <div class="btn-row" style="margin-top:8px"><button class="sm-btn" onclick="go(3)">${s.lang==='ko'?'← 체크리스트로':'← Checklist'}</button><button class="save-btn" style="flex:1.6" onclick="go(0)">${s.lang==='ko'?'🏠 완료하고 홈으로':'🏠 Done — Home'}</button></div>
     </div>`;
   }
@@ -3302,10 +3302,80 @@ function saveReport(){
   setState({previewUrl:cv.toDataURL("image/png"),step:4});
   window.scrollTo(0,0);
 }
+// ═══════════ 보고서 이미지 저장 (v91) ═══════════
+// iOS Safari/PWA는 a[download] + data:URL 조합이 무반응으로 실패한다.
+// A) Web Share API → B) Blob 다운로드 → C) 새 탭 열기 3단 폴백으로 처리.
+// iPadOS 13+는 platform이 MacIntel로 위장되므로 터치포인트로 보정
+var _isIOS = /iP(hone|ad|od)/.test(navigator.userAgent)
+          || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+
+// 버튼 라벨 — iOS/공유지원 기기는 실제 동작이 공유 시트이므로 '저장·전송'으로 표기
+function dlBtnLabel(ko){
+  var canShare = !!(navigator.canShare && navigator.share);
+  if(_isIOS || canShare) return ko ? '⬇️ 이미지 저장·전송 (관리감독자 제출용)' : '⬇️ Save / Send Image (For Supervisor)';
+  return ko ? '⬇️ 이미지 다운로드 (관리감독자 제출용)' : '⬇️ Download Image (For Supervisor)';
+}
+
+// dataURL → Blob 동기 변환 (fetch는 비동기라 iOS에서 사용자 제스처가 끊겨 공유 시트가 차단됨)
+function _dataUrlToBlob(dataUrl){
+  var parts=dataUrl.split(',');
+  var m=parts[0].match(/:(.*?);/);
+  var mime=(m&&m[1])||'image/png';
+  var bin=atob(parts[1]), len=bin.length, arr=new Uint8Array(len);
+  for(var i=0;i<len;i++) arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+
 function downloadImg(){
   if(!state.previewUrl)return;
-  const a=document.createElement("a");a.href=state.previewUrl;
-  a.download="안전점검확인서_"+getDate().replace(/[:.]/g,"-")+".png";a.click();
+  var ko=state.lang==='ko';
+  var fname='안전점검확인서_'+getDate().replace(/[:.\s\/]/g,'-')+'.png';
+  var blob=null;
+  try{ blob=_dataUrlToBlob(state.previewUrl); }catch(e){ blob=null; }
+
+  // ── A. Web Share API : iOS 15+ / 최신 Android → 사진 앱 저장·메신저 전송
+  if(blob && navigator.canShare && navigator.share){
+    try{
+      var file=new File([blob],fname,{type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title: ko?'작업 전 안전 점검 확인서':'Pre-Work Safety Checklist'})
+          .catch(function(err){
+            if(err && err.name==='AbortError') return;   // 사용자가 공유 시트를 닫음
+            _dlFallback(blob,fname,ko);
+          });
+        return;
+      }
+    }catch(e){}
+  }
+  _dlFallback(blob,fname,ko);
+}
+
+function _dlFallback(blob,fname,ko){
+  // ── B. Blob URL + a[download] : Android · PC
+  //     iOS는 download 속성이 있어도 실제 저장이 안 되므로 건너뛰고 C로 간다
+  if(!_isIOS && blob){
+    try{
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url; a.download=fname; a.style.display='none';
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ try{document.body.removeChild(a);}catch(e){} URL.revokeObjectURL(url); },4000);
+      return;
+    }catch(e){}
+  }
+  // ── C. 새 탭으로 열기 → 길게 눌러 저장
+  try{
+    var u = blob ? URL.createObjectURL(blob) : state.previewUrl;
+    var w = window.open(u,'_blank');
+    if(w){
+      alert(ko?'새 창에서 이미지를 길게 눌러 "사진에 저장"을 선택하세요.'
+              :'Long-press the image in the new tab and choose "Save to Photos".');
+      return;
+    }
+  }catch(e){}
+  // ── 최종 안내 (무반응 방지)
+  alert(ko?'이 브라우저는 자동 저장을 지원하지 않습니다.\n화면의 보고서 이미지를 길게 눌러 "사진에 저장"을 선택하세요.'
+          :'This browser does not support automatic saving.\nLong-press the report image above and choose "Save to Photos".');
 }
 
 // ═══════════════════ 체감온도 (HEAT INDEX) ═══════════════════
@@ -3860,7 +3930,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v90'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v91'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiKey='';
 let aiChatHistory=[];
 let aiChatLoading=false;
