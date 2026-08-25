@@ -8,6 +8,12 @@ const isAllowed = (o) => ALLOWED_ORIGINS.includes(o);
 // 이 모델이 향후 폐지(404)되면 코드가 'gemini-flash-latest' 별칭으로 자동 1회 재시도한다.
 const GEMINI_MODEL = 'gemini-2.5-flash';
  
+// 주 AI 모델(Groq). Groq은 모델 폐지가 잦으므로 반드시 이 상수만 바꿀 것.
+//  - llama-3.3-70b-versatile: 2026-08-16 종료 → openai/gpt-oss-120b 로 교체(2026-08)
+//  - 무료 한도: 30 RPM / 1,000 RPD / 8K TPM / 200K TPD  (토큰이 먼저 소진되는 구조)
+//  - 추론(reasoning) 모델이라 reasoning_effort·include_reasoning 파라미터를 함께 씀.
+const GROQ_MODEL = 'openai/gpt-oss-120b';
+ 
 // ═══════════════════ 법령 근거 모드 (KB 기반 RAG) ═══════════════════
 // 법제처 직접연동은 Cloudflare 차단(520/525)으로 불가 → GitHub의 조문 JSON을 받아 캐시 후 검색.
 const LAW_KB_URL = 'https://yeonskimm.github.io/safety/law_kb.json';
@@ -520,10 +526,16 @@ export default {
     try {
       // Groq 호출 본문 (재시도 시 동일하게 재사용)
       const groqPayload = JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: GROQ_MODEL,
         messages,
-        max_tokens: body.generationConfig?.maxOutputTokens || 600,
+        // gpt-oss는 추론 토큰이 완성 토큰 예산을 함께 소모한다.
+        // 클라이언트 요청값(500~600)만 주면 추론이 예산을 다 먹고 content가 비어
+        // 매번 Gemini 폴백으로 새므로, 추론 몫 900을 더해 여유를 준다.
+        // (상한선일 뿐이라 실제 토큰 소모가 늘지는 않음)
+        max_completion_tokens: (body.generationConfig?.maxOutputTokens || 600) + 900,
         temperature: body.generationConfig?.temperature || 0.7,
+        reasoning_effort: 'low',   // 안전 체크리스트 답변엔 low로 충분 (지연·토큰 절감)
+        include_reasoning: false,  // 추론 내용이 응답 본문에 섞이지 않게 제외
       });
       // ① User-Agent 추가: Groq API는 Cloudflare 뒤에 있어, UA가 없는 요청을 봇으로 보고
       //    403 Forbidden(code 1010)으로 '간헐' 차단함. 정상 UA를 붙여 차단을 회피한다.
