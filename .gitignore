@@ -1,0 +1,8 @@
+# 테스트 산출물
+tests/shot_*.png
+# 빌드 중간 산출물
+tools/annex_chunks.json
+law_kb.v2.json
+law_kb.old.json
+# 별표 원본(용량이 크고 law.go.kr에서 언제든 다시 받을 수 있음)
+tools/annex_src/*.hwpx
