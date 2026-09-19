@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  오늘의안전 AI 프록시 (Cloudflare Worker) — v94
+//  오늘의안전 AI 프록시 (Cloudflare Worker) — v94.1
 //  역할: 앱(GitHub Pages)과 AI API 사이의 중계. API 키·관리자 PIN은 이 Worker의 Secret에만 존재한다.
 //  AI 백엔드 이중화: Groq(주, openai/gpt-oss-120b) → 실패·한도 시 Google Gemini(폴백, gemini-2.5-flash)
 //    · 정상: Groq 응답 → 그대로 반환
@@ -7,7 +7,8 @@
 //    · [v93] 예측 라우팅: 직전 Groq 응답의 잔여 한도가 바닥이면 실패를 기다리지 않고 Gemini부터 호출 (통계 gemini_preroute)
 //  법령 근거(RAG): law_kb.json(산안법·시행령·시행규칙·산안규칙 1,227조문)에서 질문 관련 조문을 검색해 프롬프트에 주입
 //  v93 변경: ① 관리자 인증을 서버측 PIN 검증 + 세션토큰으로 전환 ② 법령 검색 정확도 개선 ③ 예측 라우팅
-//  v94 변경: ④ 법령 KB 정비(별표 10종 수록·공백 정규화·파싱 오염 조문 격리) ⑤ 항 단위 주입 ⑥ 답변 조문번호 검증
+//  v94 변경: ④ 법령 KB 정비(별표 13종 수록·공백 정규화·파싱 오염 조문 격리) ⑤ 항 단위 주입 ⑥ 답변 조문번호 검증
+//  v94.1  : ⑦ 적용 요건·단서 추출(lawProvisos) — AI 요약 시 "~하지 않는 사업주에 한해" 같은 조건이 빠지는 문제 보완 (Worker만 변경, 앱 버전 동일)
 // ═══════════════════════════════════════════════════════════════════════════
 // 앱 도메인만 허용 (다른 사이트/스크립트의 도용 차단). 주소가 늘면 여기에 추가만 하면 됨.
 // 주의: Origin은 '경로 없는' 스킴+호스트. github.io/safety/ → https://yeonskimm.github.io
@@ -298,6 +299,46 @@ function lawRetrieve(kb, q, n = LAW_MAX_ARTICLES) {
   return out.slice(0, n);
 }
 function lawLabel(r) { return r.label; }
+
+// ── [v94.1] 적용 요건·단서 추출: AI가 요약하면서 조건을 떨어뜨리는 것을 막는다 ──
+// 실제 사례: 시행규칙 제73조②의 "각 호의 모두에 해당하지 않는 사업주가 … 처음 발생한 산업재해에 대하여 … 15일 이내"를
+// AI가 "명령받으면 15일 이내"로만 요약 → 안전관리자 선임 사업장·은폐 시도 사업주도 해당되는 것처럼 읽힘.
+// 원문에서 단서 표지를 찾아 프롬프트에 따로 못 박아 준다.
+const LAW_PROVISO_MARK = /다만|에도 불구하고|각 호의 (?:모두|어느 하나)에 해당|에 한정한다|제외한다|처음 발생한|(?:이상|미만)(?:인|의) (?:사업장|사업주|근로자)/;
+const LAW_PROVISO_TOTAL = 760;   // 단서 안내 총 글자 상한 (근거 본문과 별도. Groq 무료 8K TPM을 고려해 짧게)
+// 각 호 열거를 "1. … / 2. … / 3. …" 로 압축 (항목당 48자, 최대 6개)
+function lawEnumItems(seg) {
+  const items = [];
+  for (const m of seg.matchAll(/(?:^|\s)(\d{1,2})\.\s([^]*?)(?=\s\d{1,2}\.\s|$)/g)) {
+    const t = m[2].replace(/\s+/g, ' ').replace(/\([^)]*\)/g, '').trim();
+    if (!t || /^[\d.\s<>개정신설]*$/.test(t)) continue;      // "<개정 2024. 8. 16.>" 날짜가 항목으로 잡히는 것 방지
+    items.push(`${m[1]}. ${t.length > 48 ? t.slice(0, 48) + '…' : t}`);
+    if (items.length >= 6) break;
+  }
+  return items;
+}
+function lawProvisos(matched, max = 5) {
+  const out = []; const seen = new Set(); let used = 0;
+  for (const r of matched) {
+    // 항(①②③) 단위로 보고, 단서 표지가 있는 항만 담는다.
+    for (let seg of r.text.slice(0, LAW_SLICE).split(/(?=[①-⑳])/)) {
+      seg = seg.replace(/<\s*(?:개정|신설|전문개정|제목개정)[^>]*>/g, ' ');   // 개정 이력 표기는 단서가 아니다 (날짜가 열거 항목으로 잡히는 것 방지)
+      const mi = seg.search(LAW_PROVISO_MARK); if (mi < 0) continue;
+      const start = seg.lastIndexOf('. ', mi) + 1;
+      const hasEnum = /각 호/.test(seg) && /\s1\.\s/.test(seg);
+      // 본문: 표지가 든 문장부터 (열거가 있으면 열거 시작 전까지), 최대 200자
+      let body = seg.slice(start, hasEnum ? seg.search(/\s1\.\s/) : undefined).replace(/\s+/g, ' ').trim();
+      if (body.length > 200) body = body.slice(0, 200).replace(/\s\S*$/, '') + '…';
+      let t = body;
+      if (hasEnum) { const items = lawEnumItems(seg.slice(seg.search(/\s1\.\s/))); if (items.length) t += ' [각 호: ' + items.join(' / ') + ']'; }
+      if (t.length < 12 || seen.has(t)) continue;
+      if (used + t.length > LAW_PROVISO_TOTAL) return out;
+      seen.add(t); used += t.length; out.push(`${r.label.replace(/\(.*?\)/, '')}: "${t}"`);
+      if (out.length >= max) return out;
+    }
+  }
+  return out;
+}
 function lawGrounding(matched, isEn) {
   let used = 0; const parts = [];
   for (const r of matched) {
@@ -306,8 +347,13 @@ function lawGrounding(matched, isEn) {
     parts.push(`【${r.label}】\n${body}`); used += body.length;
   }
   const body = parts.join('\n\n');
-  if (isEn) return '[Legal text — you MAY cite ONLY the articles below. Never fabricate article numbers, deadlines, amounts or content. If the answer is not in this text, say you are not certain and advise checking law.go.kr.]\n\n' + body + '\n\nEnd your answer with "📖 Source: ..." citing only the articles you used. Answer in English only.';
-  return '[법령 원문 — 아래 조문·별표에 한해 정확히 인용해도 됩니다. 이 원문에 없는 조문번호·기한·금액·시간은 절대 지어내지 마세요. 원문에서 답을 못 찾으면 "확인된 조문에서 찾지 못했다"고 말하고 국가법령정보센터(law.go.kr) 확인을 안내하세요.]\n\n' + body + '\n\n답변 맨 끝에 사용한 근거를 "📖 근거: ○○ 제○조(제목)" 형식으로 표기하세요. 한자·일본어 없이 순수 한글로만 답하세요.';
+  const prov = lawProvisos(matched);
+  if (isEn) {
+    const hint = prov.length ? '\n\n[Conditions and provisos found in the text above — you MUST include them in your answer; do not present a rule that applies only to some as if it applied to everyone]\n• ' + prov.join('\n• ') : '';
+    return '[Legal text — you MAY cite ONLY the articles below. Never fabricate article numbers, deadlines, amounts or content. If the answer is not in this text, say you are not certain and advise checking law.go.kr.]\n\n' + body + hint + '\n\nEnd your answer with "📖 Source: ..." citing only the articles you used. Answer in English only.';
+  }
+  const hint = prov.length ? '\n\n[위 원문에 있는 적용 요건·단서 — 답변에 반드시 그대로 포함할 것. 일부 사업장·일부 경우에만 적용되는 규정을 모두에게 적용되는 것처럼 쓰지 마세요]\n• ' + prov.join('\n• ') : '';
+  return '[법령 원문 — 아래 조문·별표에 한해 정확히 인용해도 됩니다. 이 원문에 없는 조문번호·기한·금액·시간은 절대 지어내지 마세요. 원문에서 답을 못 찾으면 "확인된 조문에서 찾지 못했다"고 말하고 국가법령정보센터(law.go.kr) 확인을 안내하세요. 규정을 요약할 때 "다만", "~에도 불구하고", "~에 한정", "~는 제외", "~하지 않는 사업주" 같은 적용 요건과 예외는 생략하지 말고 조건 그대로 쓰세요.]\n\n' + body + hint + '\n\n답변 맨 끝에 사용한 근거를 "📖 근거: ○○ 제○조(제목)" 형식으로 표기하세요. 한자·일본어 없이 순수 한글로만 답하세요.';
 }
 
 // ── 답변 검증: 주입하지 않은 조문번호를 AI가 지어내면 경고로 바꾼다 (v95) ──
