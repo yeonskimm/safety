@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  오늘의안전 AI 프록시 (Cloudflare Worker) — v94.1
+//  오늘의안전 AI 프록시 (Cloudflare Worker) — v95
 //  역할: 앱(GitHub Pages)과 AI API 사이의 중계. API 키·관리자 PIN은 이 Worker의 Secret에만 존재한다.
 //  AI 백엔드 이중화: Groq(주, openai/gpt-oss-120b) → 실패·한도 시 Google Gemini(폴백, gemini-2.5-flash)
 //    · 정상: Groq 응답 → 그대로 반환
@@ -8,8 +8,9 @@
 //  법령 근거(RAG): law_kb.json(산안법·시행령·시행규칙·산안규칙 1,227조문)에서 질문 관련 조문을 검색해 프롬프트에 주입
 //  v93 변경: ① 관리자 인증을 서버측 PIN 검증 + 세션토큰으로 전환 ② 법령 검색 정확도 개선 ③ 예측 라우팅
 //  v94 변경: ④ 법령 KB 정비(별표 13종 수록·공백 정규화·파싱 오염 조문 격리) ⑤ 항 단위 주입 ⑥ 답변 조문번호 검증
-//  v95    : 429 원인 구분(limit.kind=tpm/daily) — 앱이 '잠시 후'와 '내일'을 구분해 안내
-//  v94.1  : ⑦ 적용 요건·단서 추출(lawProvisos) — AI 요약 시 "~하지 않는 사업주에 한해" 같은 조건이 빠지는 문제 보완 (Worker만 변경, 앱 버전 동일)
+//  v94.1 변경: ⑦ 적용 요건·단서 추출(lawProvisos) — AI 요약 시 "~하지 않는 사업주에 한해" 같은 조건이 빠지는 문제 보완
+//  v95 변경: ⑧ 법 제40·51·63조 본문 복구 ⑨ 429 원인 구분(tpm/daily) ⑩ 붙여쓴 복합어 분절(법령 제목 어휘 기반)
+//            ⑪ 법령 KB 로드 실패 시 법령성 질문 차단(fail-closed) ⑫ 입력 길이 상한 ⑬ KB 캐시 버전 쿼리
 // ═══════════════════════════════════════════════════════════════════════════
 // 앱 도메인만 허용 (다른 사이트/스크립트의 도용 차단). 주소가 늘면 여기에 추가만 하면 됨.
 // 주의: Origin은 '경로 없는' 스킴+호스트. github.io/safety/ → https://yeonskimm.github.io
@@ -85,7 +86,7 @@ const LAW_DIRECT = {
   // 사업주·근로자 의무, 작업중지, 도급
   '사업주의무': ['sanan_law:5', 'sanan_law:38', 'sanan_law:39'], '근로자의무': ['sanan_law:6'],
   '작업중지': ['sanan_law:52', 'sanan_law:55'],   // ('안전조치'·'보건조치'는 너무 일반적이라 직결하지 않음 — 검색에 맡김)
-  '도급인': ['sanan_law:64', 'sanan_law:65'], '하도급': ['sanan_law:58', 'sanan_law:60'],
+  '도급인': ['sanan_law:63', 'sanan_law:64', 'sanan_law:65'], '하도급': ['sanan_law:58', 'sanan_law:60'],   // [v95] 제63조는 격리돼 있던 탓에 사전에서 빠져 있었다 — 복구와 함께 선두로 추가
   // 벌칙·과태료 — 금액은 시행령 별표35에만 있다
   '과태료': ['sanan_decree:별표35', 'sanan_law:175'], '과태료얼마': ['sanan_decree:별표35'], '과태료금액': ['sanan_decree:별표35'],
   '부과기준': ['sanan_decree:별표35'], '벌금': ['sanan_law:167', 'sanan_law:168', 'sanan_law:170'], '징역': ['sanan_law:167', 'sanan_law:168'],
@@ -193,7 +194,28 @@ function lawEnToKo(q) {   // 영어 구절을 한국어 키워드로 치환한 �
   for (const [en, ko] of LAW_EN) if (new RegExp('\\b' + en + '\\b').test(ql)) out += ko + ' ';
   return out;
 }
-function lawExpand(q) {
+// [v95] 띄어쓰기를 아예 안 쓴 질문("도급인안전조치의무는?")을 분절한다.
+//   사전을 손으로 만들지 않고 법령 조문 제목에서 어휘를 뽑아 쓴다(약 1,700개). 법이 바뀌면 사전도 따라온다.
+function lawVocab(kb) {
+  if (kb.__vocab) return kb.__vocab;
+  const v = new Set();
+  for (const lk in kb.laws) for (const a of kb.laws[lk].articles) {
+    String(a.title || '').split(/[^가-힣]+/).forEach(w => {
+      if (w.length >= 2) { v.add(w); const st = lawStrip(w); if (st.length >= 2) v.add(st); }
+    });
+  }
+  kb.__vocab = v; return v;
+}
+function lawSegment(tok, vocab) {   // 긴 어휘부터 맞춰 가는 탐욕 분절
+  const out = []; let i = 0;
+  while (i < tok.length) {
+    let hit = '';
+    for (let L = Math.min(9, tok.length - i); L >= 2; L--) { const c = tok.substr(i, L); if (vocab.has(c)) { hit = c; break; } }
+    if (hit) { out.push(hit); i += hit.length; } else i++;
+  }
+  return out;
+}
+function lawExpand(q, vocab) {
   const hasLatin = /[A-Za-z]{3,}/.test(q);
   const src = hasLatin ? q + lawEnToKo(q) : q;
   const raw = src.replace(/[^가-힣A-Za-z0-9 ]/g, ' ').toLowerCase().split(/\s+/)
@@ -203,7 +225,13 @@ function lawExpand(q) {
   const add = (t, w) => { if (t && t.length >= 2 && !LAW_QWORDS.includes(t)) terms.set(t, Math.max(terms.get(t) || 0, LAW_STOP.has(t) ? Math.min(w, 0.25) : w)); };
   for (const r of raw) {
     const s = lawStrip(r); add(s, 1);
-    if (s.length >= 5) {                                  // [v95] "안전조치의무" → "안전조치"(0.9) + "의무"(0.25)
+    if (s.length >= 5) {
+      // ㉠ 법령 어휘로 분절 — "도급인안전조치의무" → 도급인 / 안전조치 / 의무
+      if (vocab && !vocab.has(s)) {
+        const parts = lawSegment(s, vocab);
+        if (parts.length >= 2) parts.forEach(pt => { add(pt, 0.9); if (LAW_ALIAS[pt]) add(LAW_ALIAS[pt], 0.9); });
+      }
+      // ㉡ 어휘로 못 가른 조합은 꼬리 명사만이라도 떼어 앞부분을 살린다
       const tail = LAW_TAIL.find(x => s.length > x.length + 1 && s.endsWith(x));
       if (tail) { const headTok = s.slice(0, -tail.length); add(headTok, 0.9); add(tail, 0.25); if (LAW_ALIAS[headTok]) add(LAW_ALIAS[headTok], 0.9); }
     }
@@ -263,7 +291,7 @@ function lawFindUnits(kb, ref) {
 }
 function lawRetrieve(kb, q, n = LAW_MAX_ARTICLES) {
   const qn = (/[A-Za-z]{3,}/.test(q) ? q + lawEnToKo(q) : q).replace(/\s+/g, '').toLowerCase();
-  const terms = lawExpand(q);
+  const terms = lawExpand(q, lawVocab(kb));
   const units = lawUnits(kb);
   // IDF 계산 (질문에 나온 단어에 대해서만)
   const N = units.length, idf = new Map();
@@ -896,8 +924,10 @@ export default {
     // ── AI 프록시 ──
     const GROQ_API_KEY = env.GROQ_API_KEY;
     const body = await request.json();
-    const prompt = body.contents?.[0]?.parts?.[0]?.text || '';
-    const systemText = body.system_instruction?.parts?.[0]?.text || '';
+    // [v95] 입력 길이 상한 — 앱의 정상 요청(리포트 포함)은 넉넉히 들어가고, 직접 만든 대용량 요청만 잘린다.
+    const prompt = (body.contents?.[0]?.parts?.[0]?.text || '').slice(0, 8000);
+    const systemText = (body.system_instruction?.parts?.[0]?.text || '').slice(0, 3000);
+    const userQ = String(body.userQuery || '').slice(0, 500);
     // ✅ 클라이언트가 보내는 type으로 채팅/리포트 명시 분류
     //    (이전: system_instruction 유무로 판단 → 둘 다 system_instruction이 있어 항상 report로 집계되던 버그)
     const isReport = body.type === 'report';
@@ -907,21 +937,35 @@ export default {
     let lawSources = [];
     let lawGroundMsg = null;
     let lawMatched = [];        // [v94] 답변 검증(lawVerify)에 쓸 실제 주입 근거
-    if (!isReport && body.userQuery) {
+    let lawKbFail = false;
+    if (!isReport && userQ) {
       try {
         const kb = await getLawKB();
-        const matched = lawRetrieve(kb, body.userQuery, LAW_MAX_ARTICLES);
+        const matched = lawRetrieve(kb, userQ, LAW_MAX_ARTICLES);
         const top = matched[0]?.score || 0;
         // 직결 사전에 걸렸거나(direct), 법령성 단어가 있거나(forced), 검색 점수가 기준 이상이면 법령 모드
         const direct = matched.some(m => m.direct);
-        const forced = LAW_FORCE.some(k => body.userQuery.includes(k)) || /제\s*\d+\s*조/.test(body.userQuery);
+        const forced = LAW_FORCE.some(k => userQ.includes(k)) || /제\s*\d+\s*조/.test(userQ);
         // 직결 사전 적중 → 무조건 주입 / 점수 기준 이상 → 주입 / 법령성 단어가 있으면 기준의 절반까지 허용 (완전 무관한 잡조문은 강제 단어가 있어도 넣지 않음)
         if (matched.length && (direct || top >= LAW_SCORE_MIN || (forced && top >= LAW_SCORE_MIN / 2))) {
           lawGroundMsg = lawGrounding(matched, body.lang === 'en');
           lawSources = matched.map(lawLabel);
           lawMatched = matched;
         }
-      } catch (e) { /* KB 로드 실패 시 근거 없이 기존 답변으로 진행 */ }
+      } catch (e) { lawKbFail = true; try { await trackStat(env, 'law_kb_fail'); } catch (e2) {} }
+    }
+    // [v95] fail-closed — 법령 DB 자체를 못 읽은 상태에서 법 조항을 묻는 질문에 AI가 자유답변하게 두지 않는다.
+    //   (근거 점수가 낮아 주입이 안 된 일반 안전질문은 해당 없음. KB 로드 실패는 사실상 인프라 장애 경로다.)
+    if (lawKbFail) {
+      const legalish = LAW_FORCE.some(k => userQ.includes(k)) || /제\s*\d+\s*조/.test(userQ);
+      if (legalish) {
+        const msg = body.lang === 'en'
+          ? '⚠️ The legal database is temporarily unavailable, so I cannot answer questions about legal provisions right now. Please try again shortly, or check law.go.kr.'
+          : '⚠️ 지금 법령 원문을 확인할 수 없어 법 조항에 대한 답변을 드릴 수 없습니다.\n잠시 후 다시 시도하시거나 국가법령정보센터(law.go.kr)에서 확인해 주세요.';
+        return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: msg }] } }], lawSources: [], lawStripped: [], engine: 'blocked' }), {
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': origin }
+        });
+      }
     }
 
     const messages = [];
