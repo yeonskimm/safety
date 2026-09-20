@@ -1,5 +1,6 @@
 # test_ui.py — v93 관리자 인증 흐름 렌더링 테스트 (Playwright, iPhone 뷰포트, Worker 응답은 모킹)
 # 사용: python3 test_ui.py   (같은 폴더의 index.html을 로컬 http로 띄워 검사)
+import re, io
 import json, re, time, threading, http.server, socketserver, os, sys
 from playwright.sync_api import sync_playwright
 
@@ -71,7 +72,8 @@ with sync_playwright() as p:
     page.goto(f'http://127.0.0.1:{PORT}/index.html', wait_until='load'); page.wait_for_timeout(1500)
     page.screenshot(path='shot_1_home.png')
     check('홈 렌더링 (JS 예외 없음)', not errors)
-    check('APP_VERSION v94', page.evaluate('typeof APP_VERSION!=="undefined" && APP_VERSION') == 'v94')
+    _v = re.search(r"APP_VERSION='(v\d+)'", io.open('index.html', encoding='utf-8').read()).group(1)
+    check(f'APP_VERSION {_v}', page.evaluate('typeof APP_VERSION!=="undefined" && APP_VERSION') == _v)
     check('AI_PROXY_URL 정의 / GEMINI_URL 제거', page.evaluate('typeof AI_PROXY_URL==="string" && typeof GEMINI_URL==="undefined"'))
     check('구 PIN 문자열이 페이지 소스에 없음', '987502' not in page.content() and 'safety-admin-2024' not in page.content())
 
