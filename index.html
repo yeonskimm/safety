@@ -4143,12 +4143,26 @@ function goAiChat(){
 function aiChatAutoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';}
 function aiChatKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiChat();}}
 
+// [v95] AI가 스스로 붙이는 마크다운 제목(### 제목)이 화면에 그대로 노출되던 문제.
+//   프롬프트로 막기보다 화면에서 렌더링하는 편이 확실하다(모델이 지시를 안 지켜도 깨지지 않음).
+function aiMarkdown(text){
+  const lines=String(text==null?'':text).split('\n');
+  const isH=lines.map(l=>/^\s*#{1,6}\s*\S/.test(l));
+  let out='';
+  for(let i=0;i<lines.length;i++){
+    if(isH[i]){ out+='<b style="display:block;margin:10px 0 3px;font-size:1.05em">'+lines[i].replace(/^\s*#{1,6}\s*/,'').trim()+'</b>'; continue; }
+    if(lines[i].trim()==='' && ((i>0&&isH[i-1])||(i<lines.length-1&&isH[i+1]))) continue;  // 제목이 이미 여백을 가지므로 빈 줄 생략
+    out+=lines[i];
+    if(i<lines.length-1 && !isH[i+1]) out+='<br>';
+  }
+  return out.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>');
+}
 function aiAppendMsg(role,text,typing=false){
   const wrap=document.getElementById('ai-chat-msgs');if(!wrap)return null;
   const div=document.createElement('div');div.className='ai-msg '+role;
   const av=role==='ai'?'<div class="ai-avatar">🤖</div>':'<div class="ai-avatar">나</div>';
   if(typing){div.innerHTML=av+'<div class="ai-bubble"><div class="ai-typing-dots"><span></span><span></span><span></span></div></div>';}
-  else{div.innerHTML=av+'<div class="ai-bubble">'+text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')+'</div>';}
+  else{div.innerHTML=av+'<div class="ai-bubble">'+aiMarkdown(text)+'</div>';}
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;aiStickBottom=true;return div;
 }
 

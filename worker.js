@@ -34,7 +34,8 @@ const GROQ_MODEL = 'openai/gpt-oss-120b';
 //       ② 별표 수록 — 교육시간·선임기준·과태료 금액은 조문이 아니라 별표에 있어, 전에는 근거 없이 답했다
 //       ③ 답변 검증(lawVerify) — 주입한 근거에 없는 조문번호를 AI가 지어내면 표기를 떼고 경고를 붙인다
 // ── LAW_RETRIEVAL_BEGIN ── (test_retrieve.js가 이 구간을 그대로 읽어 검증한다. 마커를 지우지 말 것)
-const LAW_KB_URL = 'https://yeonskimm.github.io/safety/law_kb.json';
+const LAW_KB_VER = '2.1';   // law_kb.json의 meta.빌드버전과 맞춘다. KB를 고치면 이 값을 올려야 캐시를 건너뛰고 즉시 반영된다.
+const LAW_KB_URL = 'https://yeonskimm.github.io/safety/law_kb.json?v=' + LAW_KB_VER;
 const LAW_MAX_ARTICLES = 4;    // 주입 단위 수 (v95: 항 단위 선별로 개수를 늘림)
 const LAW_BUDGET = 3200;       // 법령 근거 전체 글자 예산 (Groq 무료 8K TPM 고려)
 const LAW_SLICE = 1100;        // 단위 1건당 최대 글자
@@ -126,6 +127,7 @@ const LAW_EXCLUDE = new Set(['산업안전보건법|1|0', '산업안전보건기
 
 // 동의어: 질문 단어 → 조문에 쓰이는 표현. (검색 확장용, 가중치는 본 단어의 60%)
 const LAW_SYN = {
+  '원청':['도급인','관계수급인'],'하청':['수급인','관계수급인','도급'],'협력업체':['수급인','관계수급인'],'하도급':['도급','수급인'],  // [v95] 현장 통용어
   '폭염':['고열','고온','온열'],'온열질환':['고열','열사병','열탈진','열경련'],'열사병':['고열','열탈진'],
   '더위':['고열','고온'],'온도':['고열','한랭'],'휴식':['휴게'],
   '추락':['떨어짐','안전대','안전난간','개구부','작업발판'],'떨어짐':['추락','안전대'],'사다리':['이동식'],
@@ -173,6 +175,10 @@ const LAW_ENDINGS = ['해야하나요','해야되나요','해야합니까','해�
 const LAW_PARTICLES = ['에서는','에게는','으로는','으로써','으로서','에서','에게','께서','으로','이랑','이나','라도','이라도','조차','밖에','마다','처럼','보다','부터','까지',
   '은','는','이','가','을','를','의','에','로','와','과','랑','도','만','나','든'];
 const LAW_QWORDS = ['어느정도','어디에서','어디서','어디에','어떻게','얼마나','무엇을','언제','어디','누가','누구','무엇','어떤','어느','얼마','뭘','뭐','왜','몇'];
+// [v95] 붙여 쓴 복합어를 분해하기 위한 꼬리 명사.
+//   현장에서는 "안전조치의무", "선임기준", "교육시간"처럼 띄어쓰기 없이 묻는 경우가 매우 흔한데,
+//   공백 기준 토큰화만으로는 "안전조치"가 살아남지 못해 정작 맞는 조문이 검색에서 밀려났다.
+const LAW_TAIL = ['의무','기준','대상','요건','절차','방법','책임','시간','주기','여부','횟수','한도','범위','조건','항목','서류','양식','벌칙','과태료','조치','교육','점검'];
 function lawStrip(tok) {
   let t = tok;
   for (let pass = 0; pass < 2; pass++) {
@@ -197,6 +203,10 @@ function lawExpand(q) {
   const add = (t, w) => { if (t && t.length >= 2 && !LAW_QWORDS.includes(t)) terms.set(t, Math.max(terms.get(t) || 0, LAW_STOP.has(t) ? Math.min(w, 0.25) : w)); };
   for (const r of raw) {
     const s = lawStrip(r); add(s, 1);
+    if (s.length >= 5) {                                  // [v95] "안전조치의무" → "안전조치"(0.9) + "의무"(0.25)
+      const tail = LAW_TAIL.find(x => s.length > x.length + 1 && s.endsWith(x));
+      if (tail) { const headTok = s.slice(0, -tail.length); add(headTok, 0.9); add(tail, 0.25); if (LAW_ALIAS[headTok]) add(LAW_ALIAS[headTok], 0.9); }
+    }
     if (LAW_ALIAS[s]) add(LAW_ALIAS[s], 1);
     if (s !== r && !LAW_STOP.has(s)) add(r, 0.5);
     for (const k in LAW_SYN) if (s === k || (s.length >= 3 && s.includes(k))) LAW_SYN[k].forEach(x => add(x, 0.6));
