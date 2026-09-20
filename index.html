@@ -2046,7 +2046,7 @@ const WORK_KEY_MAP = {
   "도장·스프레이":"Painting & Spraying",
   "배합·혼합":"Mixing & Blending",
   "충전·분리":"Filling & Separation",
-  "설비 수리·청소(화학)":"Equipment Repair & Cleaning",
+  "설비 수리·청소(화학)":"Equipment Repair & Cleaning (Chemical)",
   "탱크·반응기 내부 작업":"Tank & Reactor Interior Work",
   "절단·슬라이서":"Cutting & Slicer",
   "가열·조리":"Heating & Cooking",
@@ -2394,7 +2394,7 @@ function render(){
       <div class="home-sub-line"></div>
       <div class="home-desc">${s.lang==='ko'?'업종·작업을 선택하면 맞춤 수칙을 알려드려요<br>비정형작업(수리·점검·교체)도 따로 있어요':'Select industry &amp; task for tailored safety rules.<br>Non-routine work (repair·inspection) included.'}</div>
       <button class="home-btn" onclick="go(1)">${s.lang==='ko'?'시작하기 →':'Start →'}</button><button id="install-btn" onclick="installApp()">${s.lang==='ko'?'📲 앱으로 설치하기':'📲 Install as App'}</button>
-      <button class="home-btn-purple" id="home-ai-chat-btn" onclick="go(5)">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:2px 7px;margin-left:7px;font-weight:700;letter-spacing:0.3px">Beta</span></button>
+      <button class="home-btn-purple" id="home-ai-chat-btn" onclick="go(5)">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}</button>
       <div style="width:100%;max-width:310px;background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:9px 14px;margin-top:9px;text-align:center">
         <div style="font-size:11px;color:var(--txt-2);line-height:1.6">${s.lang==='ko'?'산업안전보건법 기반의 현장 전문 AI가<br>안전수칙·위험 요인·사고 예방을 안내해드립니다':'Field safety AI based on industrial safety regulations.<br>Guidance on safety rules, hazards & accident prevention.'}</div>
       </div>
@@ -2500,13 +2500,13 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
       
         <span style="width:1px;height:14px;background:var(--bdr-dim);display:inline-block;margin:0 6px"></span>
       <button class="ai-report-btn" id="ai-report-btn" onclick="generateAiReport()">
-        <span id="ai-report-btn-txt">${s.lang==='ko'?'✨ AI 위험 진단 리포트 생성':'✨ AI Diagnosis Report'}</span><span style="font-size:9px;background:rgba(255,255,255,0.18);border-radius:10px;padding:1px 6px;margin-left:6px;font-weight:700">Beta</span>
+        <span id="ai-report-btn-txt">${s.lang==='ko'?'✨ AI 위험 진단 리포트 생성':'✨ AI Diagnosis Report'}</span>
       </button>
       <div style="background:rgba(124,95,224,0.07);border:1px solid rgba(124,95,224,0.15);border-radius:10px;padding:10px 14px;margin-top:6px;text-align:center">
         <div style="font-size:11px;color:var(--txt-2);line-height:1.6">${s.lang==='ko'?'오늘 체크리스트 결과를 AI가 분석해<br>위험 요인·사고 유형·개선 조치를 리포트로 제공합니다':'AI analyzes today\'s checklist to provide<br>a report on hazards, accident types & corrective actions.'}</div>
       </div>
       <div class="ai-result-card" id="ai-result-card">
-        <div class="ai-result-hdr"><span class="ai-result-hdr-icon">🤖</span><span class="ai-result-hdr-text">${s.lang==='ko'?'AI 위험 진단 리포트':'AI Safety Report'}</span><span class="ai-result-hdr-sub">Groq GPT-OSS 120B · <span style="color:#8b6ee0;font-weight:700">Beta</span></span></div>
+        <div class="ai-result-hdr"><span class="ai-result-hdr-icon">🤖</span><span class="ai-result-hdr-text">${s.lang==='ko'?'AI 위험 진단 리포트':'AI Safety Report'}</span><span class="ai-result-hdr-sub">Groq GPT-OSS 120B</span></div>
         <div class="ai-result-body" id="ai-result-body"></div>
       </div>
     </div>`;
@@ -2537,7 +2537,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
     const ind=(state.lang==='en'?INDUSTRIES_EN:INDUSTRIES).find(x=>x.id===s.industry);
     const indLabel=ind?ind.label:(s.lang==='ko'?'현장':'Site');
     const workLabel=s.workType||(s.lang==='ko'?'일반 작업':'General');
-    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}<span style="font-size:9px;background:rgba(124,95,224,0.25);color:#b39af0;border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:700">Beta</span></div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button></div></div>
+    app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onclick="go(0)">${s.lang==='ko'?'← 뒤로':'← Back'}</button><div class="h-title">${s.lang==='ko'?'🛡️ AI 안전관리자':'🛡️ AI Safety Manager'}</div><button onclick="toggleLang()" class="lang-toggle-btn">${s.lang==='ko'?'🇰🇷 KO ⇄ EN':'🇺🇸 EN ⇄ KO'}</button></div></div>
     <div class="ai-chat-wrap">
       <div class="ai-chat-msgs" id="ai-chat-msgs">
         <div class="ai-msg ai"><div class="ai-avatar">🤖</div><div class="ai-bubble">
@@ -3189,6 +3189,22 @@ window._adminFb = (typeof window._adminFb!=='undefined') ? window._adminFb : nul
 window._adminFbFilterVal = window._adminFbFilterVal || 'all';
 window._adminFbShown = window._adminFbShown || 0;
 const _ADMIN_FB_PAGE = 5;
+// [v95] 관리자 화면 연락처는 기본 가림. 탭하면 전체 표시 → 회신은 그대로 가능, 캡처·어깨너머 노출만 차단.
+function _fbMask(v){
+  v=String(v||'');
+  if(!v) return '';
+  if(v.indexOf('@')>0){ const a=v.split('@'); return a[0].slice(0,2)+'***@'+a.slice(1).join('@'); }
+  const d=v.replace(/[^0-9]/g,'');
+  if(d.length===11&&d.slice(0,3)==='010') return '010-****-'+d.slice(-4);   // 휴대폰만 형태 유지
+  if(d.length>=7) return '*'.repeat(d.length-4)+d.slice(-4);                // 지역번호 등은 뒤 4자리만
+  return v.slice(0,2)+'*'.repeat(Math.max(1,v.length-2));
+}
+function _fbToggleContact(el){
+  if(!el) return;
+  const full=el.getAttribute('data-full')||'';
+  if(el.dataset.shown==='1'){ el.textContent=_fbMask(full); el.dataset.shown='0'; }
+  else { el.textContent=full; el.dataset.shown='1'; }
+}
 function _fbEsc(str){ return (str==null?'':String(str)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function _fbRel(ts){
   const m=Math.floor((Date.now()-ts)/60000);
@@ -3239,7 +3255,7 @@ function _renderAdminFb(reset){
   const BADGE={sug:['개선 제안','#e8f0ff','#2b54b8'], err:['오류 신고','#fdeaea','#c0392b'], etc:['기타','#eef0f4','#5a6478']};
   list.innerHTML = arr.slice(0,show).map(function(it){
     const b=BADGE[it.cat]||BADGE.etc;
-    const contact = it.contact ? '<b style="color:#0b1f48;font-weight:700">'+_fbEsc(it.contact)+'</b>' : '<span style="color:rgba(11,31,72,0.35)">연락처 미입력</span>';
+    const contact = it.contact ? ('<b style="color:#0b1f48;font-weight:700;cursor:pointer;border-bottom:1px dotted rgba(11,31,72,0.4)" data-full="'+_fbEsc(it.contact)+'" data-shown="0" onclick="_fbToggleContact(this)" title="탭하면 전체 표시">'+_fbEsc(_fbMask(it.contact))+'</b>') : '<span style="color:rgba(11,31,72,0.35)">연락처 미입력</span>';
     return '<div style="border:1px solid #eef1f6;border-radius:13px;padding:13px;margin-bottom:9px;background:#fcfdff">'
       +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'
       +'<span style="font-size:10px;font-weight:800;border-radius:8px;padding:3px 9px;background:'+b[1]+';color:'+b[2]+'">'+b[0]+'</span>'
@@ -3951,7 +3967,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v94'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v95'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiChatHistory=[];
 let aiChatLoading=false;
 let aiStickBottom=false; // 대화 시작 후 키보드 재오픈/리사이즈 시 마지막 메시지로 유지
@@ -4054,7 +4070,7 @@ async function generateAiReport(){
     const data=await res.json();
     if(data.error){
       body.className='ai-result-body';
-      body.textContent=aiFormatErrorMsg(res.status,data.error,state.lang==='en');
+      body.textContent=aiFormatErrorMsg(res.status,data.error,state.lang==='en',data.limit);
       return;
     }
     let text=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'No response received.':'응답을 받지 못했습니다.'),isEn);
@@ -4081,11 +4097,24 @@ async function generateAiReport(){
 function showUpdateBadge(){}
 function hideUpdateBadge(){}
 // 에러 메시지 포맷팅 (상태 코드별 안내)
-function aiFormatErrorMsg(status,err,isEn){
+function aiFormatErrorMsg(status,err,isEn,limit){
   const msg=err?.message||'';
   // 끝의 (E___) 식별코드: 화면만 보고 원인을 구분하기 위함(관리자용). 사용자에겐 '무엇을 하면 되는지' 행동 안내 위주.
   if(status===429||msg.includes('quota')||msg.includes('RATE_LIMIT')){
-        return isEn?'⚠️ Daily free quota exceeded. Please try again tomorrow. (E429)':'⚠️ 무료 한도를 초과했습니다. 내일 다시 시도해주세요. (E429)';
+    // [v95] 429의 대부분은 분당 토큰(TPM) 소진이라 1분이면 풀린다. 예전엔 무조건 '내일 다시'로 안내해
+    //       멀쩡한 앱을 고장난 것처럼 보이게 했다. Worker가 보내준 limit.kind로 문구를 갈라 쓴다.
+    if(limit&&limit.kind==='tpm'){
+      const sec=Math.max(5,Math.ceil((limit.retryMs||60000)/1000));
+      return isEn?('⚠️ AI is busy right now. Please try again in about '+sec+' seconds. (E429-M)')
+                 :('⚠️ 지금 AI 이용이 몰리고 있습니다. 약 '+sec+'초 후 다시 시도해주세요. (E429-M)');
+    }
+    if(limit&&limit.kind==='daily'){
+      return isEn?'⚠️ Today\'s free quota is used up. It resets at 9AM KST. (E429-D)'
+                 :'⚠️ 오늘 무료 한도를 모두 사용했습니다. 내일 오전 9시에 초기화됩니다. (E429-D)';
+    }
+    // 구버전 Worker 등 근거가 없을 때: TPM 쪽이 훨씬 흔하므로 '잠시 후'로 안내
+    return isEn?'⚠️ AI is temporarily limited. Please try again in a moment. (E429)'
+               :'⚠️ 이용량 한도로 잠시 응답할 수 없습니다. 잠시 후 다시 시도해주세요. (E429)';
   }
   if(status===400&&msg.includes('API_KEY')){
     return isEn?'⚠️ API key error. Please contact administrator. (E-KEY)':'⚠️ API 키 오류. 관리자에게 문의해주세요. (E-KEY)';
@@ -4162,14 +4191,18 @@ async function sendAiChat(exText){
     const data=await res.json();
     if(data.error){
       if(typing)typing.remove();
-      aiAppendMsg('ai',aiFormatErrorMsg(res.status,data.error,state.lang==='en'));
+      aiAppendMsg('ai',aiFormatErrorMsg(res.status,data.error,state.lang==='en',data.limit));
       return;
     }
     const reply=stripHanja(data.candidates?.[0]?.content?.parts?.[0]?.text||(state.lang==='en'?'Sorry, no response received.':'죄송합니다, 응답을 받지 못했습니다.'),isEn2);
     aiChatHistory.push({role:'ai',text:reply});
     aiIncUsage('ai_chat');aiUpdateLimitUI();
     if(typing)typing.remove();
-    const lawBadge=(data.lawSources&&data.lawSources.length)?('<span style="display:inline-block;background:#16361f;color:#4ade80;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:6px">📖 '+(isEn2?'Legal basis':'법령 근거')+'</span>\n'):'';
+    // [v95] Worker가 실제로 주입한 조문 목록(lawSources)을 그대로 노출한다.
+    //       답변 본문의 '📖 근거:'는 AI가 쓴 문장이라 틀릴 수 있지만, 이 칩은 검색엔진이 넣은 값이라 검증된 근거다.
+    const lawSrc=(data.lawSources&&data.lawSources.length)?data.lawSources.slice(0,6):[];
+    const lawChips=lawSrc.map(function(x){return '<span style="display:inline-block;background:rgba(74,222,128,0.10);border:1px solid rgba(74,222,128,0.32);color:#86efac;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;line-height:1.55">'+_fbEsc(String(x))+'</span>';}).join('');
+    const lawBadge=lawSrc.length?('<div style="margin-bottom:8px"><span style="display:inline-block;background:#16361f;color:#4ade80;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">📖 '+(isEn2?'Legal basis':'법령 근거')+'</span><div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">'+lawChips+'</div></div>'):'';
     aiAppendMsg('ai',lawBadge+reply);
   }catch(e){
     if(typing)typing.remove();

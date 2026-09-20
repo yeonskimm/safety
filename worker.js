@@ -8,6 +8,7 @@
 //  법령 근거(RAG): law_kb.json(산안법·시행령·시행규칙·산안규칙 1,227조문)에서 질문 관련 조문을 검색해 프롬프트에 주입
 //  v93 변경: ① 관리자 인증을 서버측 PIN 검증 + 세션토큰으로 전환 ② 법령 검색 정확도 개선 ③ 예측 라우팅
 //  v94 변경: ④ 법령 KB 정비(별표 13종 수록·공백 정규화·파싱 오염 조문 격리) ⑤ 항 단위 주입 ⑥ 답변 조문번호 검증
+//  v95    : 429 원인 구분(limit.kind=tpm/daily) — 앱이 '잠시 후'와 '내일'을 구분해 안내
 //  v94.1  : ⑦ 적용 요건·단서 추출(lawProvisos) — AI 요약 시 "~하지 않는 사업주에 한해" 같은 조건이 빠지는 문제 보완 (Worker만 변경, 앱 버전 동일)
 // ═══════════════════════════════════════════════════════════════════════════
 // 앱 도메인만 허용 (다른 사이트/스크립트의 도용 차단). 주소가 늘면 여기에 추가만 하면 됨.
@@ -121,7 +122,7 @@ const LAW_DIRECT = {
 };
 
 // [v93 발견] law_kb 파싱 오류 조문 — KB v2가 bad 표시를 달고 오지만, 구버전 KB를 받아도 막히도록 이중 방어.
-const LAW_EXCLUDE = new Set(['산업안전보건법|1|0', '산업안전보건법|40|0', '산업안전보건법|51|0', '산업안전보건법|63|0', '산업안전보건기준에 관한 규칙|2|0']);
+const LAW_EXCLUDE = new Set(['산업안전보건법|1|0', '산업안전보건기준에 관한 규칙|2|0']);  // [v95] 제40·51·63조는 본문 복구 완료 → 제외 해제
 
 // 동의어: 질문 단어 → 조문에 쓰이는 표현. (검색 확장용, 가중치는 본 단어의 60%)
 const LAW_SYN = {
@@ -1063,7 +1064,17 @@ export default {
       // ⑥ 둘 다 실패 → 기존과 동일한 형식으로 에러 반환 (앱의 E403/한도 안내 표시 로직 그대로 동작)
       if (!text) {
         await trackStat(env, 'errors');
-        return new Response(JSON.stringify({ error: data || { error: { message: groqNetMsg || 'AI unavailable' } } }), {
+        // [v95] 429 원인 구분 — Groq 429는 대개 분당 토큰(TPM) 소진이라 1분이면 풀린다.
+        //       일일 요청(RPD)까지 바닥난 경우에만 '내일 다시'가 맞다. 앱이 문구를 골라 쓰도록 근거를 실어 보낸다.
+        let limit = null;
+        if (groqRes && groqRes.status === 429) {
+          const remReq = parseInt(groqRes.headers.get('x-ratelimit-remaining-requests'));
+          const resetReq = parseGroqDuration(groqRes.headers.get('x-ratelimit-reset-requests'));
+          const resetTok = parseGroqDuration(groqRes.headers.get('x-ratelimit-reset-tokens'));
+          const daily = !isNaN(remReq) && remReq < 1;
+          limit = { kind: daily ? 'daily' : 'tpm', retryMs: Math.round(daily ? resetReq : (resetTok || 60000)) };
+        }
+        return new Response(JSON.stringify({ error: data || { error: { message: groqNetMsg || 'AI unavailable' } }, limit }), {
           status: groqRes ? groqRes.status : 500,
           headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': origin }
         });
