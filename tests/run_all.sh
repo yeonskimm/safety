@@ -11,6 +11,7 @@ step "2) 법령 KB 구조 검증" python3 tools/validate_kb.py law_kb.json
 step "3) 법령 검색 회귀 테스트" node tests/test_retrieve.js
 step "4) 답변 조문번호 검증 테스트" node tests/test_verify.js
 step "5) 관리자 인증 단위 테스트" node tests/test_admin.js
+step "5-2) AI 프록시 보호 통합 테스트" node tests/test_proxy.mjs
 step "6) 버전 동기화 (APP_VERSION ↔ CACHE_NAME)" python3 - <<'PY'
 import re,sys
 v=re.search(r"APP_VERSION='(v\d+)'",open('index.html',encoding='utf-8').read()).group(1)
@@ -18,11 +19,20 @@ c=re.search(r"onul-safety-(v\d+)",open('service-worker.js',encoding='utf-8').rea
 print(f"index.html {v} / service-worker.js {c}")
 sys.exit(0 if v==c else 1)
 PY
+step "6-2) 법령 KB 캐시키 동기화 (worker LAW_KB_VER ↔ KB 빌드버전)" python3 - <<'PY'
+import re,json,sys
+w=re.search(r"LAW_KB_VER = '([\d.]+)'",open('worker.js',encoding='utf-8').read()).group(1)
+k=json.load(open('law_kb.json',encoding='utf-8'))['meta']['빌드버전'].lstrip('v')
+print(f"worker {w} / KB {k}")
+sys.exit(0 if w==k else 1)
+PY
 step "7) 평문 비밀값 잔존 검사" bash -c '! grep -nE "safety-admin-[0-9]+|ADMIN_PIN *= *.[0-9]{6}" index.html && echo "평문 잔존 없음"'
+
 
 echo
 if command -v python3 >/dev/null && python3 -c "import playwright" 2>/dev/null; then
   step "8) 렌더링 테스트 (Playwright)" python3 tests/test_ui.py
+  step "9) 개인정보 안내 테스트 (Playwright)" python3 tests/test_privacy.py
 else
   echo "── 8) 렌더링 테스트 건너뜀 (playwright 미설치: pip install playwright && playwright install chromium)"
 fi

@@ -2548,6 +2548,7 @@ app.innerHTML=`<div class="hdr"><div class="hInner"><button class="back-btn" onc
         </div></div>
       </div>
       <div id="ai-chat-bottom" style="flex-shrink:0;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px)">
+        <div class="ai-chat-pinote" style="font-size:10.5px;color:var(--txt-3);text-align:center;margin:2px 0 -2px;line-height:1.4">${s.lang==='ko'?'ⓘ 외부 AI로 전송되니 이름·연락처는 입력하지 마세요':'ⓘ Sent to an external AI. Don’t enter names or phone numbers.'}</div>
         <div class="ai-chat-input-area"><textarea class="ai-chat-ta" id="ai-chat-ta" rows="1" ${s.lang==='ko'?'placeholder="안전 관련 질문을 입력하세요..."':'placeholder="Ask a safety question..."'} oninput="aiChatAutoResize(this)" onkeydown="aiChatKeydown(event)"></textarea><button class="ai-chat-send" id="ai-chat-send" onclick="sendAiChat()" disabled><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>
         <div class="ai-chat-limit">
           <span>${s.lang==='ko'?'남은 채팅':'Chat'} <span class="ai-chat-limit-num" id="ai-chat-lnum">${aiGetLeft('ai_chat',CHAT_LIMIT)}/${CHAT_LIMIT}${s.lang==='ko'?'회':''}</span></span>
@@ -3115,14 +3116,14 @@ function openFeedback(){
   if(document.getElementById('fb-overlay')) return;
   const en = (typeof state!=='undefined' && state.lang==='en');
   const T = en
-    ? {title:'Send Feedback', sub:'Share a quick thought to make the app better.', cats:['Suggestion','Bug report','Other'], ph:'e.g. The temperature widget text is too small / Please add OO to the checklist', contact:'Contact for reply (optional)', optnote:'* Optional. Your feedback is sent even without it.', send:'Send', close:'Close', empty:'Please enter your feedback.', okT:'Feedback sent!', okS:'Thank you for helping us improve.', fail:'Failed to send. Please try again shortly.', rate:'Too many submissions. Please try again later.', ok:'OK'}
-    : {title:'의견 보내기', sub:'앱을 더 좋게 만들 한마디, 편하게 남겨주세요.', cats:['개선 제안','오류 신고','기타'], ph:'예) 체감온도 위젯 글씨가 작아요 / 점검 항목에 OO 추가 부탁드려요', contact:'답장 받을 연락처 (선택)', optnote:'* 연락처는 선택입니다. 안 적어도 의견은 전달됩니다.', send:'보내기', close:'닫기', empty:'내용을 입력해 주세요.', okT:'의견이 전달됐어요!', okS:'소중한 의견 감사합니다.', fail:'전송에 실패했어요. 잠시 후 다시 시도해 주세요.', rate:'잠시 후 다시 시도해 주세요. (요청이 너무 많아요)', ok:'확인'};
+    ? {title:'Send Feedback', sub:'Share a quick thought to make the app better.', cats:['Suggestion','Bug report','Other'], ph:'e.g. The temperature widget text is too small / Please add OO to the checklist', contact:'Contact for reply (optional)', optnote:'* Optional. Your feedback is sent even without it.', send:'Send', close:'Close', empty:'Please enter your feedback.', okT:'Feedback sent!', okS:'Thank you for helping us improve.', fail:'Failed to send. Please try again shortly.', rate:'Too many submissions. Please try again later.', ok:'OK', cTitle:'Personal information collection & use', cItem:'Collected', cItemV:'Contact (optional)', cPurp:'Purpose', cPurpV:'To reply to your feedback', cKeep:'Retention', cKeepV:'Deleted automatically 180 days after receipt', cDeny:'You may decline. Your feedback will still be sent, but we cannot reply.', cAgree:'I agree to the collection and use above', cNeed:'To leave a contact, please agree to the collection and use of personal information.', more:'Privacy details', less:'Hide details'}
+    : {title:'의견 보내기', sub:'앱을 더 좋게 만들 한마디, 편하게 남겨주세요.', cats:['개선 제안','오류 신고','기타'], ph:'예) 체감온도 위젯 글씨가 작아요 / 점검 항목에 OO 추가 부탁드려요', contact:'답장 받을 연락처 (선택)', optnote:'* 연락처는 선택입니다. 안 적어도 의견은 전달됩니다.', send:'보내기', close:'닫기', empty:'내용을 입력해 주세요.', okT:'의견이 전달됐어요!', okS:'소중한 의견 감사합니다.', fail:'전송에 실패했어요. 잠시 후 다시 시도해 주세요.', rate:'잠시 후 다시 시도해 주세요. (요청이 너무 많아요)', ok:'확인', cTitle:'개인정보 수집·이용 안내', cItem:'수집 항목', cItemV:'연락처(선택)', cPurp:'이용 목적', cPurpV:'보내주신 의견에 대한 회신', cKeep:'보유 기간', cKeepV:'접수 후 180일이 지나면 자동 삭제', cDeny:'동의하지 않아도 됩니다. 이 경우 의견은 전달되지만 회신은 받을 수 없습니다.', cAgree:'위 내용에 동의합니다', cNeed:'연락처를 남기려면 개인정보 수집·이용에 동의해 주세요.', more:'개인정보 처리 안내 보기', less:'안내 접기'};
   window._fbCat='sug'; window._fbT=T;
   const ov=document.createElement('div');
   ov.id='fb-overlay';
   ov.style.cssText='position:fixed;inset:0;background:rgba(8,20,45,0.55);z-index:10000;display:flex;align-items:flex-end;justify-content:center;font-family:inherit';
   ov.onclick=function(e){ if(e.target===ov) closeFeedback(); };
-  ov.innerHTML='<div style="background:#fff;width:100%;max-width:600px;border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(8,20,45,0.25)">'
+  ov.innerHTML='<div style="background:#fff;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(8,20,45,0.25)">'
     +'<div id="fb-form">'
     +'<div style="width:38px;height:4px;background:#d5dbe6;border-radius:3px;margin:0 auto 14px"></div>'
     +'<div style="font-size:17px;font-weight:900;color:#08265f;text-align:center">💬 '+T.title+'</div>'
@@ -3137,6 +3138,18 @@ function openFeedback(){
     +'<input id="fb-contact" type="text" maxlength="100" placeholder="'+T.contact+'" style="width:100%;border:1.5px solid #e3e9f1;border-radius:13px;padding:11px 12px;font-size:13px;font-family:inherit;margin-top:9px;color:#1c2738">'
     +'<input id="fb-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">'
     +'<div style="font-size:11px;color:#8893a6;margin-top:5px;padding-left:3px">'+T.optnote+'</div>'
+    +'<div id="fb-consent" style="display:none;margin-top:9px;background:#f6f8fb;border:1px solid #e3e9f1;border-radius:12px;padding:11px 12px">'
+    +'<div style="font-size:12px;font-weight:800;color:#08265f;margin-bottom:6px">'+T.cTitle+'</div>'
+    +'<table style="border-collapse:collapse;font-size:11.5px;color:#44546f;line-height:1.55">'
+    +'<tr><td style="padding:1px 10px 1px 0;white-space:nowrap;color:#6b7890">'+T.cItem+'</td><td>'+T.cItemV+'</td></tr>'
+    +'<tr><td style="padding:1px 10px 1px 0;white-space:nowrap;color:#6b7890">'+T.cPurp+'</td><td>'+T.cPurpV+'</td></tr>'
+    +'<tr><td style="padding:1px 10px 1px 0;white-space:nowrap;color:#6b7890">'+T.cKeep+'</td><td>'+T.cKeepV+'</td></tr>'
+    +'</table>'
+    +'<div style="font-size:11px;color:#6b7890;margin-top:5px;line-height:1.5">'+T.cDeny+'</div>'
+    +'<label style="display:flex;align-items:center;gap:8px;margin-top:9px;font-size:13px;font-weight:800;color:#08265f;cursor:pointer"><input id="fb-agree" type="checkbox" style="width:19px;height:19px;accent-color:#08265f;margin:0;flex-shrink:0">'+T.cAgree+'</label>'
+    +'</div>'
+    +'<button type="button" id="fb-more" onclick="_fbTogglePrivacy()" aria-expanded="false" aria-controls="fb-privacy" style="display:block;margin:8px 0 0 3px;background:none;border:none;padding:2px 0;font-size:11.5px;font-weight:700;color:#5a6a83;text-decoration:underline;text-underline-offset:2px;font-family:inherit;cursor:pointer">'+T.more+' ▾</button>'
+    +'<div id="fb-privacy" style="display:none;margin-top:6px;max-height:34vh;overflow-y:auto;background:#fafbfd;border:1px solid #e9edf3;border-radius:12px;padding:11px 12px;font-size:11.5px;color:#44546f;line-height:1.6">'+_fbPrivacyHtml(en)+'</div>'
     +'<div id="fb-err" style="display:none;font-size:12px;color:#c0392b;margin-top:10px;text-align:center"></div>'
     +'<button type="button" id="fb-send" onclick="_fbSend()" style="margin-top:16px;width:100%;background:linear-gradient(135deg,#08265f,#0d3c84);color:#fff;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:900;font-family:inherit;cursor:pointer">'+T.send+'</button>'
     +'<button type="button" onclick="closeFeedback()" style="margin-top:8px;width:100%;background:none;border:none;color:#8893a6;font-size:13px;font-weight:700;padding:8px;font-family:inherit;cursor:pointer">'+T.close+'</button>'
@@ -3151,6 +3164,12 @@ function openFeedback(){
   document.body.appendChild(ov);
   const ta=document.getElementById('fb-text');
   ta.addEventListener('input',function(){ document.getElementById('fb-count').textContent=this.value.length; });
+  // [v96] 연락처를 적을 때만 수집·이용 동의 블록 표시. 지우면 숨기고 체크도 해제.
+  document.getElementById('fb-contact').addEventListener('input',function(){
+    const has=this.value.trim().length>0, box=document.getElementById('fb-consent');
+    box.style.display=has?'block':'none';
+    if(!has){ const a=document.getElementById('fb-agree'); if(a) a.checked=false; }
+  });
   setTimeout(function(){ try{ta.focus();}catch(e){} }, 120);
 }
 function _fbSetCat(c){
@@ -3162,6 +3181,33 @@ function _fbSetCat(c){
   });
 }
 function closeFeedback(){ const o=document.getElementById('fb-overlay'); if(o) o.remove(); }
+// [v96] 개인정보 처리 안내 — 의견 보내기 창 안의 접힘 링크로만 노출(화면 하단에 상시 표시하지 않음)
+function _fbTogglePrivacy(){
+  const T=window._fbT||{}, box=document.getElementById('fb-privacy'), b=document.getElementById('fb-more'); if(!box||!b) return;
+  const open=box.style.display==='none';
+  box.style.display=open?'block':'none'; b.setAttribute('aria-expanded',open?'true':'false');
+  b.textContent=(open?T.less+' ▴':T.more+' ▾');
+}
+function _fbPrivacyHtml(en){
+  const rows = en ? [
+    ['Feedback contact (optional)','Used only to reply to your feedback. Deleted automatically 180 days after receipt.'],
+    ['Usage statistics','A random device ID, city/district-level region and device type (iOS/Android). Kept in a form that does not identify you, to understand how the app is used.'],
+    ['Visit analytics','Google Analytics collects visit information (pages viewed, device, approximate location, etc.) to analyze usage.'],
+    ['Location (feels-like temperature)','Your current coordinates are sent to weather and place-name services only to show local weather. The app does not store them.'],
+    ['AI chat & report input','Sent to an external AI service to generate answers. Please do not enter names, phone numbers or other personal information.']
+  ] : [
+    ['의견 보내기 연락처(선택)','보내주신 의견에 회신할 때만 사용하며, 접수 후 180일이 지나면 자동 삭제됩니다.'],
+    ['이용 통계','기기별 무작위 번호, 시·군·구 단위 지역, 기기 종류(iOS/Android)를 이용 현황 파악에 사용합니다. 개인을 알아볼 수 없는 형태로 보관합니다.'],
+    ['방문 분석','Google Analytics가 방문 정보(본 화면, 기기, 대략적 위치 등)를 자동으로 수집해 이용 현황 분석에 사용합니다.'],
+    ['위치(체감온도)','현재 위치 좌표는 날씨·지역명 조회 서비스로만 전송되며, 앱은 좌표를 저장하지 않습니다.'],
+    ['AI 상담·리포트 입력 내용','답변 생성을 위해 외부 AI 서비스로 전송됩니다. 이름·연락처 등 개인정보는 입력하지 마세요.']
+  ];
+  const head = en ? 'Oneul Safety works without sign-up and never requires your name or phone number.' : '「오늘의안전」은 회원가입 없이 이용하며, 이름·전화번호 등을 필수로 받지 않습니다.';
+  const foot = en ? 'Questions: use Send Feedback.' : '문의: 이 창의 의견 보내기';
+  return '<div style="margin-bottom:8px">'+head+'</div>'
+    + rows.map(function(r){ return '<div style="margin-top:7px"><div style="font-weight:800;color:#08265f">'+r[0]+'</div><div>'+r[1]+'</div></div>'; }).join('')
+    + '<div style="margin-top:9px;color:#8893a6">'+foot+'</div>';
+}
 async function _fbSend(){
   const T=window._fbT||{};
   const text=(document.getElementById('fb-text').value||'').trim();
@@ -3170,6 +3216,7 @@ async function _fbSend(){
   const errEl=document.getElementById('fb-err');
   if(!text){ errEl.textContent=T.empty; errEl.style.display='block'; return; }
   if(hp){ _fbShowDone(); return; } // 봇 허니팟
+  if(contact && !(document.getElementById('fb-agree')||{}).checked){ errEl.textContent=T.cNeed; errEl.style.display='block'; return; } // [v96] 연락처 수집 동의 필수
   const btn=document.getElementById('fb-send');
   btn.disabled=true; btn.style.opacity='0.6'; errEl.style.display='none';
   const lang=(typeof state!=='undefined' && state.lang==='en')?'en':'ko';
@@ -3967,7 +4014,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v95'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v96'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiChatHistory=[];
 let aiChatLoading=false;
 let aiStickBottom=false; // 대화 시작 후 키보드 재오픈/리사이즈 시 마지막 메시지로 유지
@@ -4062,6 +4109,8 @@ async function generateAiReport(){
   try{
     const res=await fetch(AI_PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
         type:'report',
+        lang:isEn?'en':'ko',   // [v96] 서버가 고정 프롬프트 언어를 고른다
+        // system_instruction: v96 Worker는 무시(서버 고정). 배포 순서가 어긋나도 구 Worker에서 동작하도록 남겨둔다.
         system_instruction:{parts:[{text:isEn
           ?'You are an industrial safety expert. Write ONLY in English. Never use Chinese characters, Japanese kana, or any non-English scripts. Use the English word None, never Japanese kana.'
           :'당신은 산업안전 전문가입니다. 반드시 순수 한글로만 작성하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나) 문자는 단 한 글자도 쓰면 안 됩니다. 없음을 일본어 가나로 쓰지 마세요. 이것은 절대 규칙입니다.'}]},
@@ -4107,6 +4156,11 @@ function aiFormatErrorMsg(status,err,isEn,limit){
       const sec=Math.max(5,Math.ceil((limit.retryMs||60000)/1000));
       return isEn?('⚠️ AI is busy right now. Please try again in about '+sec+' seconds. (E429-M)')
                  :('⚠️ 지금 AI 이용이 몰리고 있습니다. 약 '+sec+'초 후 다시 시도해주세요. (E429-M)');
+    }
+    if(limit&&limit.kind==='ip'){   // [v96] 서버측 IP당 요청 한도(분당 15·시간당 120)
+      const sec=Math.max(5,Math.ceil((limit.retryMs||60000)/1000));
+      return isEn?('⚠️ Too many requests from this network. Please try again in about '+sec+' seconds. (E429-I)')
+                 :('⚠️ 요청이 많아요. 약 '+sec+'초 후 다시 시도해 주세요. (E429-I)');
     }
     if(limit&&limit.kind==='daily'){
       return isEn?'⚠️ Today\'s free quota is used up. It resets at 9AM KST. (E429-D)'
@@ -4197,6 +4251,7 @@ async function sendAiChat(exText){
       type:'chat',
       userQuery:text,
       lang:isEn2?'en':'ko',
+      // system_instruction: v96 Worker는 무시(서버 고정). 배포 순서가 어긋나도 구 Worker에서 동작하도록 남겨둔다.
       system_instruction:{parts:[{text:isEn2
         ?'You are an AI safety manager. Write ONLY in English. Never use Chinese characters or Japanese kana.'
         :'당신은 현장 전문안전관리자 AI입니다. 사용자는 반드시 "작업자님"으로 호칭하고 "근로자님"은 쓰지 마세요. 반드시 순수 한글로만 답변하세요. 법 조항 번호나 고시·지침 조문은 확실하지 않으면 절대 지어내지 말고, 모르면 솔직히 모른다고 답하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나) 문자는 단 한 글자도 쓰면 안 됩니다. 이것은 절대 규칙입니다.'}]},
@@ -4215,8 +4270,8 @@ async function sendAiChat(exText){
     // [v95] Worker가 실제로 주입한 조문 목록(lawSources)을 그대로 노출한다.
     //       답변 본문의 '📖 근거:'는 AI가 쓴 문장이라 틀릴 수 있지만, 이 칩은 검색엔진이 넣은 값이라 검증된 근거다.
     const lawSrc=(data.lawSources&&data.lawSources.length)?data.lawSources.slice(0,6):[];
-    const lawChips=lawSrc.map(function(x){return '<span style="display:inline-block;background:rgba(74,222,128,0.10);border:1px solid rgba(74,222,128,0.32);color:#86efac;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;line-height:1.55">'+_fbEsc(String(x))+'</span>';}).join('');
-    const lawBadge=lawSrc.length?('<div style="margin-bottom:8px"><span style="display:inline-block;background:#16361f;color:#4ade80;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">📖 '+(isEn2?'Legal basis':'법령 근거')+'</span><div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">'+lawChips+'</div></div>'):'';
+    const lawChips=lawSrc.map(function(x){return '<span style="display:inline-block;background:#ecfdf3;border:1px solid #9fd8b5;color:#0f5132;font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;line-height:1.5">'+_fbEsc(String(x))+'</span>';}).join('');
+    const lawBadge=lawSrc.length?('<div style="margin-bottom:8px"><span style="display:inline-block;background:#146c43;color:#fff;font-size:11px;font-weight:800;padding:3px 9px;border-radius:10px">📖 '+(isEn2?'Legal basis':'법령 근거')+'</span><div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">'+lawChips+'</div></div>'):'';
     aiAppendMsg('ai',lawBadge+reply);
   }catch(e){
     if(typing)typing.remove();

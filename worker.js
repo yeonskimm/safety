@@ -35,7 +35,7 @@ const GROQ_MODEL = 'openai/gpt-oss-120b';
 //       ② 별표 수록 — 교육시간·선임기준·과태료 금액은 조문이 아니라 별표에 있어, 전에는 근거 없이 답했다
 //       ③ 답변 검증(lawVerify) — 주입한 근거에 없는 조문번호를 AI가 지어내면 표기를 떼고 경고를 붙인다
 // ── LAW_RETRIEVAL_BEGIN ── (test_retrieve.js가 이 구간을 그대로 읽어 검증한다. 마커를 지우지 말 것)
-const LAW_KB_VER = '2.1';   // law_kb.json의 meta.빌드버전과 맞춘다. KB를 고치면 이 값을 올려야 캐시를 건너뛰고 즉시 반영된다.
+const LAW_KB_VER = '3.0';   // law_kb.json의 meta.빌드버전과 맞춘다. KB를 고치면 이 값을 올려야 캐시를 건너뛰고 즉시 반영된다.
 const LAW_KB_URL = 'https://yeonskimm.github.io/safety/law_kb.json?v=' + LAW_KB_VER;
 const LAW_MAX_ARTICLES = 4;    // 주입 단위 수 (v95: 항 단위 선별로 개수를 늘림)
 const LAW_BUDGET = 3200;       // 법령 근거 전체 글자 예산 (Groq 무료 8K TPM 고려)
@@ -90,6 +90,10 @@ const LAW_DIRECT = {
   // 벌칙·과태료 — 금액은 시행령 별표35에만 있다
   '과태료': ['sanan_decree:별표35', 'sanan_law:175'], '과태료얼마': ['sanan_decree:별표35'], '과태료금액': ['sanan_decree:별표35'],
   '부과기준': ['sanan_decree:별표35'], '벌금': ['sanan_law:167', 'sanan_law:168', 'sanan_law:170'], '징역': ['sanan_law:167', 'sanan_law:168'],
+  // [v96] 벌칙 조문(제167~169·174조) 본문 복구와 함께 — 사망 시 처벌은 제167조(+양벌 제173조), 일반 위반 처벌은 제168조를 선두로
+  '사망+처벌': ['sanan_law:167', 'sanan_law:173'], '사망+벌칙': ['sanan_law:167', 'sanan_law:173'], '사망+벌금': ['sanan_law:167', 'sanan_law:173'],
+  '사망+징역': ['sanan_law:167', 'sanan_law:173'], '위반+처벌': ['sanan_law:168', 'sanan_law:167'], '양벌': ['sanan_law:173'],
+  '산안법+목적': ['sanan_law:1'], '산업안전보건법+목적': ['sanan_law:1'],
   // 산안규칙 별표 3 — 작업시작 전 점검사항 (앱 체크리스트의 법적 근거)
   '작업시작전점검': ['kijun_rule:별표3', 'kijun_rule:35'], '작업전점검': ['kijun_rule:별표3', 'kijun_rule:35'],
   '작업전+확인': ['kijun_rule:별표3'], '작업전+점검': ['kijun_rule:별표3'], '작업시작+점검': ['kijun_rule:별표3'], '시작전+확인': ['kijun_rule:별표3'],
@@ -124,7 +128,7 @@ const LAW_DIRECT = {
 };
 
 // [v93 발견] law_kb 파싱 오류 조문 — KB v2가 bad 표시를 달고 오지만, 구버전 KB를 받아도 막히도록 이중 방어.
-const LAW_EXCLUDE = new Set(['산업안전보건법|1|0', '산업안전보건기준에 관한 규칙|2|0']);  // [v95] 제40·51·63조는 본문 복구 완료 → 제외 해제
+const LAW_EXCLUDE = new Set([]);  // [v96] KB 전면 재생성(원문 기준)으로 격리 조문 0개. 다시 오염이 발견되면 '법령명|조|의' 형식으로 추가
 
 // 동의어: 질문 단어 → 조문에 쓰이는 표현. (검색 확장용, 가중치는 본 단어의 60%)
 const LAW_SYN = {
@@ -490,6 +494,41 @@ async function kvGetManyJson(env, keys, chunk) {
 //     ADMIN_SECRET  토큰 서명용 임의 문자열 (32자 이상 권장, 아무 문자열이나 됨)
 //   둘 중 하나라도 없으면 /admin-auth 는 500 not_configured 를 돌려준다.
 const ADMIN_SESSION_SEC = 30 * 60;   // 세션 유지 30분
+// ── [v96] AI 프록시 보호 ──────────────────────────────────────────────
+// ① 시스템 프롬프트는 서버에 고정한다. 예전엔 앱이 보낸 문구를 그대로 썼기 때문에, 앱 밖에서
+//    Origin 헤더만 흉내 내면 이 Worker를 아무 용도의 범용 AI로 쓸 수 있었다.
+//    (문구는 v95 앱이 보내던 것과 동일 → 답변 말투 변화 없음. 구버전 앱이 보내는 system_instruction은 무시)
+const SYSTEM_PROMPTS = {
+  chat: {
+    ko: '당신은 현장 전문안전관리자 AI입니다. 사용자는 반드시 "작업자님"으로 호칭하고 "근로자님"은 쓰지 마세요. 반드시 순수 한글로만 답변하세요. 법 조항 번호나 고시·지침 조문은 확실하지 않으면 절대 지어내지 말고, 모르면 솔직히 모른다고 답하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나) 문자는 단 한 글자도 쓰면 안 됩니다. 이것은 절대 규칙입니다.',
+    en: 'You are an AI safety manager. Write ONLY in English. Never use Chinese characters or Japanese kana.',
+  },
+  report: {
+    ko: '당신은 산업안전 전문가입니다. 반드시 순수 한글로만 작성하세요. 한자(漢字)·중국어·일본어(히라가나·가타카나) 문자는 단 한 글자도 쓰면 안 됩니다. 없음을 일본어 가나로 쓰지 마세요. 이것은 절대 규칙입니다.',
+    en: 'You are an industrial safety expert. Write ONLY in English. Never use Chinese characters, Japanese kana, or any non-English scripts. Use the English word None, never Japanese kana.',
+  },
+};
+// ② 답변 길이·온도 상한 — 앱은 500~600을 쓴다. 직접 만든 요청이 큰 값을 넣어도 800까지만.
+const AI_MAX_OUT = 800;
+// ③ IP당 요청 한도(채팅+리포트 합산). KV는 사용량이 이미 한계라 쓰지 않고 Worker 메모리에 센다.
+//    Cloudflare는 여러 인스턴스를 돌리므로 '정확한 차단'이 아니라 한 곳에서 몰아치는 폭주만 걸러낸다.
+//    같은 현장 와이파이(한 IP)를 여러 명이 쓰는 경우를 고려해 넉넉하게 잡았다. (앱 자체 한도: 기기당 하루 채팅 10·리포트 5)
+const AI_IP_LIMITS = [ { win: 60 * 1000, max: 15 }, { win: 60 * 60 * 1000, max: 120 } ];
+const _aiHits = new Map();   // ip → 최근 1시간 요청 시각 배열
+function aiIpCheck(ip, now = Date.now()) {
+  const hour = AI_IP_LIMITS[AI_IP_LIMITS.length - 1].win;
+  const arr = (_aiHits.get(ip) || []).filter(t => now - t < hour);
+  for (const L of AI_IP_LIMITS) {
+    const inWin = arr.filter(t => now - t < L.win);
+    if (inWin.length >= L.max) { _aiHits.set(ip, arr); return { ok: false, retryMs: L.win - (now - inWin[0]) }; }
+  }
+  arr.push(now); _aiHits.set(ip, arr);
+  if (_aiHits.size > 5000) {   // 메모리 보호: 1시간 지난 항목 정리
+    for (const [k, v] of _aiHits) if (!v.length || now - v[v.length - 1] >= hour) _aiHits.delete(k);
+  }
+  return { ok: true };
+}
+
 const ADMIN_MAX_TRIES = 5;           // IP당 시간당 PIN 실패 허용 횟수 (초과 시 429)
 const _enc = new TextEncoder();
 const _b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -923,10 +962,27 @@ export default {
 
     // ── AI 프록시 ──
     const GROQ_API_KEY = env.GROQ_API_KEY;
-    const body = await request.json();
+    // [v96] IP당 요청 한도 — 본문을 읽기 전에 먼저 거른다
+    const aiIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const ipc = aiIpCheck(aiIp);
+    if (!ipc.ok) {
+      // (차단 건수를 KV에 기록하지 않는다 — 폭주 시 차단 응답마다 KV 쓰기가 발생해 무료 한도를 태우기 때문)
+      return new Response(JSON.stringify({ error: { message: 'RATE_LIMIT ip' }, limit: { kind: 'ip', retryMs: Math.max(1000, Math.round(ipc.retryMs)) } }), {
+        status: 429, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': origin }
+      });
+    }
+    let body;
+    try { body = await request.json(); } catch (e) {
+      return new Response(JSON.stringify({ error: { message: 'bad request' } }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': origin } });
+    }
     // [v95] 입력 길이 상한 — 앱의 정상 요청(리포트 포함)은 넉넉히 들어가고, 직접 만든 대용량 요청만 잘린다.
     const prompt = (body.contents?.[0]?.parts?.[0]?.text || '').slice(0, 8000);
-    const systemText = (body.system_instruction?.parts?.[0]?.text || '').slice(0, 3000);
+    // [v96] 시스템 프롬프트 서버 고정 — 앱이 보낸 system_instruction은 언어 판별(구버전 리포트 요청에 lang이 없음)에만 쓴다
+    const clientSys = String(body.system_instruction?.parts?.[0]?.text || '');
+    const aiLang = body.lang === 'en' || body.lang === 'ko' ? body.lang : (/[가-힣]/.test(clientSys) ? 'ko' : 'en');
+    const systemText = SYSTEM_PROMPTS[body.type === 'report' ? 'report' : 'chat'][aiLang];
+    const outTokens = Math.min(AI_MAX_OUT, Math.max(100, parseInt(body.generationConfig?.maxOutputTokens, 10) || 600));
+    const temp = Math.min(1, Math.max(0, Number(body.generationConfig?.temperature ?? 0.7) || 0));
     const userQ = String(body.userQuery || '').slice(0, 500);
     // ✅ 클라이언트가 보내는 type으로 채팅/리포트 명시 분류
     //    (이전: system_instruction 유무로 판단 → 둘 다 system_instruction이 있어 항상 report로 집계되던 버그)
@@ -938,7 +994,15 @@ export default {
     let lawGroundMsg = null;
     let lawMatched = [];        // [v94] 답변 검증(lawVerify)에 쓸 실제 주입 근거
     let lawKbFail = false;
-    if (!isReport && userQ) {
+    // [v96] 중대재해처벌법 질문 — KB에 이 법이 없다. 산안법 벌칙(제167·168조 등)을 주입하면 AI가 두 법을 섞어 답하므로
+    //       주입하지 않고, 조문·형량을 단정하지 말라는 안내만 넣는다.
+    const sapaQ = /중대재해\s*처벌|중처법|serious accidents? punishment/i.test(userQ);
+    if (!isReport && sapaQ) {
+      lawGroundMsg = body.lang === 'en'
+        ? '[Note] This app\'s legal database does not contain the Serious Accidents Punishment Act. Do not state its article numbers or penalty amounts as fact; give only a general explanation and tell the user to confirm on law.go.kr. Never cite Occupational Safety and Health Act articles as if they were provisions of that Act.'
+        : '[안내] 이 앱의 법령 DB에는 「중대재해 처벌 등에 관한 법률」 원문이 없다. 이 법의 조문번호·형량·의무를 단정하지 말고 일반적인 설명에 그치며, 정확한 내용은 국가법령정보센터(law.go.kr)에서 확인하도록 안내하라. 산업안전보건법 조문을 중대재해처벌법 조문처럼 인용하지 마라.';
+    }
+    if (!isReport && userQ && !sapaQ) {
       try {
         const kb = await getLawKB();
         const matched = lawRetrieve(kb, userQ, LAW_MAX_ARTICLES);
@@ -982,8 +1046,8 @@ export default {
         // 클라이언트 요청값(500~600)만 주면 추론이 예산을 다 먹고 content가 비어
         // 매번 Gemini 폴백으로 새므로, 추론 몫 900을 더해 여유를 준다.
         // (상한선일 뿐이라 실제 토큰 소모가 늘지는 않음)
-        max_completion_tokens: (body.generationConfig?.maxOutputTokens || 600) + 900,
-        temperature: body.generationConfig?.temperature || 0.7,
+        max_completion_tokens: outTokens + 900,
+        temperature: temp,
         reasoning_effort: 'low',   // 안전 체크리스트 답변엔 low로 충분 (지연·토큰 절감)
         include_reasoning: false,  // 추론 내용이 응답 본문에 섞이지 않게 제외
       });
@@ -1011,8 +1075,8 @@ export default {
             // thinking을 끈 경우(2.5-flash)는 요청값 그대로 사용.
             // 별칭 재시도처럼 thinking이 켜질 수 있는 모델은 내부 추론이 출력 토큰을
             // 잠식하므로 2048로 여유 있게 상향한다.
-            maxOutputTokens: disableThinking ? (body.generationConfig?.maxOutputTokens || 600) : 2048,
-            temperature: body.generationConfig?.temperature || 0.7,
+            maxOutputTokens: disableThinking ? outTokens : 2048,
+            temperature: temp,
           },
         };
         // gemini-2.5-flash는 내부 추론(thinking)이 기본 ON → 끄면 응답이 빠르고 토큰이 절약됨
@@ -1143,7 +1207,7 @@ export default {
         const v = lawVerify(text, lawMatched, body.lang === 'en');
         text = v.text; lawStripped = v.stripped;
         if (lawStripped.length) {
-          console.log('LAW_HALLUCINATION', 'engine=' + engine, 'stripped=' + JSON.stringify(lawStripped).slice(0, 200), 'q=' + String(body.userQuery || '').slice(0, 80));
+          console.log('LAW_HALLUCINATION', 'engine=' + engine, 'stripped=' + JSON.stringify(lawStripped).slice(0, 200));   // [v96] 질문 원문은 로그에 남기지 않는다(개인정보 입력 가능성)
           await trackStat(env, 'law_stripped');
         }
       }

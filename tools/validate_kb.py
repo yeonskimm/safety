@@ -24,6 +24,15 @@ def main(path='law_kb.v2.json'):
             if len(a['text']) < 40:
                 warns.append(f"{name} {head}({a.get('title','')}): 본문 {len(a['text'])}자로 비정상적으로 짧음")
 
+        # 1-2) [v96] 본문 잘림 — 추출 중 끊긴 조문은 '또는'·쉼표·'3.' 같은 이어질 말로 끝난다.
+        #      (v95까지 법 제167~169·174·175조가 이렇게 잘린 채 배포돼 벌칙 질문에 엉뚱한 조문이 주입됐다)
+        for a in arts:
+            if a.get('bad'): continue
+            tail = re.sub(r'\[시행일[^\]]*\][^\[]*$', '', a['text']).rstrip()   # '[시행일 : …] 제6조' 같은 시행일 꼬리표는 정상
+            if re.search(r'(또는|및|ㆍ|,|\s\d+(?:\s*의\s*\d+)?\.|제\d+조(?:의\d+)?(?:제\d+항)?)$', tail):
+                head = f"제{a['jo']}조" + (f"의{a['ui']}" if a.get('ui') else '')
+                errs.append(f"{name} {head}: 본문이 중간에 끊김 → 「…{tail[-30:]}」")
+
         # 2) 제목이 본문 괄호 안 제목과 일치하는가
         for a in arts:
             if a.get('bad'): continue

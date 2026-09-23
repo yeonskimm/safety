@@ -41,4 +41,10 @@ t('단서 안내 총량 상한(760자) 준수', ['휴게시설 설치 의무 사
 const g73=F.lawGrounding(F.lawRetrieve(kb,'산업재해조사표는 언제제출해야해?'),false);
 t('프롬프트에 단서 안내 블록 삽입', g73.includes('[위 원문에 있는 적용 요건·단서') && g73.includes('은폐하려고 한 사업주'));
 t('단서 안내 포함해도 주입 길이 4,000자 이내', g73.length < 4000);
+// [v96] 중대재해처벌법 질문은 산안법 조문을 주입하지 않는다 (KB에 없는 법 — 두 법 혼동 방지)
+const sapaSrc=(src.match(/const sapaQ = (\/.*?\/i)\.test/)||[])[1];
+t('중처법 판별식이 worker.js에 존재', !!sapaSrc);
+const sapa=sapaSrc?eval(sapaSrc):/$^/;
+t('중처법 질문 판별(중대재해처벌법·중처법·띄어쓰기)', ['중대재해처벌법 위반하면 처벌 수위','중처법 대상이야?','중대재해 처벌 등에 관한 법률'].every(q=>sapa.test(q)));
+t('산안법 벌칙 질문은 중처법으로 오인하지 않음', !['안전조치 위반하면 처벌','사망사고 나면 사업주 처벌','중대재해 발생 보고 기한'].some(q=>sapa.test(q)));
 console.log(`\nVERIFY 테스트 ${pass}/${pass+fail} 통과`); process.exitCode=fail?1:0;
