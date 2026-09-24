@@ -1,4 +1,4 @@
-const CACHE_NAME = 'onul-safety-v96';
+const CACHE_NAME = 'onul-safety-v97';
 const FILES_TO_CACHE = [
   './',
   './index.html',
@@ -19,11 +19,14 @@ self.addEventListener('install', event => {
   // skipWaiting은 페이지가 '안전한 시점'에 SKIP_WAITING 메시지로 요청한다(채팅 입력 중 강제 새로고침 방지)
 });
 
-// 활성화 — 이전 캐시 삭제 후 즉시 제어 획득
+// 활성화 — '내 이전 캐시'만 삭제 후 즉시 제어 획득
+// 캐시 저장소는 저장소(/safety, /lawon)가 아니라 주소(yeonskimm.github.io) 단위로 공유된다.
+// 반드시 onul-safety- 로 시작하는 캐시만 지울 것 — 법ON(lawon-) 등 다른 앱의 오프라인 저장본을 지우지 않도록 (v97)
+const CACHE_PREFIX = 'onul-safety-';
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
