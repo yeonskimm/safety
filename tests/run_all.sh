@@ -26,6 +26,13 @@ k=json.load(open('law_kb.json',encoding='utf-8'))['meta']['빌드버전'].lstrip
 print(f"worker {w} / KB {k}")
 sys.exit(0 if w==k else 1)
 PY
+step "6-3) 캐시 삭제 범위 (자기 접두어 onul-safety- 만 삭제)" python3 - <<'PY'
+import re,sys
+s=open('service-worker.js',encoding='utf-8').read()
+ok=("CACHE_PREFIX = 'onul-safety-'" in s) and bool(re.search(r"filter\(k => k\.startsWith\(CACHE_PREFIX\) && k !== CACHE_NAME\)",s)) and not re.search(r"filter\(k => k !== CACHE_NAME\)",s)
+print("자기 캐시만 삭제" if ok else "다른 앱 캐시까지 삭제하는 코드가 있음 — 법ON 저장본이 지워짐")
+sys.exit(0 if ok else 1)
+PY
 step "7) 평문 비밀값 잔존 검사" bash -c '! grep -nE "safety-admin-[0-9]+|ADMIN_PIN *= *.[0-9]{6}" index.html && echo "평문 잔존 없음"'
 
 
