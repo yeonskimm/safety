@@ -53,6 +53,16 @@ jobs:
           sys.exit(0 if v == c else 1)
           PY
 
+      - name: 캐시 삭제 범위 (자기 접두어 onul-safety- 만 삭제)
+        run: |
+          python3 - <<'PY'
+          import re,sys
+          s=open('service-worker.js',encoding='utf-8').read()
+          ok=("CACHE_PREFIX = 'onul-safety-'" in s) and bool(re.search(r"filter\(k => k\.startsWith\(CACHE_PREFIX\) && k !== CACHE_NAME\)",s)) and not re.search(r"filter\(k => k !== CACHE_NAME\)",s)
+          print("자기 캐시만 삭제" if ok else "다른 앱 캐시까지 삭제하는 코드가 있음 — 법ON 저장본이 지워짐")
+          sys.exit(0 if ok else 1)
+          PY
+
       - name: 평문 비밀값 잔존 검사
         run: |
           if grep -nE "safety-admin-[0-9]+|ADMIN_PIN *= *.[0-9]{6}" index.html; then
