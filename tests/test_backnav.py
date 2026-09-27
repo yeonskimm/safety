@@ -1,4 +1,4 @@
-# test_backnav.py — v98 안드로이드 시스템 뒤로가기 테스트 (Playwright, 안드로이드 뷰포트)
+# test_backnav.py — v98·v99 안드로이드 시스템 뒤로가기 테스트 (Playwright) — 아이폰은 v99부터 적용 제외 확인
 # 시스템 뒤로가기 = 브라우저 history back 과 같으므로 page.go_back()으로 재현한다.
 # 사용: python3 tests/test_backnav.py
 import os, sys, time, threading, http.server, socketserver
@@ -150,7 +150,7 @@ with sync_playwright() as p:
     check('전체 흐름 동안 JS 예외 없음(안드로이드)', not errors)
     if errors: print('  예외:', errors[:5])
 
-    # 10) 아이폰 — 뒤로 스와이프(=history back) 동작, 홈에서는 종료 안내 없음
+    # 10) 아이폰 — v99부터 적용 제외: 방문기록을 넣지 않아 뒤로 스와이프 반응 없음, "← 뒤로" 버튼만 사용
     ictx = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True,
         user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1')
     ip = ictx.new_page(); ierr = []
@@ -160,14 +160,23 @@ with sync_playwright() as p:
         ip.route(pat, lambda r, q: r.fulfill(status=200, body='{}', headers=JSON))
     ip.route('**/www.googletagmanager.com/**', lambda r, q: r.fulfill(status=200, body='', headers={'Content-Type': 'text/javascript'}))
     ip.goto(f'http://127.0.0.1:{PORT}/{PAGE}', wait_until='load'); ip.wait_for_timeout(1000)
-    ist = lambda: ip.evaluate('state.step'); iback = lambda: (ip.go_back(), ip.wait_for_timeout(250))
-    check('아이폰 판정(IS_IOS=true)', ip.evaluate('_osBack.isIOS') is True)
+    ist = lambda: ip.evaluate('state.step')
+    no_guard = lambda: ip.evaluate('!(history.state && history.state.osG)')
+    check('아이폰 판정 → 뒤로가기 처리 비활성', ip.evaluate('_osBack.isIOS===true && _osBack.disabled===true'))
+    L0 = ip.evaluate('history.length')
     ip.click('button.home-btn[onclick="go(1)"]'); ip.locator('button.i-btn').first.click(); ip.wait_for_timeout(150)
-    iback(); check('아이폰 스와이프: 작업 선택 → 업종 선택', ist() == 1)
-    iback(); check('아이폰 스와이프: 업종 선택 → 홈', ist() == 0)
-    iback(); check('아이폰 홈에서 스와이프 → 종료 안내 없음·홈 유지', ist() == 0 and not ip.evaluate("!!document.querySelector('#os-back-toast.show')"))
-    ip.go_forward(); ip.wait_for_timeout(250)
-    check('아이폰 앞으로 스와이프 → 무시(화면 그대로)', ist() == 0)
+    ip.locator('button.det-btn').first.click(); ip.click('button.big-btn[onclick="startCheck()"]'); ip.wait_for_timeout(150)
+    ip.locator('button[onclick^="toggle("]').first.click(); ip.wait_for_timeout(100)
+    check('아이폰: 화면을 눌러 이동해도 방문기록 추가 없음(스와이프 대상 없음)', ist() == 3 and ip.evaluate('history.length') == L0 and no_guard())
+    ip.evaluate("window.dispatchEvent(new PopStateEvent('popstate',{state:{osG:0}}))"); ip.wait_for_timeout(150)
+    check('아이폰: popstate가 와도 화면 변화 없음', ist() == 3 and not ip.evaluate("!!document.querySelector('#os-back-toast.show')"))
+    for want in (2, 1, 0):
+        ip.locator('.back-btn').first.click(); ip.wait_for_timeout(150)
+    check('아이폰: 왼쪽 위 "← 뒤로" 버튼 정상(체크리스트→작업→업종→홈)', ist() == 0)
+    # v98 설치 상태에서 업데이트 새로고침된 경우: 남은 가드 기록을 걷어냄
+    ip.evaluate("for(let i=1;i<=5;i++) history.pushState({osG:i},'')")
+    ip.reload(wait_until='load'); ip.wait_for_timeout(1000)
+    check('아이폰: v98에서 남은 가드 기록(5칸) → 새로고침 시 정리', no_guard() and ist() == 0)
     check('아이폰 흐름 JS 예외 없음', not ierr)
     ictx.close()
     browser.close()

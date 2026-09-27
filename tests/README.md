@@ -17,7 +17,7 @@ bash tests/run_all.sh
 | `test_verify.js` | 답변 조문번호 검증 (lawVerify) | `node tests/test_verify.js` |
 | `test_admin.js` | 관리자 세션토큰·PIN 비교 | `node tests/test_admin.js` |
 | `test_ui.py` | 관리자 인증 흐름 렌더링 (Playwright) | `python3 tests/test_ui.py` |
-| `test_backnav.py` | 안드로이드 뒤로가기·아이폰 뒤로 스와이프 (Playwright, v98) | `python3 tests/test_backnav.py` |
+| `test_backnav.py` | 안드로이드 뒤로가기 / 아이폰 적용 제외 확인 (Playwright, v99) | `python3 tests/test_backnav.py` |
 
 `test_retrieve.js` / `test_verify.js` / `test_admin.js`는 **`worker.js`의 해당 코드 구간을 그대로 읽어 실행한다.**
 테스트용 사본을 따로 두지 않으므로, 배포 파일과 검증 대상이 항상 일치한다.

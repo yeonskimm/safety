@@ -4014,7 +4014,7 @@ function stripHanja(text,isEn){
 }
 const AI_UPDATING=false; // true: 업데이트 중 배지 항상 표시 / 정상화 시 false로 변경
 const REPORT_LIMIT=5, CHAT_LIMIT=10;
-const APP_VERSION='v98'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
+const APP_VERSION='v99'; // 관리자 표시용 - service-worker.js CACHE_NAME과 함께 올릴 것
 let aiChatHistory=[];
 let aiChatLoading=false;
 let aiStickBottom=false; // 대화 시작 후 키보드 재오픈/리사이즈 시 마지막 메시지로 유지
@@ -4644,16 +4644,19 @@ function installApp(){
   if(dP){dP.prompt();dP.userChoice.then(()=>{dP=null;});}
 }
 </script>
-<!-- [v98] 시스템 뒤로가기(안드로이드 버튼·아이폰 스와이프) 처리 -->
+<!-- [v98·v99] 안드로이드 시스템 뒤로가기 처리 (아이폰 제외) -->
 <style>
 #os-back-toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(20,33,61,.92);color:#fff;padding:11px 18px;border-radius:22px;font-size:14px;font-weight:600;z-index:10001;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 #os-back-toast.show{opacity:1}
 </style>
 <script>
-// [v98] 시스템 뒤로가기(안드로이드 하단 버튼·아이폰 뒤로 스와이프) 처리
-// 문제: 화면 전환을 state.step으로만 해서 방문기록이 없음 → 안드로이드는 뒤로가기 시 앱이 바로 종료, 아이폰은 스와이프가 안 됨
+// [v98] 안드로이드 시스템(하단) 뒤로가기 처리
+// 문제: 화면 전환을 state.step으로만 해서 방문기록이 없음 → 안드로이드는 뒤로가기 시 앱이 바로 종료
 // 동작: ① 열린 창(의견·관리자·설정) 닫기 → ② 화면 왼쪽 위 "← 뒤로"와 같은 화면으로 이동
-//       → ③ 홈에서는 안드로이드만 "한 번 더 누르면 종료" 안내(아이폰 홈 화면 앱은 스와이프로 종료되지 않으므로 안내 없음)
+//       → ③ 홈에서는 "한 번 더 누르면 종료" 안내 후 종료
+// [v99] 아이폰·아이패드는 적용 제외(방문기록을 넣지 않음 → 뒤로 스와이프 반응 없음, v97과 동일)
+//   이유: 아이폰 스와이프 미리보기는 기록을 넣은 순간의 화면 캡처라, 가드를 한꺼번에 넣는 방식에서는
+//         직전 화면과 무관한 화면(다른 체크리스트·홈)이 비쳐 혼란을 줌. 아이폰은 왼쪽 위 "← 뒤로" 버튼만 사용
 // 방식: 사용자가 화면을 누를 때(클릭) 방문기록에 '가드'를 최대 GUARD_MAX칸까지 채워 둠.
 //   뒤로가기는 가드를 1칸씩 소비하고, 뒤로가기 도중에는 기록을 새로 넣지 않음.
 //   (크롬은 '뒤로가기 직후·터치 없이' 넣은 기록을 건너뛰는 보호장치가 있어, 그 시점에 넣으면 다음 뒤로가기에 앱이 종료될 수 있음)
@@ -4661,9 +4664,18 @@ function installApp(){
 //   가드는 같은 주소·같은 화면이라 기록이 쌓여도 사용자에게 보이지 않고, 화면을 옮겨도 늘어나지 않음(최대 5칸 고정).
 (function(){
   if(!window.history || typeof history.pushState!=='function' || typeof history.replaceState!=='function') return;
+  var IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  if(IS_IOS){
+    // [v99] 아이폰 제외. v98에서 업데이트되며 새로고침된 경우 남아 있는 가드 기록을 걷어내 스와이프가 반응하지 않게 함
+    try{
+      var left=(history.state && typeof history.state.osG==='number') ? history.state.osG : 0;
+      if(left>0) history.go(-left);
+    }catch(e){}
+    window._osBack={guards:function(){return 0;}, isIOS:true, disabled:true};   // 테스트용
+    return;
+  }
   var PARENT={1:0,2:1,3:2,4:3};           // 화면 왼쪽 위 "← 뒤로" 버튼과 동일 (그 밖의 화면은 홈)
   var GUARD_MAX=5, EXIT_WINDOW=2000;
-  var IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
   var curG=0, exitTimer=null, jumping=false;
   function gOf(st){ return (st && typeof st.osG==='number') ? st.osG : 0; }
   // 시작 기록(0칸) 표시. 새로고침·업데이트로 이미 가드 위에 있으면 그 위치를 그대로 이어받음
@@ -4698,7 +4710,7 @@ function installApp(){
   function onBack(e){
     var g=gOf(e && e.state);
     if(jumping){ jumping=false; curG=g; return; }     // 종료 대기용 순간 이동(아래 history.go)으로 생긴 popstate
-    if(g>curG){ curG=g; return; }                      // '앞으로'(아이폰 오른쪽→왼쪽 스와이프) — 무시
+    if(g>curG){ curG=g; return; }                      // '앞으로' 이동 — 무시
     if(g===curG) return;                               // 가드와 무관한 popstate(구형 사파리 초기 로드 등)
     curG=g;
     if(closeTopLayer()) return;
@@ -4713,7 +4725,6 @@ function installApp(){
       go(Object.prototype.hasOwnProperty.call(PARENT,s) ? PARENT[s] : 0);
       return;
     }
-    if(IS_IOS) return;                                 // 아이폰 홈: 종료 수단이 없으므로 안내 없이 그대로
     // 안드로이드 홈: 안내 후 시작 기록으로 이동 → 2초 안에 한 번 더 누르면 앱 종료
     toast(ko() ? '뒤로 버튼을 한 번 더 누르면 종료됩니다' : 'Press back again to exit');
     if(curG>0){ jumping=true; try{ history.go(-curG); }catch(_){ jumping=false; } }
@@ -4723,7 +4734,7 @@ function installApp(){
   window.addEventListener('popstate', onBack);
   // 사용자가 화면을 누를 때마다 가드를 다시 채움(이미 가득이면 아무것도 안 함). 종료 안내 중이면 취소
   document.addEventListener('click', function(){ if(exitTimer) cancelExit(); topUp(); }, true);
-  window._osBack={guards:function(){return curG;}, isIOS:IS_IOS, max:GUARD_MAX};   // 테스트용
+  window._osBack={guards:function(){return curG;}, isIOS:false, max:GUARD_MAX};   // 테스트용
 })();
 </script>
 </body>
