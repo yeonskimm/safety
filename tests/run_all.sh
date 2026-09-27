@@ -40,6 +40,7 @@ echo
 if command -v python3 >/dev/null && python3 -c "import playwright" 2>/dev/null; then
   step "8) 렌더링 테스트 (Playwright)" python3 tests/test_ui.py
   step "9) 개인정보 안내 테스트 (Playwright)" python3 tests/test_privacy.py
+  step "10) 뒤로가기·스와이프 테스트 (Playwright)" python3 tests/test_backnav.py
 else
   echo "── 8) 렌더링 테스트 건너뜀 (playwright 미설치: pip install playwright && playwright install chromium)"
 fi
