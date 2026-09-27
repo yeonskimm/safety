@@ -100,3 +100,6 @@ jobs:
           pip install playwright
           playwright install --with-deps chromium
           python3 tests/test_ui.py
+
+      - name: 안드로이드 뒤로가기 테스트 (Playwright)
+        run: python3 tests/test_backnav.py
