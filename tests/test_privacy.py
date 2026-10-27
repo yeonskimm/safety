@@ -1,4 +1,5 @@
 # test_privacy.py — v96 개인정보 안내(의견 보내기 동의·접힘 안내, AI 채팅 안내문) 렌더링·동작 테스트
+#                  + v100 보고서 성명·소속 기기 저장(자동 입력·지우기·외부 전송 없음)
 # 사용: python3 tests/test_privacy.py   (Worker 응답은 모킹)
 import json, os, time, threading, http.server, socketserver
 from playwright.sync_api import sync_playwright
@@ -55,6 +56,7 @@ with sync_playwright() as p:
         page.click('#fb-more'); page.wait_for_timeout(150)
         txt=page.inner_text('#fb-privacy')
         check(f'[{lang}] 접힘 링크 펼침 + GA·180일·외부 AI 포함', vis('#fb-privacy') and 'Google Analytics' in txt and '180' in txt and page.get_attribute('#fb-more','aria-expanded')=='true')
+        check(f'[{lang}] 처리 안내에 보고서 성명·소속(이 기기에만 저장) 포함', ('보고서 성명·소속' in txt and '이 기기에만' in txt) if lang=='ko' else ('Report name and team' in txt and 'this device' in txt))
         if SHOT and lang=='ko': page.screenshot(path=f'{SHOT}/demo_fb_privacy.png')
         page.click('#fb-more'); page.wait_for_timeout(100)
         check(f'[{lang}] 다시 누르면 접힘', not vis('#fb-privacy'))
@@ -69,6 +71,43 @@ with sync_playwright() as p:
         last=page.evaluate("(()=>{const m=[...document.querySelectorAll('.ai-msg.ai')];return m.length?m[m.length-1].innerText:''})()")
         check(f'[{lang}] 서버 IP 한도(429 ip) → 대기 안내 E429-I·42초', 'E429-I' in last and '42' in last)
         page.evaluate("state.step=0; render();")
+    # ── v100 보고서 성명·소속 기기 저장 (사용자 의견 반영)
+    reqs=[]
+    def _rq(r):
+        try: reqs.append((r.url, r.post_data or ''))
+        except Exception: reqs.append((r.url, ''))
+    page.on('request', _rq)
+    def to_step2():
+        page.evaluate("state.lang='ko'; state.industry=(INDUSTRIES[0]||{}).id; state.step=2; render();"); page.wait_for_timeout(200)
+    shown=lambda sel: page.evaluate(f"(()=>{{const e=document.querySelector('{sel}');return !!e&&getComputedStyle(e).display!=='none'}})()")
+    to_step2()
+    check('[보고서정보] 처음엔 빈 칸·지우기 없음·저장 안내 표시', page.input_value('#rpt-name')=='' and page.input_value('#rpt-team')=='' and not shown('.info-clear') and '이 기기에만' in page.inner_text('#rpt-note'))
+    NAME='홍"길동<b>x</b>'; TEAM='안전&보건팀'
+    page.fill('#rpt-name', NAME); page.fill('#rpt-team', TEAM)
+    check('[보고서정보] 입력 즉시 이 기기에 저장', page.evaluate("JSON.parse(localStorage.getItem('_reportInfo')||'null')")=={'name':NAME,'team':TEAM})
+    check('[보고서정보] 입력하면 지우기 버튼 표시', shown('.info-clear'))
+    page.locator('button.det-btn').first.click(); page.wait_for_timeout(200)   # 작업 선택 → 화면 다시 그림
+    check('[보고서정보] 다시 그려도 따옴표·꺾쇠 그대로(칸 안 깨짐)', page.input_value('#rpt-name')==NAME and page.input_value('#rpt-team')==TEAM and page.evaluate("document.querySelectorAll('.info-box b').length")==0)
+    page.reload(wait_until='load'); page.wait_for_timeout(1000); to_step2()
+    check('[보고서정보] 앱을 다시 열면 자동 입력', page.input_value('#rpt-name')==NAME and page.input_value('#rpt-team')==TEAM and shown('.info-clear'))
+    if SHOT: page.screenshot(path=f'{SHOT}/demo_reportinfo.png')
+    page.evaluate("window._brArgs=null; const _o=buildReport; buildReport=function(){ window._brArgs=[...arguments]; return _o.apply(this,arguments); }; true")
+    page.locator('button.det-btn').first.click(); page.click('button.big-btn[onclick="startCheck()"]'); page.wait_for_timeout(200)
+    page.evaluate("saveReport()"); page.wait_for_timeout(300)
+    check('[보고서정보] 보고서 이미지에 성명·소속 반영', page.evaluate("window._brArgs && [window._brArgs[5], window._brArgs[6]]")==[NAME,TEAM] and page.evaluate("state.step")==4)
+    leak=[u for u,d in reqs if ('길동' in d or '보건팀' in d or '%EA%B8%B8%EB%8F%99' in u)]
+    check(f'[보고서정보] 서버·외부로 보내지 않음(요청 {len(reqs)}건 중 포함 0건)', not leak and len(reqs)>0)
+    to_step2(); page.click('.info-clear'); page.wait_for_timeout(150)
+    check('[보고서정보] 지우기 → 칸·저장값 삭제, 버튼 숨김', page.input_value('#rpt-name')=='' and page.input_value('#rpt-team')=='' and page.evaluate("localStorage.getItem('_reportInfo')") is None and not shown('.info-clear'))
+    page.reload(wait_until='load'); page.wait_for_timeout(1000); to_step2()
+    check('[보고서정보] 지운 뒤 다시 열면 빈 칸', page.input_value('#rpt-name')=='' and page.input_value('#rpt-team')=='')
+    page.evaluate("Storage.prototype._si=Storage.prototype.setItem; Storage.prototype.setItem=function(){ throw new Error('QuotaExceededError'); }; true")
+    n0=len(errs); page.fill('#rpt-name','김철수'); page.wait_for_timeout(100)
+    check('[보고서정보] 저장 불가 환경(사파리 시크릿 등)에서도 입력 정상', len(errs)==n0 and page.evaluate("state.workerName")=='김철수')
+    page.evaluate("Storage.prototype.setItem=Storage.prototype._si; true")
+    page.evaluate("state.lang='en'; render();"); page.wait_for_timeout(150)
+    check('[보고서정보] 영어 화면 안내·버튼 영어', 'this device' in page.inner_text('#rpt-note') and page.inner_text('.info-clear').strip()=='Clear')
+    page.evaluate("state.lang='ko'; state.step=0; render();")
     check('JS 예외 없음'+(' '+str(errs[:2]) if errs else ''), not errs)
     b.close()
 print(f'\nPRIVACY 테스트 {sum(res)}/{len(res)} 통과'); raise SystemExit(0 if all(res) else 1)
