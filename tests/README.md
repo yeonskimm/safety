@@ -21,7 +21,7 @@ bash tests/run_all.sh
 | 6-3 | 캐시 삭제 범위 | 자기 접두어(`onul-safety-`) 캐시만 삭제 — 같은 주소의 법ON 저장본 보호 |
 | 7 | 평문 비밀값 잔존 | `index.html`에 PIN 등 평문이 없는지 |
 | 8 | 렌더링 (Playwright) | 17항목 (`test_ui.py`) |
-| 9 | 개인정보 안내 (Playwright) | 25항목 (`test_privacy.py`) |
+| 9 | 개인정보 안내 (Playwright) | 38항목 (`test_privacy.py`) |
 | 10 | 안드로이드 뒤로가기 (Playwright) | 43항목 (`test_backnav.py`) |
 
 Playwright가 설치되지 않은 환경에서는 8~10번을 건너뛴다(배포 전에는 반드시 설치 후 실행).
@@ -35,7 +35,7 @@ Playwright가 설치되지 않은 환경에서는 8~10번을 건너뛴다(배포
 | `test_admin.js` | 관리자 세션토큰·PIN 비교 | `node tests/test_admin.js` |
 | `test_proxy.mjs` | AI 프록시 보호: 서버 고정 시스템 프롬프트, 답변 길이·온도 상한, IP당 요청 한도, 잘못된 요청 차단 (18항목) | `node tests/test_proxy.mjs` |
 | `test_ui.py` | 홈 렌더링·관리자 인증 흐름 (Playwright, 17항목) | `python3 tests/test_ui.py` |
-| `test_privacy.py` | 개인정보 안내: 의견 보내기 동의·접힘 안내, AI 채팅 안내문 (Playwright, 25항목) | `python3 tests/test_privacy.py` |
+| `test_privacy.py` | 개인정보 안내: 의견 보내기 동의·접힘 안내, AI 채팅 안내문, 보고서 성명·소속 기기 저장 (Playwright, 38항목) | `python3 tests/test_privacy.py` |
 | `test_backnav.py` | 안드로이드 뒤로가기 / 아이폰 적용 제외 확인 (Playwright, 43항목) | `python3 tests/test_backnav.py` |
 
 `test_retrieve.js` / `test_verify.js` / `test_admin.js` / `test_proxy.mjs`는 **`worker.js`의 코드를 그대로 읽어 실행한다.**
